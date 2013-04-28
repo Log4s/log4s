@@ -19,7 +19,7 @@ object Logger {
 }
 
 private object LoggerMacros {
-  def getLoggerImpl(c: Context): c.Expr[Logger] = {
+  final def getLoggerImpl(c: Context): c.Expr[Logger] = {
     import c.universe._
     
     val cls = c.enclosingClass.symbol
@@ -56,11 +56,11 @@ private object LoggerMacros {
     }
   }
   
-  def traceM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("trace")
-  def debugM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("debug")
-  def infoM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("info")
-  def warnM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("warn")
-  def errorM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("error")
+  final def traceM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("trace")
+  final def debugM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("debug")
+  final def infoM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("info")
+  final def warnM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("warn")
+  final def errorM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("error")
   
 }
 

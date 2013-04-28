@@ -108,10 +108,10 @@ enabled.  It does this by inspecting the structure of the argument that you
 pass into the logger.  
 
 If you pass a constant string literal, Log4s will make a direct, in-line call 
-directly to the underlying SLF4J log method.  If you pass in any kind of more 
-complex expression, Log4s will wrap it in an <tt>is*Level*Enabled</tt> call 
-automatically.  This is what SLF4J does when you use parameterized logging, 
-but Log4s does it transparently and can even auto-wrap additional calculation.
+to the underlying SLF4J log method.  If you pass in any kind of more complex
+expression, Log4s will wrap it in an <tt>is*Level*Enabled</tt> call
+automatically.  This is what SLF4J does when you use parameterized logging, but
+Log4s does it transparently and can even auto-wrap additional calculation.
 
 Compare the following:
 
