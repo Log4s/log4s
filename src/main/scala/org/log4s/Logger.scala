@@ -14,14 +14,17 @@ object Logger {
   final val singletonsByName = true
   final val trailingDollar = false
   
-  def getLogger: Logger = macro getLoggerImpl
-  
+  @deprecated("0.1", "Use org.log4s.getLogger")
+  def getLogger: Logger = macro LoggerMacros.getLoggerImpl
+}
+
+private object LoggerMacros {
   def getLoggerImpl(c: Context): c.Expr[Logger] = {
     import c.universe._
     
     val cls = c.enclosingClass.symbol
 
-    if (singletonsByName) {
+    if (Logger.singletonsByName) {
       if (cls.isModule) {
         val name = c.literal(cls.fullName)
         return reify { new Logger(getJLogger(name.splice)) }
@@ -35,11 +38,9 @@ object Logger {
     val expr = c.Expr[Class[_]](Literal(Constant(tp.asType.toTypeConstructor)))
     reify { new Logger(getJLogger(expr.splice)) }
   }
-
-
-}
-
-private object LoggerMacros {
+  
+  
+  
   private type LogCtx = Context { type PrefixType = Logger }
   def traceM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = conditionalLog(c)(msg)(
     { (target, msg) => c.universe.reify { target.splice.logger.trace(msg.splice) } },
