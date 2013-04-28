@@ -40,23 +40,11 @@ private object LoggerMacros {
   }
   
   
+  private[this] type LogCtx = Context { type PrefixType = Logger }
   
-  private type LogCtx = Context { type PrefixType = Logger }
-  def traceM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = conditionalLog(c)(msg)(
-    { (target, msg) => c.universe.reify { target.splice.logger.trace(msg.splice) } },
-    { (target, msg) => c.universe.reify { if (target.splice.logger.isTraceEnabled) target.splice.logger.trace(msg.splice) } }
-  )
-  
-  @inline private def reflectiveLog(c: LogCtx)(msg: c.Expr[String])(logLevel: String) = {
+  @inline private[this] def reflectiveLog(c: LogCtx)(msg: c.Expr[String])(logLevel: String) = {
     import c.universe._
         
-//    val logMethod = target.staticType.declaration(newTermName(logLevel)).suchThat { s =>
-//      s.isMethod && (s.asMethod.typeSignature match {
-//        case MethodType(List(p),_) if p.typeSignature =:= typeOf[String] => true
-//        case _ => false
-//      })
-//    }.asMethod
-    
     val logger = Select(c.prefix.tree, newTermName("logger"))
     val logExpr = c.Expr[Unit](Apply(Select(logger, newTermName(logLevel)), List(msg.tree)))
     @inline def checkExpr = c.Expr[Boolean](Apply(Select(logger, newTermName(s"is${logLevel.capitalize}Enabled")), Nil))
@@ -68,34 +56,12 @@ private object LoggerMacros {
     }
   }
   
+  def traceM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("trace")
   def debugM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("debug")
   def infoM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("info")
+  def warnM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("warn")
   def errorM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("error")
   
-  def warnM(c: Context { type PrefixType = Logger })(msg: c.Expr[String]): c.Expr[Unit] = {
-    import c.universe._
-    
-    val target = c.prefix
-    
-    msg match {
-      case c.Expr(Literal(Constant(_))) =>
-        reify { target.splice.logger.warn(msg.splice) }
-      case _ =>
-        reify { if (target.splice.logger.isWarnEnabled) target.splice.logger.warn(msg.splice) }  
-    }
-  }
-  
-  private def conditionalLog(c: LogCtx)(msg: c.Expr[String])(simple:  (c.Expr[Logger], c.Expr[String]) => c.Expr[Unit], 
-                                                             checked: (c.Expr[Logger], c.Expr[String]) => c.Expr[Unit]): c.Expr[Unit] = {
-    import c.universe._
-    
-    val target = c.prefix
-    
-    msg match {
-      case c.Expr(Literal(Constant(_))) => simple(target, msg)
-      case _ => checked(target, msg)
-    }
-  }
 }
 
 final class Logger(val logger: JLogger) extends AnyVal {
