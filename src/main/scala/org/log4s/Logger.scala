@@ -42,11 +42,15 @@ private object LoggerMacros {
   
   private[this] type LogCtx = Context { type PrefixType = Logger }
   
-  @inline private[this] def reflectiveLog(c: LogCtx)(msg: c.Expr[String])(logLevel: String) = {
+  @inline private[this] def reflectiveLog(c: LogCtx)(msg: c.Expr[String], error: Option[c.Expr[Throwable]])(logLevel: String) = {
     import c.universe._
         
     val logger = Select(c.prefix.tree, newTermName("logger"))
-    val logExpr = c.Expr[Unit](Apply(Select(logger, newTermName(logLevel)), List(msg.tree)))
+    val logValues = error match {
+      case None    => List(msg.tree)
+      case Some(e) => List(msg.tree, e.tree)
+    }
+    val logExpr = c.Expr[Unit](Apply(Select(logger, newTermName(logLevel)), logValues))
     @inline def checkExpr = c.Expr[Boolean](Apply(Select(logger, newTermName(s"is${logLevel.capitalize}Enabled")), Nil))
     
     msg match {
@@ -56,11 +60,20 @@ private object LoggerMacros {
     }
   }
   
-  final def traceM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("trace")
-  final def debugM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("debug")
-  final def infoM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("info")
-  final def warnM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("warn")
-  final def errorM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg)("error")
+  final def traceTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))("trace")
+  final def traceM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)("trace")
+  
+  final def debugTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))("debug")
+  final def debugM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)("debug")
+  
+  final def infoTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))("info")
+  final def infoM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)("info")
+  
+  final def warnTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))("warn")
+  final def warnM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)("warn")
+  
+  final def errorTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))("error")
+  final def errorM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)("error")
   
 }
 
@@ -77,14 +90,19 @@ final class Logger(val logger: JLogger) extends AnyVal {
   
   import LoggerMacros._
   
+  def trace(t: Throwable)(msg: String) = macro traceTM
   def trace(msg: String) = macro traceM
   
+  def debug(t: Throwable)(msg: String) = macro debugTM
   def debug(msg: String) = macro debugM
   
+  def info(t: Throwable)(msg: String) = macro infoTM
   def info(msg: String) = macro infoM
   
+  def warn(t: Throwable)(msg: String) = macro warnTM
   def warn(msg: String) = macro warnM
   
+  def error(t: Throwable)(msg: String) = macro errorTM
   def error(msg: String) = macro errorM
   
 }
