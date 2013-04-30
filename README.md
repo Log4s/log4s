@@ -43,7 +43,7 @@ class DemoClass {
 There is no requirement that you mark your loggers with `private[this]`, but 
 the compiler may bypass accessors and generate direct field access if you do.
 
-Automatic logger naming also works for modules (_AKA_ objects or 
+Automatic logger naming also works for modules (a.k.a. objects or 
 singletons).
 
 ```scala
