@@ -21,8 +21,8 @@ project's goals.
 
 ## Examples ##
 
-- [Getting a logger][]
-- [Logging messages][]
+- [Getting a logger](#getting-a-logger)
+- [Logging messages](#logging-messages)
 
 ### Getting a logger ###
 
