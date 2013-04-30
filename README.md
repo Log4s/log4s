@@ -109,7 +109,7 @@ pass into the logger.
 
 If you pass a constant string literal, Log4s will make a direct, in-line call 
 to the underlying SLF4J log method.  If you pass in any kind of more complex
-expression, Log4s will wrap it in an <tt>is<i>Level</i>Enabled</tt> call
+expression, Log4s will wrap it in an `is<var>Level</var>Enabled` call
 automatically.  This is what SLF4J does when you use parameterized logging, but
 Log4s does it transparently and can even auto-wrap additional calculation.
 
