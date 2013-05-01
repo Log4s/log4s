@@ -18,6 +18,46 @@ object Logger {
   def getLogger: Logger = macro LoggerMacros.getLoggerImpl
 }
 
+final class Logger(val logger: JLogger) extends AnyVal {
+  @inline def isTraceEnabled: Boolean = logger.isTraceEnabled
+  
+  @inline def isDebugEnabled: Boolean = logger.isDebugEnabled
+  
+  @inline def isInfoEnabled: Boolean = logger.isInfoEnabled
+  
+  @inline def isWarnEnabled: Boolean = logger.isWarnEnabled
+  
+  @inline def isErrorEnabled: Boolean = logger.isErrorEnabled
+  
+  import LoggerMacros._
+  
+  // TODO: Wrap & macro these
+  @inline def apply(level: LogLevel)(msg: => String) = level match {
+    case Trace => logger.trace(msg)
+    case Debug => logger.debug(msg)
+    case Info  => logger.info(msg)
+    case Warn  => logger.warn(msg)
+    case Error => logger.error(msg)
+  }
+  
+  def trace(t: Throwable)(msg: String) = macro traceTM
+  def trace(msg: String) = macro traceM
+  
+  def debug(t: Throwable)(msg: String) = macro debugTM
+  def debug(msg: String) = macro debugM
+  
+  def info(t: Throwable)(msg: String) = macro infoTM
+  def info(msg: String) = macro infoM
+  
+  def warn(t: Throwable)(msg: String) = macro warnTM
+  def warn(msg: String) = macro warnM
+  
+  def error(t: Throwable)(msg: String) = macro errorTM
+  def error(msg: String) = macro errorM
+  
+}
+
+
 private object LoggerMacros {
   final def getLoggerImpl(c: Context): c.Expr[Logger] = {
     import c.universe._
@@ -74,35 +114,5 @@ private object LoggerMacros {
   
   final def errorTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))("error")
   final def errorM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)("error")
-  
-}
-
-final class Logger(val logger: JLogger) extends AnyVal {
-  @inline def isTraceEnabled: Boolean = logger.isTraceEnabled
-  
-  @inline def isDebugEnabled: Boolean = logger.isDebugEnabled
-  
-  @inline def isInfoEnabled: Boolean = logger.isInfoEnabled
-  
-  @inline def isWarnEnabled: Boolean = logger.isWarnEnabled
-  
-  @inline def isErrorEnabled: Boolean = logger.isErrorEnabled
-  
-  import LoggerMacros._
-  
-  def trace(t: Throwable)(msg: String) = macro traceTM
-  def trace(msg: String) = macro traceM
-  
-  def debug(t: Throwable)(msg: String) = macro debugTM
-  def debug(msg: String) = macro debugM
-  
-  def info(t: Throwable)(msg: String) = macro infoTM
-  def info(msg: String) = macro infoM
-  
-  def warn(t: Throwable)(msg: String) = macro warnTM
-  def warn(msg: String) = macro warnM
-  
-  def error(t: Throwable)(msg: String) = macro errorTM
-  def error(msg: String) = macro errorM
   
 }
