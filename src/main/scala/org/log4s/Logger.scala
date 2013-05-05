@@ -18,6 +18,7 @@ object Logger {
   def getLogger: Logger = macro LoggerMacros.getLoggerImpl
 }
 
+
 final class Logger(val logger: JLogger) extends AnyVal {
   @inline def isTraceEnabled: Boolean = logger.isTraceEnabled
   
@@ -31,13 +32,13 @@ final class Logger(val logger: JLogger) extends AnyVal {
   
   import LoggerMacros._
   
-  // TODO: Wrap & macro these
-  @inline def apply(level: LogLevel)(msg: => String) = level match {
-    case Trace => logger.trace(msg)
-    case Debug => logger.debug(msg)
-    case Info  => logger.info(msg)
-    case Warn  => logger.warn(msg)
-    case Error => logger.error(msg)
+  // TBD: These might benefit from macros?
+  @inline def apply(level: LogLevel): LevelLogger = level match {
+    case Trace => new TraceLevelLogger(logger)
+    case Debug => new DebugLevelLogger(logger)
+    case Info  => new InfoLevelLogger(logger)
+    case Warn  => new WarnLevelLogger(logger)
+    case Error => new ErrorLevelLogger(logger)
   }
   
   def trace(t: Throwable)(msg: String) = macro traceTM
@@ -57,6 +58,35 @@ final class Logger(val logger: JLogger) extends AnyVal {
   
 }
 
+sealed trait LevelLogger extends Any {
+  def isEnabled: Boolean
+  def apply(msg: => String): Unit
+}
+
+private final class TraceLevelLogger(val logger: JLogger) extends AnyVal with LevelLogger {
+  @inline def isEnabled = logger.isTraceEnabled
+  @inline def apply(msg: => String) = if (isEnabled) logger.trace(msg)
+}
+
+private final class DebugLevelLogger(val logger: JLogger) extends AnyVal with LevelLogger {
+  @inline def isEnabled = logger.isDebugEnabled
+  @inline def apply(msg: => String) = if (isEnabled) logger.debug(msg)
+}
+
+private final class InfoLevelLogger(val logger: JLogger) extends AnyVal with LevelLogger {
+  @inline def isEnabled = logger.isInfoEnabled
+  @inline def apply(msg: => String) = if (isEnabled) logger.info(msg)
+}
+
+private final class WarnLevelLogger(val logger: JLogger) extends AnyVal with LevelLogger {
+  @inline def isEnabled = logger.isWarnEnabled
+  @inline def apply(msg: => String) = if (isEnabled) logger.warn(msg)
+}
+
+private final class ErrorLevelLogger(val logger: JLogger) extends AnyVal with LevelLogger {
+  @inline def isEnabled = logger.isErrorEnabled
+  @inline def apply(msg: => String) = if (isEnabled) logger.error(msg)
+}
 
 private object LoggerMacros {
   final def getLoggerImpl(c: Context): c.Expr[Logger] = {
