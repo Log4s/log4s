@@ -27,6 +27,7 @@
   </developers>
   <properties>
     <scala.version>2.10.1</scala.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
@@ -66,6 +67,7 @@
               <useTestClasspath>true</useTestClasspath>
               <args>
                 <arg>-deprecation</arg>
+                <arg>-feature</arg>
                 <arg>-optimise</arg>
                 <arg>-target:jvm-1.7</arg>
                 <arg>-Ystruct-dispatch:poly-cache</arg>
