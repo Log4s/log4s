@@ -16,8 +16,43 @@ object Logger {
   
   @deprecated("0.1", "Use org.log4s.getLogger")
   def getLogger: Logger = macro LoggerMacros.getLoggerImpl
-}
+  
+  sealed trait LevelLogger extends Any {
+    def isEnabled: Boolean
+    def apply(msg: => String): Unit
+    def apply(t: Throwable)(msg: => String)
+  }
 
+  final class TraceLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
+    @inline def isEnabled = logger.isTraceEnabled
+    @inline def apply(msg: => String) = if (isEnabled) logger.trace(msg)
+    @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.trace(msg, t)
+  }
+  
+  final class DebugLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
+    @inline def isEnabled = logger.isDebugEnabled
+    @inline def apply(msg: => String) = if (isEnabled) logger.debug(msg)
+    @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.debug(msg, t)
+  }
+  
+  final class InfoLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
+    @inline def isEnabled = logger.isInfoEnabled
+    @inline def apply(msg: => String) = if (isEnabled) logger.info(msg)
+    @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.info(msg, t)
+  }
+  
+  final class WarnLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
+    @inline def isEnabled = logger.isWarnEnabled
+    @inline def apply(msg: => String) = if (isEnabled) logger.warn(msg)
+    @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.warn(msg, t)
+  }
+  
+  final class ErrorLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
+    @inline def isEnabled = logger.isErrorEnabled
+    @inline def apply(msg: => String) = if (isEnabled) logger.error(msg)
+    @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.error(msg, t)
+  }
+}
 
 final class Logger(val logger: JLogger) extends AnyVal {
   @inline def isTraceEnabled: Boolean = logger.isTraceEnabled
@@ -30,16 +65,25 @@ final class Logger(val logger: JLogger) extends AnyVal {
   
   @inline def isErrorEnabled: Boolean = logger.isErrorEnabled
   
-  import LoggerMacros._
   
-  // TBD: These might benefit from macros?
-  @inline def apply(level: LogLevel): LevelLogger = level match {
+  import Logger._
+  
+  /* These will allow maximum inlining if the type is known at compile time. */
+  @inline def apply(lvl: Trace.type): TraceLevelLogger = new TraceLevelLogger(logger)
+  @inline def apply(lvl: Debug.type): DebugLevelLogger = new DebugLevelLogger(logger)
+  @inline def apply(lvl: Info .type): InfoLevelLogger  = new InfoLevelLogger (logger)
+  @inline def apply(lvl: Warn .type): WarnLevelLogger  = new WarnLevelLogger (logger)
+  @inline def apply(lvl: Error.type): ErrorLevelLogger = new ErrorLevelLogger(logger)
+  
+  def apply(level: LogLevel): LevelLogger = level match {
     case Trace => new TraceLevelLogger(logger)
     case Debug => new DebugLevelLogger(logger)
     case Info  => new InfoLevelLogger(logger)
     case Warn  => new WarnLevelLogger(logger)
     case Error => new ErrorLevelLogger(logger)
   }
+  
+  import LoggerMacros._
   
   def trace(t: Throwable)(msg: String) = macro traceTM
   def trace(msg: String) = macro traceM
@@ -56,36 +100,6 @@ final class Logger(val logger: JLogger) extends AnyVal {
   def error(t: Throwable)(msg: String) = macro errorTM
   def error(msg: String) = macro errorM
   
-}
-
-sealed trait LevelLogger extends Any {
-  def isEnabled: Boolean
-  def apply(msg: => String): Unit
-}
-
-private final class TraceLevelLogger(val logger: JLogger) extends AnyVal with LevelLogger {
-  @inline def isEnabled = logger.isTraceEnabled
-  @inline def apply(msg: => String) = if (isEnabled) logger.trace(msg)
-}
-
-private final class DebugLevelLogger(val logger: JLogger) extends AnyVal with LevelLogger {
-  @inline def isEnabled = logger.isDebugEnabled
-  @inline def apply(msg: => String) = if (isEnabled) logger.debug(msg)
-}
-
-private final class InfoLevelLogger(val logger: JLogger) extends AnyVal with LevelLogger {
-  @inline def isEnabled = logger.isInfoEnabled
-  @inline def apply(msg: => String) = if (isEnabled) logger.info(msg)
-}
-
-private final class WarnLevelLogger(val logger: JLogger) extends AnyVal with LevelLogger {
-  @inline def isEnabled = logger.isWarnEnabled
-  @inline def apply(msg: => String) = if (isEnabled) logger.warn(msg)
-}
-
-private final class ErrorLevelLogger(val logger: JLogger) extends AnyVal with LevelLogger {
-  @inline def isEnabled = logger.isErrorEnabled
-  @inline def apply(msg: => String) = if (isEnabled) logger.error(msg)
 }
 
 private object LoggerMacros {
@@ -112,7 +126,7 @@ private object LoggerMacros {
   
   private[this] type LogCtx = Context { type PrefixType = Logger }
   
-  @inline private[this] def reflectiveLog(c: LogCtx)(msg: c.Expr[String], error: Option[c.Expr[Throwable]])(logLevel: String) = {
+  @inline private[this] def reflectiveLog(c: LogCtx)(msg: c.Expr[String], error: Option[c.Expr[Throwable]])(logLevel: LogLevel) = {
     import c.universe._
         
     val logger = Select(c.prefix.tree, newTermName("logger"))
@@ -120,8 +134,8 @@ private object LoggerMacros {
       case None    => List(msg.tree)
       case Some(e) => List(msg.tree, e.tree)
     }
-    val logExpr = c.Expr[Unit](Apply(Select(logger, newTermName(logLevel)), logValues))
-    @inline def checkExpr = c.Expr[Boolean](Apply(Select(logger, newTermName(s"is${logLevel.capitalize}Enabled")), Nil))
+    val logExpr = c.Expr[Unit](Apply(Select(logger, newTermName(logLevel.methodName)), logValues))
+    @inline def checkExpr = c.Expr[Boolean](Apply(Select(logger, newTermName(s"is${logLevel.name}Enabled")), Nil))
     
     msg match {
       case c.Expr(Literal(Constant(_))) => logExpr
@@ -130,19 +144,19 @@ private object LoggerMacros {
     }
   }
   
-  final def traceTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))("trace")
-  final def traceM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)("trace")
+  def traceTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))(Trace)
+  def traceM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)(Trace)
   
-  final def debugTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))("debug")
-  final def debugM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)("debug")
+  def debugTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))(Debug)
+  def debugM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)(Debug)
   
-  final def infoTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))("info")
-  final def infoM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)("info")
+  def infoTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))(Info)
+  def infoM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)(Info)
   
-  final def warnTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))("warn")
-  final def warnM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)("warn")
+  def warnTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))(Warn)
+  def warnM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)(Warn)
   
-  final def errorTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))("error")
-  final def errorM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)("error")
+  def errorTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))(Error)
+  def errorM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)(Error)
   
 }
