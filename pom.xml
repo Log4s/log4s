@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.gerweck.parent</groupId>
+    <artifactId>standard</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
   <groupId>org.log4s</groupId>
   <artifactId>log4s</artifactId>
   <version>0.1.0-SNAPSHOT</version>
@@ -9,45 +14,20 @@
   <description>Logging interface for Scala</description>
   <inceptionYear>2013</inceptionYear>
   <url>http://log4s.org/</url>
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-      <comments>A business-friendly OSS license</comments>
-    </license>
-  </licenses>
-  <developers>
-    <developer>
-      <id>sarah</id>
-      <name>Sarah Gerweck</name>
-      <email>sarah.a180@gmail.com</email>
-      <timezone>-8</timezone>
-    </developer>
-  </developers>
-  <properties>
-    <scala.version>2.10.1</scala.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
-      <version>${scala.version}</version>
     </dependency>
     <dependency>
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-reflect</artifactId>
-      <version>${scala.version}</version>
       <!-- This is needed only at compile time -->
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>[1.6,)</version>
     </dependency>
   </dependencies>
   <build>
@@ -55,28 +35,6 @@
       <plugin>
         <groupId>org.scala-tools</groupId>
         <artifactId>maven-scala-plugin</artifactId>
-        <version>2.15.2</version>
-        <executions>
-          <execution>
-            <id>compile</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-            <configuration>
-              <useTestClasspath>true</useTestClasspath>
-              <args>
-                <arg>-deprecation</arg>
-                <arg>-feature</arg>
-                <arg>-optimise</arg>
-                <arg>-target:jvm-1.7</arg>
-                <arg>-Ystruct-dispatch:poly-cache</arg>
-                <arg>-Yclosure-elim</arg>
-                <arg>-Yinline</arg>
-              </args>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
