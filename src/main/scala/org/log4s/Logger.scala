@@ -14,9 +14,6 @@ object Logger {
   final val singletonsByName = true
   final val trailingDollar = false
   
-  @deprecated("0.1", "Use org.log4s.getLogger")
-  def getLogger: Logger = macro LoggerMacros.getLoggerImpl
-  
   sealed trait LevelLogger extends Any {
     def isEnabled: Boolean
     def apply(msg: => String): Unit
