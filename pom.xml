@@ -13,7 +13,24 @@
   <name>Log4s</name>
   <description>Logging interface for Scala</description>
   <inceptionYear>2013</inceptionYear>
-  <url>http://log4s.org/</url>
+  <url>https://github.com/sarahgerweck/log4s</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Sarah Gerweck</name>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git://github.com/sarahgerweck/log4s.git</connection>
+    <developerConnection>scm:git:git://github.com/sarahgerweck/log4s.git</developerConnection>
+    <url>https://github.com/sarahgerweck/log4s</url>
+  </scm>
   <dependencies>
     <dependency>
       <groupId>org.scala-lang</groupId>
