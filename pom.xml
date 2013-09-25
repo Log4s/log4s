@@ -31,6 +31,17 @@
     <developerConnection>scm:git:git://github.com/sarahgerweck/log4s.git</developerConnection>
     <url>https://github.com/sarahgerweck/log4s</url>
   </scm>
+  <repositories>
+    <repository>
+      <id>gerweckSnapshots</id>
+      <url>https://repository-gerweck.forge.cloudbees.com/snapshot/</url>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+    </repository>
+  </repositories>
   <dependencies>
     <dependency>
       <groupId>org.scala-lang</groupId>
