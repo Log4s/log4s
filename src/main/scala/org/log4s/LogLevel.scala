@@ -3,7 +3,7 @@ package org.log4s
 /** A severity level that can be assigned to log statements. */
 sealed trait LogLevel {
   /** The name of this log level. It is spelled with initial capitals */
-  @inline def name: String = this.toString
+  def name: String = this.toString
   
   /** The name of the SLF4J method that does logging at this level */
   private[log4s] def methodName = name.toLowerCase

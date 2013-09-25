@@ -132,7 +132,7 @@ private object LoggerMacros {
       case Some(e) => List(msg.tree, e.tree)
     }
     val logExpr = c.Expr[Unit](Apply(Select(logger, newTermName(logLevel.methodName)), logValues))
-    @inline def checkExpr = c.Expr[Boolean](Apply(Select(logger, newTermName(s"is${logLevel.name}Enabled")), Nil))
+    def checkExpr = c.Expr[Boolean](Apply(Select(logger, newTermName(s"is${logLevel.name}Enabled")), Nil))
     
     msg match {
       case c.Expr(Literal(Constant(_))) => logExpr
