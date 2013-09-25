@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.gerweck.parent</groupId>
-    <artifactId>standard</artifactId>
+    <artifactId>gerweck-parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.log4s</groupId>
