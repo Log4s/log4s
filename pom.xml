@@ -37,7 +37,7 @@
       <url>https://repository-gerweck.forge.cloudbees.com/snapshot/</url>
       <snapshots>
         <enabled>true</enabled>
-        <updatePolicy>always</updatePolicy>
+        <updatePolicy>interval:120</updatePolicy>
         <checksumPolicy>fail</checksumPolicy>
       </snapshots>
     </repository>
