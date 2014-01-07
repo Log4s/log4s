@@ -45,7 +45,7 @@ object MDC extends collection.mutable.Map[String,String] {
   /** Execute a block of code with MDC variables set. After the block completes,
     * any variables you've set will be returned to their previous values.
     */
-  def withCtx[A](kvs: (String,String)*)(v: => A) = {
+  def withCtx[A](kvs: (String,String)*)(v: => A): A = {
     val old =
       ( for {
           (a,b) <- kvs
