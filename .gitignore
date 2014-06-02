@@ -4,3 +4,5 @@
 /.cache
 /.settings
 *.swp
+/project/target
+/project/project
