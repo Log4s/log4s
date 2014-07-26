@@ -23,6 +23,7 @@ project's goals.
 
 - [Getting a logger](#getting-a-logger)
 - [Logging messages](#logging-messages)
+- [Exception logging](#exception-logging)
 
 ### Getting a logger ###
 
@@ -143,3 +144,39 @@ calculation with `isDebugEnabled`.
 
 The string interpolation syntax is not required for this detection, but it 
 is usually the easiest and best-performing approach. 
+
+### Exception logging
+
+When logging an exception, it's always the best practice to attach send actual
+exception object into your logging system. This gives you flexibility in how
+it's displayed, the ability to do filtering, and additional options for things
+like database logging.
+
+Log4s allows you to pass exceptions into your logger, while still maintining
+the simple string-interpolation style API that makes it so convenient. To log
+an exception, use the following syntax.
+
+```
+try {
+  ...
+} catch {
+  case e: Exception => logger.error(e)("Some error message")
+}
+```
+
+There is no method to log an error message without any message, because this
+is generally not a good practice. You can always feed it an empty string if
+you really want. It's usually not desirable to use the exception's message, as
+most logging systems will output this anyway.
+
+Like regular message logging, exception logging uses macros to improve
+performance in the case where the given logger is not enabled. If the log
+message is dynamic, it will not be constructed unless the logger is disabled.
+
+The macro also detect if the exception is dynamic, making it possible to write
+code like below, and pay for only an `isTraceEnabled` unless trace logging is
+enabled on the given logger.
+
+```
+logger.trace(new RuntimeException())("Got call into xyz")
+```

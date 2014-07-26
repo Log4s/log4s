@@ -134,8 +134,16 @@ private object LoggerMacros {
     val logExpr = c.Expr[Unit](Apply(Select(logger, newTermName(logLevel.methodName)), logValues))
     def checkExpr = c.Expr[Boolean](Apply(Select(logger, newTermName(s"is${logLevel.name}Enabled")), Nil))
 
+    def errorIsSimple = {
+      error match {
+        case None | Some(c.Expr(Ident(_))) => true
+        case _                             => false
+      }
+    }
+
     msg match {
-      case c.Expr(Literal(Constant(_))) => logExpr
+      case c.Expr(Literal(Constant(_))) if errorIsSimple =>
+        logExpr
       case _ =>
         reify { if (checkExpr.splice) logExpr.splice }
     }
