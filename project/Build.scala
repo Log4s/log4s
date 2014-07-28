@@ -12,7 +12,7 @@ object BuildSettings {
 
   val buildScalaVersions = Seq("2.10.4", "2.11.2")
 
-  val buildNumberOpt = envOrNone("BUILD_NUMBER")
+  val buildNumberOpt = envOrNone("TRAVIS_BUILD_NUMBER") orElse envOrNone("BUILD_NUMBER")
   val isJenkins      = buildNumberOpt.isDefined
 
   val buildVersion = buildNumberOpt match {
