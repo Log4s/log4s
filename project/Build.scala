@@ -43,7 +43,7 @@ object BuildSettings {
     homepage     := Some(url("http://log4s.org")),
     description  := "High-performance SLF4J wrapper that provides convenient Scala bindings using macros.",
     startYear    := Some(2013),
-    scmInfo      := Some(ScmInfo(url("http://github.com/sarahgerweck/log4s"), "scm:git:git@github.com:sarahgerweck/log4.git")),
+    scmInfo      := Some(ScmInfo(url("http://github.com/Log4s/log4s"), "scm:git:git@github.com:Log4s/log4.git")),
 
     scalaVersion       := buildScalaVersion,
     crossScalaVersions := buildScalaVersions,
