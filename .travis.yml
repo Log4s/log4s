@@ -1,5 +1,5 @@
 language: scala
-script: sbt -Dsbt.log.noformat=true +publish
+script: sbt -Dsbt.log.noformat=true +compile +make-site +publish
 jdk:
 - oraclejdk7
 env:

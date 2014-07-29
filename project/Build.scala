@@ -91,7 +91,7 @@ object PublishSettings {
         <developer>
           <id>sarah</id>
           <name>Sarah Gerweck</name>
-          <url>http://github.com/sarahgerweck</url>
+          <url>https://github.com/sarahgerweck</url>
         </developer>
       </developers>
     )
