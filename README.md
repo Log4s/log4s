@@ -18,6 +18,11 @@ Please feel free to contact me if you have suggestions for how to enhance or
 improve this library—as long as those suggestions are compatible with the 
 project's goals.
 
+## Installation ##
+
+To use Log4s, add the following to your SBT build:
+
+    libraryDependencies += "org.log4s" %% "log4s" % "1.0.2"
 
 ## Examples ##
 

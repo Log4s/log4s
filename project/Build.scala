@@ -6,20 +6,26 @@ import com.typesafe.sbt.SbtSite.site
 import scala.util.Properties.envOrNone
 
 object BuildSettings {
+  import Helpers._
+
   final val buildOrganization = "org.log4s"
-  final val baseVersion       = "1.0.1"
+  final val baseVersion       = "1.0.2"
   final val buildScalaVersion = "2.10.4"
   final val buildJavaVersion  = "1.7"
   final val optimize          = true
 
+  /** Whether to suffix the base version with the current build number. */
+  val continuousBuild         = false
+
   val buildScalaVersions = Seq("2.10.4", "2.11.2")
 
-  val buildNumberOpt = envOrNone("TRAVIS_BUILD_NUMBER") orElse envOrNone("BUILD_NUMBER")
+  val buildNumberOpt = opts("TRAVIS_BUILD_NUMBER", "BUILD_NUMBER")
   val isJenkins      = buildNumberOpt.isDefined
 
   val buildVersion = buildNumberOpt match {
-    case Some("") | Some("SNAPSHOT") | None => baseVersion + "-SNAPSHOT"
-    case Some(s)                            => baseVersion + "." + s
+    case Some("") | Some("SNAPSHOT") | None => s"$baseVersion-SNAPSHOT"
+    case Some(build) if continuousBuild     => s"$baseVersion.$build"
+    case Some(_)                            => baseVersion
   }
 
   lazy val isSnapshot = buildVersion endsWith "-SNAPSHOT"
@@ -65,6 +71,7 @@ object Helpers {
   def parseBool(str: String): Boolean = Set("yes", "y", "true", "t", "1") contains str.trim.toLowerCase
   def boolFlag(name: String): Option[Boolean] = getProp(name) map { parseBool _ }
   def boolFlag(name: String, default: Boolean): Boolean = boolFlag(name) getOrElse default
+  def opts(names: String*): Option[String] = names.view.map(getProp _).foldLeft(None: Option[String]) { _ orElse _ }
 }
 
 object Resolvers {
