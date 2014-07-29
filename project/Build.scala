@@ -1,6 +1,8 @@
 import sbt._
 import Keys._
 
+import com.typesafe.sbt.SbtSite.site
+
 import scala.util.Properties.envOrNone
 
 object BuildSettings {
@@ -22,7 +24,7 @@ object BuildSettings {
 
   lazy val isSnapshot = buildVersion endsWith "-SNAPSHOT"
 
-  val buildScalacOptions = Seq (
+  lazy val buildScalacOptions = Seq (
     "-deprecation",
     "-unchecked",
     "-feature",
@@ -31,12 +33,16 @@ object BuildSettings {
     if (optimize) Seq("-optimize") else Seq.empty
   )
 
-  val buildJavacOptions = Seq(
+  lazy val buildJavacOptions = Seq(
     "-target", buildJavaVersion,
     "-source", buildJavaVersion
   )
 
-  val buildSettings = Defaults.defaultSettings ++ Seq (
+  lazy val siteSettings = site.settings ++ site.includeScaladoc()
+
+  lazy val buildSettings = Defaults.defaultSettings ++
+                           siteSettings ++
+                           Seq (
     organization := buildOrganization,
     version      := buildVersion,
     licenses     := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
@@ -47,6 +53,7 @@ object BuildSettings {
 
     scalaVersion       := buildScalaVersion,
     crossScalaVersions := buildScalaVersions,
+    autoAPIMappings    := true,
 
     scalacOptions ++= buildScalacOptions,
     javacOptions  ++= buildJavacOptions
