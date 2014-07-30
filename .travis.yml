@@ -1,3 +1,6 @@
+branches:
+  only:
+    - dev
 language: scala
 script: sbt -Dsbt.log.noformat=true +compile +make-site +publish
 jdk:
