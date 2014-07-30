@@ -16,6 +16,7 @@ object BuildSettings {
 
   /** Whether to suffix the base version with the current build number. */
   val continuousBuild         = false
+  val alwaysSnapshot          = true
 
   val buildScalaVersions = Seq("2.10.4", "2.11.2")
 
@@ -23,6 +24,7 @@ object BuildSettings {
   val isJenkins      = buildNumberOpt.isDefined
 
   val buildVersion = buildNumberOpt match {
+    case _ if alwaysSnapshot                => s"$baseVersion-SNAPSHOT"
     case Some("") | Some("SNAPSHOT") | None => s"$baseVersion-SNAPSHOT"
     case Some(build) if continuousBuild     => s"$baseVersion.$build"
     case Some(_)                            => baseVersion
@@ -76,24 +78,39 @@ object Helpers {
 
 object Resolvers {
   val sarahSnaps    = "Sarah Snaps" at "https://repository-gerweck.forge.cloudbees.com/snapshot/"
-  val log4sSnaps    = "Log4s Snapshots" at "s3://repo.log4s.org.s3-us-west-2.amazonaws.com/snapshot/"
-  val log4sReleases = "Log4s Releases" at "s3://repo.log4s.org.s3-us-west-2.amazonaws.com/releases/"
+  val sonaSnaps     = "Sonatype Snaps" at "https://oss.sonatype.org/content/repositories/snapshots"
+  val sonaStage     = "Sonatype Staging" at "https://oss.sonatype.org/service/local/staging/deploy/maven2"
 }
 
 object PublishSettings {
   import BuildSettings._
   import Resolvers._
+  import Helpers._
 
-  val publishRepo =
-    if (isSnapshot) Some(log4sSnaps)
-    else            Some(log4sReleases)
+  val publishRepo = {
+    if (isSnapshot) Some(sonaSnaps)
+    else            Some(sonaStage)
+  }
 
-  val publishSettings = Seq (
-    publishMavenStyle    := true,
-    pomIncludeRepository := { _ => false },
+  val sonaCreds = (
+    for {
+      user <- getProp("SONATYPE_USER")
+      pass <- getProp("SONATYPE_PASS")
+    } yield {
+      credentials +=
+          Credentials("Sonatype Nexus Repository Manager",
+                      "oss.sonatype.org",
+                      user, pass)
+    }
+  ).toSeq
 
-    publishTo            := publishRepo,
-    pomExtra             := (
+  val publishSettings = sonaCreds ++ Seq (
+    publishMavenStyle       := true,
+    pomIncludeRepository    := { _ => false },
+    publishArtifact in Test := false,
+
+    publishTo               := publishRepo,
+    pomExtra                := (
       <developers>
         <developer>
           <id>sarah</id>
