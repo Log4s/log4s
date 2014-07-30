@@ -1,6 +1,6 @@
 branches:
   only:
-    - dev
+    - master
 language: scala
 script: sbt -Dsbt.log.noformat=true +compile +make-site +publish
 jdk:
