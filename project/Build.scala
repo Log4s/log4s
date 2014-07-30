@@ -2,6 +2,7 @@ import sbt._
 import Keys._
 
 import com.typesafe.sbt.SbtSite.site
+import sbtrelease.ReleasePlugin._
 
 import scala.util.Properties.envOrNone
 
@@ -122,6 +123,10 @@ object PublishSettings {
   )
 }
 
+object Release {
+  val settings = releaseSettings
+}
+
 object Eclipse {
   import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
@@ -148,7 +153,7 @@ object Log4sBuild extends Build {
   import Dependencies._
   import PublishSettings._
 
-  lazy val baseSettings = buildSettings ++ Eclipse.settings ++ publishSettings
+  lazy val baseSettings = buildSettings ++ Eclipse.settings ++ publishSettings ++ Release.settings
 
   lazy val log4sDeps = Seq (
     slf4j
