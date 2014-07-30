@@ -22,9 +22,7 @@ project's goals.
 
 To use Log4s, add the following to your SBT build:
 
-    resolvers += Resolver.sonatypeRepo("snapshots")
-
-    libraryDependencies += "org.log4s" %% "log4s" % "1.0.2-SNAPSHOT"
+    libraryDependencies += "org.log4s" %% "log4s" % "1.0.3"
 
 ## Examples ##
 
