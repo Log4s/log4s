@@ -10,7 +10,6 @@ object BuildSettings {
   import Helpers._
 
   final val buildOrganization = "org.log4s"
-  final val baseVersion       = "1.0.2"
   final val buildScalaVersion = "2.10.4"
   final val buildJavaVersion  = "1.7"
   final val optimize          = true
@@ -23,15 +22,6 @@ object BuildSettings {
 
   val buildNumberOpt = opts("TRAVIS_BUILD_NUMBER", "BUILD_NUMBER")
   val isJenkins      = buildNumberOpt.isDefined
-
-  val buildVersion = buildNumberOpt match {
-    case _ if alwaysSnapshot                => s"$baseVersion-SNAPSHOT"
-    case Some("") | Some("SNAPSHOT") | None => s"$baseVersion-SNAPSHOT"
-    case Some(build) if continuousBuild     => s"$baseVersion.$build"
-    case Some(_)                            => baseVersion
-  }
-
-  lazy val isSnapshot = buildVersion endsWith "-SNAPSHOT"
 
   lazy val buildScalacOptions = Seq (
     "-deprecation",
@@ -53,7 +43,6 @@ object BuildSettings {
                            siteSettings ++
                            Seq (
     organization := buildOrganization,
-    version      := buildVersion,
     licenses     := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
     homepage     := Some(url("http://log4s.org")),
     description  := "High-performance SLF4J wrapper that provides convenient Scala bindings using macros.",
@@ -88,11 +77,6 @@ object PublishSettings {
   import Resolvers._
   import Helpers._
 
-  val publishRepo = {
-    if (isSnapshot) Some(sonaSnaps)
-    else            Some(sonaStage)
-  }
-
   val sonaCreds = (
     for {
       user <- getProp("SONATYPE_USER")
@@ -110,7 +94,13 @@ object PublishSettings {
     pomIncludeRepository    := { _ => false },
     publishArtifact in Test := false,
 
-    publishTo               := publishRepo,
+    publishTo               := {
+      if (version.value.trim endsWith "SNAPSHOT")
+        Some(sonaSnaps)
+      else
+        Some(sonaStage)
+    },
+
     pomExtra                := (
       <developers>
         <developer>
