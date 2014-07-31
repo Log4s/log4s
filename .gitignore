@@ -6,3 +6,4 @@
 *.swp
 /project/target
 /project/project
+.DS_Store
