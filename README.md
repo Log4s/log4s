@@ -138,21 +138,21 @@ class ScalaClass {
 ```
 
 In the Java API, parameterized logging is not enough: unless you wrap the call
-with `isDebugEnabled`, you will still incur the cost of stepping through the
+with `isTraceEnabled`, you will still incur the cost of stepping through the
 linked list to find element 1000 even if trace-level logging is disabled.
 Without manual intervention, SLF4J only avoids the cost of string
 concatenations.
 
 However, Log4s can do better. Its macros discover at compile time that you are
 constructing a dynamic log statement and automatically wrap the entire
-calculation with `isDebugEnabled`.
+calculation with `isTraceEnabled`.
 
 The string interpolation syntax is not required for this detection, but it
 is usually the easiest and best-performing approach.
 
 ### Exception logging
 
-When logging an exception, it's always the best practice to attach send actual
+When logging an exception, it's always the best practice to send the actual
 exception object into your logging system. This gives you flexibility in how
 it's displayed, the ability to do filtering, and additional options for things
 like database logging.
