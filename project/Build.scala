@@ -14,14 +14,7 @@ object BuildSettings {
   final val buildJavaVersion  = "1.7"
   final val optimize          = true
 
-  /** Whether to suffix the base version with the current build number. */
-  val continuousBuild         = false
-  val alwaysSnapshot          = true
-
   val buildScalaVersions = Seq("2.10.4", "2.11.2")
-
-  val buildNumberOpt = opts("TRAVIS_BUILD_NUMBER", "BUILD_NUMBER")
-  val isJenkins      = buildNumberOpt.isDefined
 
   lazy val buildScalacOptions = Seq (
     "-deprecation",
@@ -39,8 +32,7 @@ object BuildSettings {
 
   lazy val siteSettings = site.settings ++ site.includeScaladoc()
 
-  lazy val buildSettings = Defaults.defaultSettings ++
-                           siteSettings ++
+  lazy val buildSettings = siteSettings ++
                            Seq (
     organization := buildOrganization,
     licenses     := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
@@ -67,7 +59,6 @@ object Helpers {
 }
 
 object Resolvers {
-  val sarahSnaps    = "Sarah Snaps" at "https://repository-gerweck.forge.cloudbees.com/snapshot/"
   val sonaSnaps     = "Sonatype Snaps" at "https://oss.sonatype.org/content/repositories/snapshots"
   val sonaStage     = "Sonatype Staging" at "https://oss.sonatype.org/service/local/staging/deploy/maven2"
 }
@@ -106,7 +97,9 @@ object PublishSettings {
         <developer>
           <id>sarah</id>
           <name>Sarah Gerweck</name>
+          <email>sarah.a180@gmail.com</email>
           <url>https://github.com/sarahgerweck</url>
+          <timezone>America/Los_Angeles</timezone>
         </developer>
       </developers>
     )
@@ -158,7 +151,6 @@ object Dependencies {
   final val slf4jVersion = "1.7.7"
 
   val slf4j        = "org.slf4j"      % "slf4j-api"     % slf4jVersion
-  //val scalaReflect = "org.scala-lang" % "scala-reflect" % scalaVersion.value
 }
 
 object Log4sBuild extends Build {
@@ -175,14 +167,12 @@ object Log4sBuild extends Build {
     slf4j
   )
 
-  lazy val root = Project (
-    id = "Log4s",
-    base = file("."),
-    settings = baseSettings ++ Seq (
+  lazy val log4s = (project in file ("."))
+    .settings(baseSettings: _*)
+    .settings(
       name := "Log4s",
       libraryDependencies ++= log4sDeps ++ Seq (
         "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided"
       )
     )
-  )
 }
