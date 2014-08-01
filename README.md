@@ -38,16 +38,23 @@ possible, transparently deriving the name for you with zero overhead at runtime.
 
 ```scala
 package com.example.project
+import org.log4s._
 
 class DemoClass {
   // Retrieves a logger for "com.example.project.DemoClass"
-  private[this] val logger = org.log4s.getLogger
+  private[this] val logger = getLogger
   ???
 }
 ```
 
 There is no requirement that you mark your loggers with `private[this]`, but
 the compiler may bypass accessors and generate direct field access if you do.
+
+It is not required that you import `org.log4s._` into your classes: calling
+`org.log4s.getLogger` will also have the same effect. I generally recommend
+importing the entire `log4s` package: it doesn't have many symbols that are
+likely to conflict, and importing the package makes it easy to access other
+logging features if needed.
 
 Automatic logger naming also works for modules (a.k.a. objects or
 singletons).
