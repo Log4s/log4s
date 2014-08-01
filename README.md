@@ -74,6 +74,29 @@ but this behavior is more consistent with Java practices and I suspect is what
 a majority of users will prefer.  Future enhancements may provide a mechanism
 to allow the user to choose whether to include the trailing _$_.
 
+#### Custom Logger Names ####
+
+There are situations where you may want to use a custom logger name. E.g., you
+may want to have a special category for some kind of high-level events, or you
+may want to consolidate the logging of two related classes.
+
+To accomplish this, you can simply pass a name directly to `getLogger`.
+
+```scala
+import org.log4s._
+
+object CustomNamed {
+  private[this] val queryLogger = getLogger("queries")
+}
+```
+
+Although this is fully supported, I recommend that you use the automatic
+class-named loggers most of the time. Class-named loggers provide useful
+debugging information and usually align well with the decisions you'll make
+about which logging statements you want to enable in which situations. By
+letting the compiler provide the name for you, you also reduce the chance of
+errors as you refactor your code.
+
 #### Instance or static? ####
 
 My recommendation is that by default you create your loggers as instance
