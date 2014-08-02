@@ -204,14 +204,26 @@ is generally not a good practice. You can always feed it an empty string if
 you really want. It's usually not desirable to use the exception's message, as
 most logging systems will output this anyway.
 
-Like regular message logging, exception logging uses macros to improve
-performance in the case where the given logger is not enabled. If the log
-message is dynamic, it will not be constructed unless the logger is disabled.
+Like regular message logging, dynamic arguments are only evaluated if the
+provided logger is turned on. This includes both the `Throwable` and the
+message itself.
 
-The macro also detect if the exception is dynamic, making it possible to write
-code like below, and pay for only an `isTraceEnabled` unless trace logging is
-enabled on the given logger.
+This means you could use the following pattern to see who is calling a method,
+and if you were to disable trace logging you would only pay for the call to
+`isTraceEnabled`, which has a cost of only a few nanoseconds (according to the
+[SLF4J FAQ](http://www.slf4j.org/faq.html#trace)).
 
+```scala
+object MyObject {
+  def xyz() {
+    logger.trace(new RuntimeException())("Got call into xyz")
+    ???
+  }
+}
 ```
-logger.trace(new RuntimeException())("Got call into xyz")
-```
+
+Whether this is a good way to get this kind of information depends on the
+exact situation. In my opinion, everybody who's developing on the JVM should
+have an IDE at the ready to answer questions like this, even if they use
+a standalone editor for their primary development. A good engineer has a
+repertoire that includes an assortment both low-tech and complex tools.
