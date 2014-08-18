@@ -1,11 +1,10 @@
-branches:
 language: scala
 scala:
   - 2.10.4
   - 2.11.2
 script:
   - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION test'
-  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && sbt ++$TRAVIS_SCALA_VERSION make-site publish'
+  - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then sbt ++$TRAVIS_SCALA_VERSION make-site publish; fi'
 jdk:
   - oraclejdk7
 env:
