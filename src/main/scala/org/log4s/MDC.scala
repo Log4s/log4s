@@ -1,6 +1,7 @@
 package org.log4s
 
 import java.util.{ Map => JMap }
+import java.util.Collections.EMPTY_MAP
 
 import scala.collection.JavaConversions._
 
@@ -15,7 +16,13 @@ import org.slf4j.{ MDC => JMDC }
   * making a copy of the MDC.
   */
 object MDC extends collection.mutable.Map[String,String] {
-  @inline private[this] final def copyMap: JMap[String,String] = JMDC.getCopyOfContextMap.asInstanceOf[JMap[String,String]]
+  @inline private[this] final def copyMap: JMap[String,String] = {
+    val mdcMap = JMDC.getCopyOfContextMap()
+    if (mdcMap != null)
+      mdcMap
+    else
+      EMPTY_MAP.asInstanceOf[JMap[String,String]]
+  }
 
   final def += (kv: (String,String)): this.type = {
     val (key, value) = kv
