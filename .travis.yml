@@ -1,8 +1,11 @@
 branches:
-  only:
-    - master
 language: scala
-script: sbt -Dsbt.log.noformat=true +compile +make-site +publish
+scala:
+  - 2.10.4
+  - 2.11.2
+script:
+  - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION test'
+  - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && sbt ++$TRAVIS_SCALA_VERSION make-site publish'
 jdk:
   - oraclejdk7
 env:
