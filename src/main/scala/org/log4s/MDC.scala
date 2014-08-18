@@ -3,6 +3,7 @@ package org.log4s
 import java.util.{ Map => JMap }
 
 import scala.collection.JavaConversions._
+import collection.mutable
 
 import org.slf4j.{ MDC => JMDC }
 
@@ -14,8 +15,9 @@ import org.slf4j.{ MDC => JMDC }
   * operations, but other operations, including getting the size, requires
   * making a copy of the MDC.
   */
-object MDC extends collection.mutable.Map[String,String] {
-  @inline private[this] final def copyMap: JMap[String,String] = JMDC.getCopyOfContextMap.asInstanceOf[JMap[String,String]]
+object MDC extends mutable.Map[String,String] {
+  @inline private[this] final def copyMap: JMap[String,String] =
+    Option(JMDC.getCopyOfContextMap.asInstanceOf[JMap[String,String]]) getOrElse mutable.Map.empty[String,String]
 
   final def += (kv: (String,String)): this.type = {
     val (key, value) = kv
@@ -69,4 +71,3 @@ object MDC extends collection.mutable.Map[String,String] {
     }
   }
 }
-
