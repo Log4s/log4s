@@ -148,9 +148,13 @@ object Eclipse {
 }
 
 object Dependencies {
-  final val slf4jVersion = "1.7.7"
+  final val slf4jVersion     = "1.7.7"
+  final val logbackVersion   = "1.1.2"
+  final val scalaTestVersion = "2.2.1"
 
-  val slf4j        = "org.slf4j"      % "slf4j-api"     % slf4jVersion
+  val slf4j     = "org.slf4j"      %  "slf4j-api"       % slf4jVersion
+  val logback   = "ch.qos.logback" %  "logback-classic" % logbackVersion
+  val scalaTest = "org.scalatest"  %% "scalatest"       % scalaTestVersion
 }
 
 object Log4sBuild extends Build {
@@ -164,7 +168,9 @@ object Log4sBuild extends Build {
   lazy val baseSettings = buildSettings ++ Eclipse.settings ++ publishSettings ++ Release.settings
 
   lazy val log4sDeps = Seq (
-    slf4j
+    slf4j,
+    logback % "test",
+    scalaTest % "test"
   )
 
   lazy val log4s = (project in file ("."))
