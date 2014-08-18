@@ -4,7 +4,7 @@ branches:
 language: scala
 script: sbt -Dsbt.log.noformat=true +compile +make-site +publish
 jdk:
-- oraclejdk7
+  - oraclejdk7
 env:
   global:
   - secure: LZqtbvSqVPpycaMLC9FnCaEs70WLt9tr+477t6jdCwyUgkaRfcBvLVeh/EsH4RJW+GtvNqmpZ43dpUGrnxZktFvZz+1LdPNtVggLza+ysMd/KlVlSXT1Re1NvArc4nE9Po+hQws26ehvlk2+BKh0e5SfXRU/3+NDs1H0bgtkQVU=
