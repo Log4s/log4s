@@ -130,17 +130,6 @@ private object LoggerMacros {
       reify { new Logger(getJLogger(expr.splice)) }
     }
 
-    def ownerChain(s: Symbol): Seq[Symbol] = {
-      if (s == c.mirror.RootClass)
-        Vector(s)
-      else
-        s +: ownerChain(s.owner)
-    }
-
-    def isPureClass(s: Symbol) = {
-      ownerChain(s) takeWhile { ! _.isPackage } forall { s => s.isClass && !s.isModuleClass }
-    }
-
     @inline def isInnerClass(s: Symbol) = {
       s.isClass && !(s.owner.isPackage)
     }
