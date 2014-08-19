@@ -52,6 +52,9 @@ object Logger {
 }
 
 final class Logger(val logger: JLogger) extends AnyVal {
+  /** The name of this logger. */
+  @inline def name = logger.getName
+
   @inline def isTraceEnabled: Boolean = logger.isTraceEnabled
 
   @inline def isDebugEnabled: Boolean = logger.isDebugEnabled
