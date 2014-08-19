@@ -22,7 +22,7 @@ project's goals.
 
 To use Log4s, add the following to your SBT build:
 
-    libraryDependencies += "org.log4s" %% "log4s" % "1.0.4"
+    libraryDependencies += "org.log4s" %% "log4s" % "1.0.5"
 
 ## Examples ##
 
