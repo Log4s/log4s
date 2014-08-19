@@ -50,6 +50,25 @@ class MDCSpec extends FlatSpec with Matchers {
     MDC shouldBe empty
   }
 
+  it should "support map operations" in {
+    MDC.clear
+    MDC("a") = "1"
+    MDC should have size 1
+    MDC should contain key ("a")
+    MDC("a") shouldEqual "1"
+    MDC shouldEqual Map("a" -> "1")
+    MDC ++= Vector("b" -> "2", "c" -> "3")
+    MDC should have size 3
+    MDC.keys should contain allOf ("a", "b", "c")
+    MDC.values should contain allOf ("1", "2", "3")
+    MDC shouldEqual Map("a" -> "1", "b" -> "2", "c" -> "3")
+    MDC --= Vector("a", "c")
+    MDC should not contain key ("a")
+    MDC should not contain key ("c")
+    MDC should have size 1
+    MDC shouldEqual Map("b" -> "2")
+  }
+
   it should "remove values" in {
     MDC.clear
     MDC("a") = "1"
