@@ -108,19 +108,50 @@ private object LoggerMacros {
 
     val cls = c.enclosingClass.symbol
 
-    if (Logger.singletonsByName) {
-      if (cls.isModule) {
-        val name = c.literal(cls.fullName)
-        return reify { new Logger(getJLogger(name.splice)) }
-      }
-    }
-
     assert(cls.isModule || cls.isClass, "Enclosing class is always either a module or a class")
 
-    val tp = if (cls.isModule) cls.asModule.moduleClass else cls
+    def loggerBySymbolName(s: Symbol) = {
+      def fullName(s: Symbol): String = {
+        if (!(s.isModule || s.isClass)) {
+          fullName(s.owner)
+        } else if (!s.owner.isStatic) {
+          fullName(s.owner) + "." + s.name.encoded
+        } else {
+          s.fullName
+        }
+      }
+      reify { new Logger(getJLogger(c.literal(fullName(s)).splice)) }
+    }
 
-    val expr = c.Expr[Class[_]](Literal(Constant(tp.asType.toTypeConstructor)))
-    reify { new Logger(getJLogger(expr.splice)) }
+    def loggerByType(s: Symbol) = {
+      val tp = if (cls.isModule) cls.asModule.moduleClass else cls
+
+      val expr = c.Expr[Class[_]](Literal(Constant(tp.asType.toTypeConstructor)))
+      reify { new Logger(getJLogger(expr.splice)) }
+    }
+
+    def ownerChain(s: Symbol): Seq[Symbol] = {
+      if (s == c.mirror.RootClass)
+        Vector(s)
+      else
+        s +: ownerChain(s.owner)
+    }
+
+    def isPureClass(s: Symbol) = {
+      ownerChain(s) takeWhile { ! _.isPackage } forall { s => s.isClass && !s.isModuleClass }
+    }
+
+    @inline def isInnerClass(s: Symbol) = {
+      s.isClass && !(s.owner.isPackage)
+    }
+
+    val instanceByName = Logger.singletonsByName && cls.isModule || cls.isClass && isInnerClass(cls)
+
+    if (instanceByName) {
+      loggerBySymbolName(cls)
+    } else {
+      loggerByType(cls)
+    }
   }
 
 
