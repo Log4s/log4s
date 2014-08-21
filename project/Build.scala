@@ -179,6 +179,12 @@ object Log4sBuild extends Build {
       name := "Log4s",
       libraryDependencies ++= log4sDeps ++ Seq (
         "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided"
-      )
+      ),
+      unmanagedSourceDirectories in Compile <+= (scalaBinaryVersion, baseDirectory) { (ver, dir) =>
+        ver match {
+          case "2.10" => dir / "src" / "main" / "scala-2.10"
+          case _      => dir / "src" / "main" / "scala-2.11"
+        }
+      }
     )
 }
