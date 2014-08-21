@@ -53,7 +53,7 @@ private[log4s] object LoggerMacros {
   }
 
   /** A macro context that represents a method call on a Logger instance. */
-  private[this] type LogCtx = blackbox.Context { type PrefixType = Logger }
+  private[this] type LogCtx = whitebox.Context { type PrefixType = Logger }
 
   /** Log a message reflectively at a given level.
     *
