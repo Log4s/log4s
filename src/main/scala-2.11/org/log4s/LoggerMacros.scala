@@ -2,7 +2,7 @@ package org.log4s
 
 import language.experimental.macros
 
-import scala.reflect.macros._
+import scala.reflect.macros.{ blackbox, whitebox }
 
 import org.slf4j.{ Logger => JLogger }
 import org.slf4j.LoggerFactory.{ getLogger => getJLogger }
