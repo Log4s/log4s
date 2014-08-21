@@ -4,14 +4,12 @@ import language.experimental.macros
 
 import scala.reflect.macros.{ blackbox, whitebox }
 
-import org.slf4j.{ Logger => JLogger }
-import org.slf4j.LoggerFactory.{ getLogger => getJLogger }
-
 /** Macros that support the logging system.
   *
   * @author Sarah Gerweck <sarah@atscale.com>
   */
 private[log4s] object LoggerMacros {
+
   /** Get a logger by reflecting the enclosing class name. */
   final def getLoggerImpl(c: blackbox.Context) = {
     import c.universe._
@@ -19,6 +17,10 @@ private[log4s] object LoggerMacros {
     val cls = c.enclosingClass.symbol
 
     assert(cls.isModule || cls.isClass, "Enclosing class is always either a module or a class")
+
+    def loggerByParam(param: c.Tree) = {
+      q"new org.log4s.Logger(org.slf4j.LoggerFactory.getLogger(...${List(param)}))"
+    }
 
     def loggerBySymbolName(s: Symbol) = {
       def fullName(s: Symbol): String = {
@@ -30,13 +32,12 @@ private[log4s] object LoggerMacros {
           s.fullName
         }
       }
-      q"new Logger(org.slf4j.LoggerFactory.getLogger(${fullName(s)}))"
+      loggerByParam(q"${fullName(s)}")
     }
 
     def loggerByType(s: Symbol) = {
-      val tp = if (cls.isModule) cls.asModule.moduleClass else cls
-
-      q"new Logger(org.slf4j.LoggerFactory.getLogger(classOf[$tp]))"
+      val tp = if (s.isModule) s.asModule.moduleClass else s
+      loggerByParam(q"classOf[$tp]")
     }
 
     @inline def isInnerClass(s: Symbol) = {
@@ -72,10 +73,7 @@ private[log4s] object LoggerMacros {
       case Some(e) => List(msg.tree, e.tree)
     }
     val logExpr = q"$logger.${TermName(logLevel.methodName)}(...$logValues)"
-    val checkExpr = {
-      val checkName = s"is${logLevel.name}Enabled"
-      q"$logger.${TermName(checkName)}()"
-    }
+    val checkExpr = q"$logger.${TermName(s"is${logLevel.name}Enabled")}()"
 
     def errorIsSimple = {
       error match {

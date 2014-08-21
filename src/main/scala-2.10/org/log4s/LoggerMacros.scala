@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory.{ getLogger => getJLogger }
   * @author Sarah Gerweck <sarah@atscale.com>
   */
 private[log4s] object LoggerMacros {
+
   /** Get a logger by reflecting the enclosing class name. */
   final def getLoggerImpl(c: Context): c.Expr[Logger] = {
     import c.universe._
