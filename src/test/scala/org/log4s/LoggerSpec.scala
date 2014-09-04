@@ -12,8 +12,18 @@ class LoggerSpec extends FlatSpec with Matchers {
   behavior of "getLogger"
 
   it should "properly name class loggers" in {
-    classOf[LoggerSpec].getCanonicalName
     logger.name shouldEqual "org.log4s.LoggerSpec"
+  }
+
+  it should "properly name simply parametrized class loggers" in {
+    val lsp = new LoggerSpecParam[LoggerSpec]
+    lsp.logger.name shouldEqual "org.log4s.LoggerSpecParam"
+  }
+
+  it should "properly name complex parametrized class loggers" in {
+    implicit val intPrinter = new Printable[Int] { def print(i: Int) = i.toString }
+    val lspb = new LoggerSpecParamBounded(3)
+    lspb.logger.name shouldEqual "org.log4s.LoggerSpecParamBounded"
   }
 
   it should "properly name local object loggers" in {
@@ -88,6 +98,20 @@ class LoggerSpec extends FlatSpec with Matchers {
   it should "support explicit logger names" in {
     getLogger("a.b.c").name shouldEqual "a.b.c"
   }
+}
+
+private class LoggerSpecParam[A] {
+  val logger = getLogger
+}
+
+
+// The trait is here to facilitate this common use pattern of type bounds.
+// (It has no significance in itself: its purpose is to give us a complex type structure.)
+private trait Printable[A] { def print(a: A): String }
+private class LoggerSpecParamBounded[A, B <: Printable[A]](default: A)(implicit printer: B) {
+  val logger = getLogger
+  /* The print method is, like the Printable trait, purely structural */
+  def print = printer.print(default)
 }
 
 private class LoggerSpecTLC {

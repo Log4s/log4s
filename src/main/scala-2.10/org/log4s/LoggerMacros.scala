@@ -35,9 +35,18 @@ private[log4s] object LoggerMacros {
     }
 
     def loggerByType(s: Symbol) = {
-      val tp = if (cls.isModule) cls.asModule.moduleClass else cls
+      val typeSymbol = (if (cls.isModule) cls.asModule.moduleClass else cls).asClass
 
-      val expr = c.Expr[Class[_]](Literal(Constant(tp.asType.toTypeConstructor)))
+      val typeConstructor = {
+        val polyArgs = for (tpar <- typeSymbol.typeParams) yield WildcardType
+        if (polyArgs.isEmpty) {
+          typeSymbol.toTypeConstructor
+        } else {
+          appliedType(typeSymbol.toTypeConstructor, polyArgs)
+        }
+      }
+
+      val expr = c.Expr[Class[_]](Literal(Constant(typeConstructor)))
       reify { new Logger(getJLogger(expr.splice)) }
     }
 

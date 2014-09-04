@@ -36,8 +36,14 @@ private[log4s] object LoggerMacros {
     }
 
     def loggerByType(s: Symbol) = {
-      val tp = if (s.isModule) s.asModule.moduleClass else s
-      loggerByParam(q"classOf[$tp]")
+      val typeSymbol: ClassSymbol = (if (s.isModule) s.asModule.moduleClass else s).asClass
+      val polyArgs = for (tpar <- typeSymbol.typeParams) yield WildcardType
+      if (polyArgs.isEmpty) {
+        loggerByParam(q"classOf[$typeSymbol]")
+      } else {
+        val typeConstructor = tq"$typeSymbol[..$polyArgs]"
+        loggerByParam(q"classOf[$typeConstructor]")
+      }
     }
 
     @inline def isInnerClass(s: Symbol) = {
