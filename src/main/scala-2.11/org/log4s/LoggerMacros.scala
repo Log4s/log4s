@@ -37,11 +37,13 @@ private[log4s] object LoggerMacros {
 
     def loggerByType(s: Symbol) = {
       val typeSymbol: ClassSymbol = (if (s.isModule) s.asModule.moduleClass else s).asClass
-      val polyArgs = for (tpar <- typeSymbol.typeParams) yield WildcardType
-      if (polyArgs.isEmpty) {
+      val typeParams = typeSymbol.typeParams
+
+      if (typeParams.isEmpty) {
         loggerByParam(q"classOf[$typeSymbol]")
       } else {
-        val typeConstructor = tq"$typeSymbol[..$polyArgs]"
+        val typeArgs = List.fill(typeParams.length)(WildcardType)
+        val typeConstructor = tq"$typeSymbol[..${typeArgs}]"
         loggerByParam(q"classOf[$typeConstructor]")
       }
     }
