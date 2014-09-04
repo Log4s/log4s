@@ -19,7 +19,7 @@ private[log4s] object LoggerMacros {
     assert(cls.isModule || cls.isClass, "Enclosing class is always either a module or a class")
 
     def loggerByParam(param: c.Tree) = {
-      q"new org.log4s.Logger(org.slf4j.LoggerFactory.getLogger(...${List(param)}))"
+      q"new _root_.org.log4s.Logger(_root_.org.slf4j.LoggerFactory.getLogger(...${List(param)}))"
     }
 
     def loggerBySymbolName(s: Symbol) = {
