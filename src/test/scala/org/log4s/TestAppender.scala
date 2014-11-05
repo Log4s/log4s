@@ -15,15 +15,14 @@ class TestAppender extends AppenderBase[ILoggingEvent] {
   import TestAppender._
 
   override def start(): Unit = {
+    super.start()
     newQueue()
   }
 
   override def stop(): Unit = {
     resetQueue()
+    super.stop()
   }
-
-  // XXX: This shouldn't be necessary.
-  override def doAppend(event: ILoggingEvent): Unit = append(event)
 
   override def append(event: ILoggingEvent): Unit = {
     addEvent(event)
