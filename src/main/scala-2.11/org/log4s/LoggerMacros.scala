@@ -80,7 +80,7 @@ private[log4s] object LoggerMacros {
       case None    => List(msg.tree)
       case Some(e) => List(msg.tree, e.tree)
     }
-    val logExpr = q"$logger.${TermName(logLevel.methodName)}(...$logValues)"
+    val logExpr = q"$logger.${TermName(logLevel.methodName)}(..$logValues)"
     val checkExpr = q"$logger.${TermName(s"is${logLevel.name}Enabled")}()"
 
     def errorIsSimple = {

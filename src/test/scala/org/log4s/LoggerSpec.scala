@@ -11,6 +11,26 @@ class LoggerSpec extends FlatSpec with Matchers {
 
   behavior of "getLogger"
 
+  // these are strictly compile tests for the macro generators.
+  it should "properly compile trace logging events" in {
+    logger.trace("foo")
+    logger.trace(new Exception())("foo")
+
+    logger.debug("Foo")
+    logger.debug(new Exception())("foo")
+
+    logger.info("Foo")
+    logger.info(new Exception())("foo")
+
+    logger.warn("Foo")
+    logger.warn(new Exception())("foo")
+
+    logger.error("Foo")
+    logger.error(new Exception())("foo")
+
+    true shouldEqual true
+  }
+
   it should "properly name class loggers" in {
     logger.name shouldEqual "org.log4s.LoggerSpec"
   }
@@ -97,6 +117,10 @@ class LoggerSpec extends FlatSpec with Matchers {
 
   it should "support explicit logger names" in {
     getLogger("a.b.c").name shouldEqual "a.b.c"
+  }
+
+  it should "compile error log messages" in {
+    true shouldEqual true
   }
 }
 
