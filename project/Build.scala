@@ -14,7 +14,7 @@ object BuildSettings {
   final val buildJavaVersion  = "1.7"
   final val optimize          = true
 
-  val buildScalaVersions = Seq("2.10.4", "2.11.2")
+  val buildScalaVersions = Seq("2.10.4", "2.11.4")
 
   lazy val buildScalacOptions = Seq (
     "-deprecation",

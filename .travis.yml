@@ -4,7 +4,7 @@ branches:
 language: scala
 scala:
   - 2.10.4
-  - 2.11.2
+  - 2.11.4
 script:
   - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION test'
   - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then sbt ++$TRAVIS_SCALA_VERSION make-site publish; fi'
