@@ -1,6 +1,7 @@
 package org.log4s
 
 import scala.collection.mutable
+import scala.util._
 
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.AppenderBase
@@ -41,8 +42,8 @@ object TestAppender {
     events += event
   }
 
-  def dequeue: ILoggingEvent = synchronized {
-    events.dequeue
+  def dequeue: Option[ILoggingEvent] = synchronized {
+    Try(events.dequeue).toOption
   }
 
   private def newQueue(): Unit = synchronized {

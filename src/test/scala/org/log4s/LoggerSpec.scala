@@ -127,18 +127,22 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
 
   private[this] object event {
     def hasData (msg: String, level: Lvl, throwable: Option[Throwable]) = {
-      val event = TestAppender.dequeue
+      val eventOpt = TestAppender.dequeue
 
-      event.getFormattedMessage shouldEqual msg
-      event.getLevel shouldEqual level
+      eventOpt should be ('defined)
 
-      event.getArgumentArray should be (null)
-      event.getLoggerName shouldEqual "test"
+      eventOpt foreach { event =>
+        event.getFormattedMessage shouldEqual msg
+        event.getLevel shouldEqual level
 
-      val tp = event.getThrowableProxy
-      throwable match {
-        case Some(t) => t shouldMatch tp
-        case None    => tp should be (null)
+        event.getArgumentArray should be (null)
+        event.getLoggerName shouldEqual "test"
+
+        val tp = event.getThrowableProxy
+        throwable match {
+          case Some(t) => t shouldMatch tp
+          case None    => tp should be (null)
+        }
       }
     }
   }
