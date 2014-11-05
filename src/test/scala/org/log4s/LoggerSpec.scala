@@ -2,156 +2,145 @@ package org.log4s
 
 import org.scalatest._
 
-/** Test suite for the standard Log4s loggers.
+import ch.qos.logback.classic.{ Level => Lvl }
+import ch.qos.logback.classic.spi.IThrowableProxy
+
+/** Test suite for the behavior of Log4s loggers.
   *
   * @author Sarah Gerweck <sarah@atscale.com>
   */
-class LoggerSpec extends FlatSpec with Matchers {
-  private[this] val logger = getLogger
+class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerInit {
+  private[this] val testLogger = getLogger("test")
 
-  behavior of "getLogger"
+  behavior of "log compilation"
 
-  it should "properly name class loggers" in {
-    logger.name shouldEqual "org.log4s.LoggerSpec"
+  it should "generate trace logging" in {
+    When("doing static logging")
+    testLogger.trace("traceLiteral")
+    event hasData ("traceLiteral", Lvl.TRACE, None)
+
+    When("doing dynamic logging")
+    testLogger.trace(s"trace${1+1}")
+    event hasData ("trace2", Lvl.TRACE, None)
+
+    When("doing static error logging")
+    val e1 = new Exception()
+    testLogger.trace(e1)("traceErrorLiteral")
+    event hasData ("traceErrorLiteral", Lvl.TRACE, Some(e1))
+
+    When("doing dynamic error logging")
+    val e2 = new Exception()
+    testLogger.trace(Some(e2).get)(s"traceError${0+2}")
+    event hasData ("traceError2", Lvl.TRACE, Some(e2))
   }
 
-  it should "properly name simply parametrized class loggers" in {
-    val lsp = new LoggerSpecParam[LoggerSpec]
-    lsp.logger.name shouldEqual "org.log4s.LoggerSpecParam"
+  it should "generate debug logging" in {
+    When("doing literal logging")
+    testLogger.debug("debugLiteral")
+    event hasData ("debugLiteral", Lvl.DEBUG, None)
+
+    When("doing dynamic logging")
+    testLogger.debug(s"debug${1+1}")
+    event hasData ("debug2", Lvl.DEBUG, None)
+
+    When("doing static error logging")
+    val e1 = new Exception()
+    testLogger.debug(e1)("debugErrorLiteral")
+    event hasData ("debugErrorLiteral", Lvl.DEBUG, Some(e1))
+
+    When("doing dynamic error logging")
+    val e2 = new Exception()
+    testLogger.debug(Some(e2).get)(s"debugError${0+2}")
+    event hasData ("debugError2", Lvl.DEBUG, Some(e2))
   }
 
-  it should "properly name complex parametrized class loggers" in {
-    implicit val intPrinter = new Printable[Int] { def print(i: Int) = i.toString }
-    val lspb = new LoggerSpecParamBounded(3)
-    lspb.logger.name shouldEqual "org.log4s.LoggerSpecParamBounded"
+  it should "generate info logging" in {
+    When("doing literal logging")
+    testLogger.info("infoLiteral")
+    event hasData ("infoLiteral", Lvl.INFO, None)
+
+    When("doing dynamic logging")
+    testLogger.info(s"info${1+1}")
+    event hasData ("info2", Lvl.INFO, None)
+
+    When("doing static error logging")
+    val e1 = new Exception()
+    testLogger.info(e1)("infoErrorLiteral")
+    event hasData ("infoErrorLiteral", Lvl.INFO, Some(e1))
+
+    When("doing dynamic error logging")
+    val e2 = new Exception()
+    testLogger.info(Some(e2).get)(s"infoError${0+2}")
+    event hasData ("infoError2", Lvl.INFO, Some(e2))
   }
 
-  it should "properly name local object loggers" in {
-    object LocalObject {
-      private[LoggerSpec] val logger = getLogger
-    }
-    LocalObject.logger.name shouldEqual "org.log4s.LoggerSpec.LocalObject"
+  it should "generate warn logging" in {
+    When("doing literal logging")
+    testLogger.warn("warnLiteral")
+    event hasData ("warnLiteral", Lvl.WARN, None)
+
+    When("doing dynamic logging")
+    testLogger.warn(s"warn${1+1}")
+    event hasData ("warn2", Lvl.WARN, None)
+
+    When("doing static error logging")
+    val e1 = new Exception()
+    testLogger.warn(e1)("warnErrorLiteral")
+    event hasData ("warnErrorLiteral", Lvl.WARN, Some(e1))
+
+    When("doing dynamic error logging")
+    val e2 = new Exception()
+    testLogger.warn(Some(e2).get)(s"warnError${0+2}")
+    event hasData ("warnError2", Lvl.WARN, Some(e2))
   }
 
-  it should "properly name local class loggers" in {
-    class LocalClass {
-      private[LoggerSpec] val logger = getLogger
-    }
-    val ic = new LocalClass
-    ic.logger.name shouldEqual "org.log4s.LoggerSpec.LocalClass"
+  it should "generate error logging" in {
+    When("doing literal logging")
+    testLogger.error("errorLiteral")
+    event hasData ("errorLiteral", Lvl.ERROR, None)
+
+    When("doing dynamic logging")
+    testLogger.error(s"error${1+1}")
+    event hasData ("error2", Lvl.ERROR, None)
+
+    When("doing static error logging")
+    val e1 = new Exception()
+    testLogger.error(e1)("errorErrorLiteral")
+    event hasData ("errorErrorLiteral", Lvl.ERROR, Some(e1))
+
+    When("doing dynamic error logging")
+    val e2 = new Exception()
+    testLogger.error(Some(e2).get)(s"errorError${0+2}")
+    event hasData ("errorError2", Lvl.ERROR, Some(e2))
   }
 
-  it should "properly name top-level object loggers" in {
-    LoggerSpecTLO.logger.name shouldEqual "org.log4s.LoggerSpecTLO"
-  }
-
-  it should "properly name objects inside objects" in {
-    LoggerSpecTLO.InnerObject.logger.name shouldEqual "org.log4s.LoggerSpecTLO.InnerObject"
-  }
-
-  it should "properly name classes inside objects" in {
-    val io = new LoggerSpecTLO.InnerClass
-    io.logger.name shouldEqual "org.log4s.LoggerSpecTLO.InnerClass"
-  }
-
-  it should "properly name objects inside classes" in {
-    val tlc = new LoggerSpecTLC
-    tlc.InnerObject.logger.name shouldEqual "org.log4s.LoggerSpecTLC.InnerObject"
-  }
-
-  it should "properly name classes inside classes" in {
-    val tlc = new LoggerSpecTLC
-    val ic = new tlc.InnerClass
-    ic.logger.name shouldEqual "org.log4s.LoggerSpecTLC.InnerClass"
-  }
-
-  it should "properly name loggers inside closures" in {
-    val l = getLogger
-    l.name shouldEqual "org.log4s.LoggerSpec"
-  }
-
-  def myFun(): Logger = {
-    val l = getLogger
-    l
-  }
-
-  it should "properly name loggers inside named functions" in {
-    myFun().name shouldEqual "org.log4s.LoggerSpec"
-  }
-
-  it should "properly name loggers inside nested functions" in {
-    def helper1() = {
-      val l = getLogger
-      l
-    }
-    def helper2() = {
-      def helper3(i: Int) = {
-        val l = getLogger
-        l
+  private[this] implicit class ComparableThrowable(val t: Throwable) {
+    def shouldMatch (tp: IThrowableProxy) {
+      t.getMessage shouldEqual tp.getMessage
+      t.getCause match {
+        case null => tp.getCause should be (null)
+        case c    => c shouldMatch tp.getCause
       }
-      helper3(37)
+      t.getClass.getCanonicalName shouldEqual tp.getClassName
     }
-    helper1().name shouldEqual "org.log4s.LoggerSpec"
-    helper2().name shouldEqual "org.log4s.LoggerSpec"
   }
 
-  it should "support explicit logger names" in {
-    getLogger("a.b.c").name shouldEqual "a.b.c"
-  }
+  private[this] object event {
+    def hasData (msg: String, level: Lvl, throwable: Option[Throwable]) = {
+      val event = TestAppender.dequeue
 
-  // these are strictly compile tests for the macro generators.
-  it should "properly compile macro logging" in {
-    val quietLogger = getLogger("quiet")
+      event.getFormattedMessage shouldEqual msg
+      event.getLevel shouldEqual level
 
-    quietLogger.trace("foo")
-    quietLogger.trace(new Exception())("foo")
+      event.getArgumentArray should be (null)
+      event.getLoggerName shouldEqual "test"
 
-    quietLogger.debug("Foo")
-    quietLogger.debug(new Exception())("foo")
-
-    quietLogger.info("Foo")
-    quietLogger.info(new Exception())("foo")
-
-    quietLogger.warn("Foo")
-    quietLogger.warn(new Exception())("foo")
-
-    quietLogger.error("Foo")
-    quietLogger.error(new Exception())("foo")
-
-    true shouldEqual true
+      val tp = event.getThrowableProxy
+      throwable match {
+        case Some(t) => t shouldMatch tp
+        case None    => tp should be (null)
+      }
+    }
   }
 }
 
-private class LoggerSpecParam[A] {
-  val logger = getLogger
-}
-
-
-// The trait is here to facilitate this common use pattern of type bounds.
-// (It has no significance in itself: its purpose is to give us a complex type structure.)
-private trait Printable[A] { def print(a: A): String }
-private class LoggerSpecParamBounded[A, B <: Printable[A]](default: A)(implicit printer: B) {
-  val logger = getLogger
-  /* The print method is, like the Printable trait, purely structural */
-  def print = printer.print(default)
-}
-
-private class LoggerSpecTLC {
-  val logger = getLogger
-  object InnerObject {
-    val logger = getLogger
-  }
-  class InnerClass {
-    val logger = getLogger
-  }
-}
-
-private object LoggerSpecTLO {
-  val logger = getLogger
-  object InnerObject {
-    val logger = getLogger
-  }
-  class InnerClass {
-    val logger = getLogger
-  }
-}

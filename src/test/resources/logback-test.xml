@@ -5,10 +5,13 @@
     </encoder>
   </appender>
 
+  <appender name="TEST" class="org.log4s.TestAppender"/>
+
   <root level="warn">
     <appender-ref ref="STDOUT" />
   </root>
-  <logger name="quiet" additivity="false">
-    <!-- No appenders here: we want to suppress these. -->
+  <logger name="test" additivity="false" level="TRACE">
+    <!-- We don't want to print these: we want to capture them for testing. -->
+    <appender-ref ref="TEST" />
   </logger>
 </configuration>
