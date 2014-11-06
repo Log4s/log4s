@@ -156,6 +156,8 @@ object Dependencies {
   val slf4j     = "org.slf4j"      %  "slf4j-api"       % slf4jVersion
   val logback   = "ch.qos.logback" %  "logback-classic" % logbackVersion
   val scalaTest = "org.scalatest"  %% "scalatest"       % scalaTestVersion
+
+  def reflect(ver: String) = "org.scala-lang" % "scala-reflect" % ver
 }
 
 object Log4sBuild extends Build {
@@ -166,21 +168,21 @@ object Log4sBuild extends Build {
   import Dependencies._
   import PublishSettings._
 
-  lazy val baseSettings = buildSettings ++ Eclipse.settings ++ publishSettings ++ Release.settings
-
-  lazy val log4sDeps = Seq (
-    slf4j,
-    logback % "test",
-    scalaTest % "test"
-  )
-
   lazy val log4s = (project in file ("."))
-    .settings(baseSettings: _*)
+    .settings(buildSettings: _*)
+    .settings(Eclipse.settings: _*)
+    .settings(publishSettings: _*)
+    .settings(Release.settings: _*)
     .settings(
       name := "Log4s",
-      libraryDependencies ++= log4sDeps ++ Seq (
-        "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided"
+
+      libraryDependencies ++= Seq (
+        slf4j,
+        logback                     % "test",
+        scalaTest                   % "test",
+        reflect(scalaVersion.value) % "provided"
       ),
+
       unmanagedSourceDirectories in Compile <+= (scalaBinaryVersion, baseDirectory) { (ver, dir) =>
         ver match {
           case "2.10" => dir / "src" / "main" / "scala-2.10"
