@@ -29,6 +29,8 @@ To use Log4s, add the following to your SBT build:
 - [Getting a logger](#getting-a-logger)
 - [Logging messages](#logging-messages)
 - [Exception logging](#exception-logging)
+- [Diagnostic contexts](#diagnostic-contexts)
+- [Unsupported features](#unsupported-features)
 
 ### Getting a logger ###
 
@@ -227,3 +229,116 @@ than a suggestion that this is the best way to get caller information.
 However, sometimes a low-tech solution like this can be a good complement to
 more complex solutions like profilers and debuggers. An effective developer
 has a wide repertoire of tools and tricks in his or her arsenal.)
+
+### Diagnostic contexts
+
+Mapped diagnostic contexts (MDCs) are a great way to put share common
+contextual information across all log statements. Frameworks like Logback
+have the ability to not just output them, but also use them in filtering to
+select the type of logging to perform or even persist certain information in
+databases.
+
+MDCs in Log4s have the same semantics as those of standard MDCs in SLF4J.
+In keeping with the design goal of making SLF4J idiomatic to Scala,
+Log4s's MDCs implement the standard interface for a
+[Scala mutable map](http://www.scala-lang.org/api/current/index.html#scala.collection.mutable.Map).
+
+**Though I cover the map-style API first, see the [MDC convenience and
+safety](#mdc-convenience-and-safety) section below for the simpler idiom that
+I recommend for most situations.**
+
+#### MDC Map-style API
+
+The direct way to manipulate MDCs is through the `org.log4s.MDC` object.
+
+```scala
+import org.log4s._
+
+object DiagnosticExample {
+  private[this] val logger = getLogger
+
+  def doRequest(user: String) {
+    val requestId = java.util.UUID.randomUUID
+
+    // Empty out the MDC for this thread
+    MDC.clear
+
+    /* *************************** */
+    /* Set some context in the MDC */
+    /* *************************** */
+
+    // Set a single value
+    MDC("request-id") = requestId.toString
+    // Set multiple values
+    MDC += ("request-user" -> user, "request-time" -> System.currentTimeMillis)
+
+    // Note that Log4s requires the caller to do string conversion. This helps
+    // ensure that it's really the implementation that you want.
+
+    /* *************** */
+    /* Use our context */
+    /* *************** */
+
+    // No need to put the request ID in the message: it's in the context
+    logger.debug("Processing request")
+
+    /* ************************ */
+    /* Remove context variables */
+    /* ************************ */
+
+    // Remove a single value
+    MDC -= "request-id"
+    // Remove multiple values
+    MDC -= ("request-user", "request-time")
+  }
+}
+```
+
+These are a few common examples, but all the mutator methods of a mutable
+map will work. It's also possible to intermix calls to SLF4J's MDC methods
+directly: the Log4s map is backed by the actual SLF4J MDC.
+
+#### MDC convenience and safety
+
+Note that the example above has a common bug: if some exception happens during
+request processing, the MDC will not get cleaned up and it will leak to other
+operations. Because of this common situation, there's a convenience method
+that does cleanup in a finalizer block. I recommend using this approach for
+most common settings.
+
+```scala
+import org.log4s._
+
+object BlockExample {
+  def doRequest(user: String) {
+    val requestId = java.util.UUID.randomUUID
+
+    // This context operates only for the block, then cleans itself up
+    MDC.withCtx ("request-id" -> requestId.toString, "request-user" -> user) {
+      logger.debug("Processing request")
+    }
+  }
+}
+```
+
+Nesting context blocks is permitted. The inner context block retains the
+values of the outer context. If there are conflicts, the inner block wins, but
+the outer value is restored when the inner block is completed.
+
+This ability to restore previous values on block exit does require their
+storage in a map which adds slight memory overhead. If you are in a tight loop
+with nested contexts, you may have better performance if you add and remove
+values directly. These performance costs apply only the the block-based API,
+not the map-style API.
+
+### Unsupported features
+
+The following potential or suggested features are not implemented. If some
+missing feature is particularly valuable to you, feel free to reach out with
+your requests or suggestions. I'm also—of course—open to pull requests,
+but please drop me an email first if there are significant new APIs or
+features so we can agree on the general design.
+
+  * A `scalac` compiler flag or environment variable to automatically disable
+    all logging below a certain level.
+  * Marker support.
