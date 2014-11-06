@@ -222,8 +222,8 @@ object MyObject {
 }
 ```
 
-Whether this is a good way to get this kind of information depends on the
-exact situation. In my opinion, everybody who's developing on the JVM should
-have an IDE at the ready to answer questions like this, even if they use
-a standalone editor for their primary development. A good engineer has a
-repertoire that includes an assortment both low-tech and complex tools.
+(This is more an illustration of the possibilities of dynamic code execution
+than a suggestion that this is the best way to get caller information.
+However, sometimes a low-tech solution like this can be a good complement to
+more complex solutions like profilers and debuggers. An effective developer
+has a wide repertoire of tools and tricks in his or her arsenal.)
