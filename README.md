@@ -185,6 +185,29 @@ calculation with `isTraceEnabled`.
 The string interpolation syntax is not required for this detection, but it
 is usually the easiest and best-performing approach.
 
+You can also use message nesting with entire code blocks. If logging is not
+enabled at the provided level, the block is skipped entirely.
+
+```scala
+class ComplexTrace {
+  ...
+  logger trace {
+    def helper(s: String) = ???
+    val x = ...
+    val y = helper(...)
+    s"Combined trace message for $x: $y"
+  }
+}
+```
+
+You can, of course, accomplish the same thing using
+`if (logger.isTraceEnabled) ...`. If the logger is disabled, they will have
+identical performance. However, the explicit test may perform slightly better
+than a block in the case where the logger is enabled as a closure may be
+required to compile the block. (In most situations, these differences are
+_completely_ negligible, but designing for zero overhead and documenting any
+usage patterns that do add overhead is a major goal of Log4s.)
+
 ### Exception logging
 
 When logging an exception, it's always the best practice to send the actual
@@ -227,11 +250,10 @@ object MyObject {
 }
 ```
 
-(This is more an illustration of the possibilities of dynamic code execution
-than a suggestion that this is the best way to get caller information.
-However, sometimes a low-tech solution like this can be a good complement to
-more complex solutions like profilers and debuggers. An effective developer
-has a wide repertoire of tools and tricks in his or her arsenal.)
+(This is more an illustration of the possibilities of dynamic message
+processing than a suggestion that this is the best way to get caller
+information. However, sometimes a low-tech solution like this can be a good
+complement to more complex solutions like profilers and debuggers.)
 
 ### Diagnostic contexts
 
@@ -331,7 +353,7 @@ the outer value is restored when the inner block is completed.
 This ability to restore previous values on block exit does require their
 storage in a map which adds slight memory overhead. If you are in a tight loop
 with nested contexts, you may have better performance if you add and remove
-values directly. These performance costs apply only the the block-based API,
+values directly. These performance costs apply only to the block-based API,
 not the map-style API.
 
 ### Unsupported features
