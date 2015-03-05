@@ -10,11 +10,11 @@ object BuildSettings {
   import Helpers._
 
   final val buildOrganization = "org.log4s"
-  final val buildScalaVersion = "2.11.4"
+  final val buildScalaVersion = "2.11.6"
   final val buildJavaVersion  = "1.7"
   final val optimize          = true
 
-  val buildScalaVersions = Seq("2.10.4", "2.11.4")
+  val buildScalaVersions = Seq("2.10.5", "2.11.6")
 
   lazy val buildScalacOptions = Seq (
     "-deprecation",
@@ -149,9 +149,9 @@ object Eclipse {
 }
 
 object Dependencies {
-  final val slf4jVersion     = "1.7.7"
+  final val slf4jVersion     = "1.7.10"
   final val logbackVersion   = "1.1.2"
-  final val scalaTestVersion = "2.2.1"
+  final val scalaTestVersion = "2.2.4"
 
   val slf4j     = "org.slf4j"      %  "slf4j-api"       % slf4jVersion
   val logback   = "ch.qos.logback" %  "logback-classic" % logbackVersion
