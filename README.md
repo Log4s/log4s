@@ -22,7 +22,7 @@ project's goals.
 
 To use Log4s, add the following to your SBT build:
 
-    libraryDependencies += "org.log4s" %% "log4s" % "1.1.4"
+    libraryDependencies += "org.log4s" %% "log4s" % "1.1.5"
 
 Scala 2.10 and 2.11 are both fully supported, and enabling macro paradise in
 the compiler is not required. You can just add it like any other dependency.
