@@ -149,8 +149,8 @@ object Eclipse {
 }
 
 object Dependencies {
-  final val slf4jVersion     = "1.7.10"
-  final val logbackVersion   = "1.1.2"
+  final val slf4jVersion     = "1.7.12"
+  final val logbackVersion   = "1.1.3"
   final val scalaTestVersion = "2.2.4"
 
   val slf4j     = "org.slf4j"      %  "slf4j-api"       % slf4jVersion
