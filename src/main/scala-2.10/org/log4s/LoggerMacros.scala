@@ -23,12 +23,21 @@ private[log4s] object LoggerMacros {
 
     def loggerBySymbolName(s: Symbol) = {
       def fullName(s: Symbol): String = {
-        if (!(s.isModule || s.isClass)) {
-          fullName(s.owner)
-        } else if (!s.owner.isStatic) {
-          fullName(s.owner) + "." + s.name.encodedName.toString
+        @inline def isPackageObject = (
+          (s.isModule || s.isModuleClass)
+          && s.owner.isPackage
+          && s.name.decodedName.toString == nme.PACKAGE.decodedName.toString
+        )
+        if (s.isModule || s.isClass) {
+          if (isPackageObject) {
+            s.owner.fullName
+          } else if (s.owner.isStatic) {
+            s.fullName
+          } else {
+            fullName(s.owner) + "." + s.name.encodedName.toString
+          }
         } else {
-          s.fullName
+          fullName(s.owner)
         }
       }
       reify { new Logger(getJLogger(c.literal(fullName(s)).splice)) }

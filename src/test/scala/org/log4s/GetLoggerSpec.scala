@@ -95,6 +95,11 @@ class GetLoggerSpec extends FlatSpec with Matchers with GivenWhenThen with Logge
     helper2().name shouldEqual "org.log4s.GetLoggerSpec"
   }
 
+  it should "properly name package-scoped loggers" in {
+    val l = packageScoped.logger
+    l.name shouldEqual "org.log4s.packageScoped"
+  }
+
   it should "support explicit logger names" in {
     getLogger("a.b.c").name shouldEqual "a.b.c"
   }
@@ -131,4 +136,8 @@ private object GetLoggerSpecTLO {
   class InnerClass {
     val logger = getLogger
   }
+}
+
+package object packageScoped {
+  val logger = org.log4s.getLogger
 }

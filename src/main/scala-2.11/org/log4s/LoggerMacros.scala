@@ -2,6 +2,7 @@ package org.log4s
 
 import language.experimental.macros
 
+import scala.annotation.tailrec
 import scala.reflect.macros.{ blackbox, whitebox }
 
 /** Macros that support the logging system.
@@ -14,7 +15,19 @@ private[log4s] object LoggerMacros {
   final def getLoggerImpl(c: blackbox.Context) = {
     import c.universe._
 
-    val cls = c.enclosingClass.symbol
+    @tailrec def findEnclosingClass(sym: c.universe.Symbol): c.universe.Symbol = {
+      sym match {
+        case NoSymbol =>
+          c.abort(c.enclosingPosition, s"Couldn't find an enclosing class or module for the logger")
+        case s if s.isModule || s.isClass =>
+          s
+        case other =>
+          /* We're not in a module or a class, so we're probably inside a member definition. Recurse upward. */
+          findEnclosingClass(other.owner)
+      }
+    }
+
+    val cls = findEnclosingClass(c.internal.enclosingOwner)
 
     assert(cls.isModule || cls.isClass, "Enclosing class is always either a module or a class")
 
@@ -24,12 +37,21 @@ private[log4s] object LoggerMacros {
 
     def loggerBySymbolName(s: Symbol) = {
       def fullName(s: Symbol): String = {
-        if (!(s.isModule || s.isClass)) {
-          fullName(s.owner)
-        } else if (!s.owner.isStatic) {
-          fullName(s.owner) + "." + s.name.encodedName.toString
+        @inline def isPackageObject = (
+          (s.isModule || s.isModuleClass)
+          && s.owner.isPackage
+          && s.name.decodedName.toString == termNames.PACKAGE.decodedName.toString
+        )
+        if (s.isModule || s.isClass) {
+          if (isPackageObject) {
+            s.owner.fullName
+          } else if (s.owner.isStatic) {
+            s.fullName
+          } else {
+            fullName(s.owner) + "." + s.name.encodedName.toString
+          }
         } else {
-          s.fullName
+          fullName(s.owner)
         }
       }
       loggerByParam(q"${fullName(s)}")
@@ -52,7 +74,7 @@ private[log4s] object LoggerMacros {
       s.isClass && !(s.owner.isPackage)
     }
 
-    val instanceByName = Logger.singletonsByName && cls.isModule || cls.isClass && isInnerClass(cls)
+    val instanceByName = Logger.singletonsByName && (cls.isModule || cls.isModuleClass) || cls.isClass && isInnerClass(cls)
 
     if (instanceByName) {
       loggerBySymbolName(cls)
