@@ -2,8 +2,10 @@ target
 /.classpath
 /.project
 /.cache
+/.cache-*
 /.settings
 *.swp
 /project/target
 /project/project
 .DS_Store
+/bin/
