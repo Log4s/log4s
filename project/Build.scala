@@ -2,7 +2,8 @@ import sbt._
 import Keys._
 
 import com.typesafe.sbt.SbtSite.site
-import sbtrelease.ReleasePlugin._
+import sbtrelease.ReleasePlugin.autoImport._
+import com.typesafe.sbt.SbtPgp.autoImport._
 
 import scala.util.Properties.envOrNone
 
@@ -10,11 +11,11 @@ object BuildSettings {
   import Helpers._
 
   final val buildOrganization = "org.log4s"
-  final val buildScalaVersion = "2.11.6"
+  final val buildScalaVersion = "2.11.7"
   final val buildJavaVersion  = "1.7"
   final val optimize          = true
 
-  val buildScalaVersions = Seq("2.10.5", "2.11.6")
+  val buildScalaVersions = Seq("2.10.5", "2.11.7")
 
   lazy val buildScalacOptions = Seq (
     "-deprecation",
@@ -107,42 +108,18 @@ object PublishSettings {
 }
 
 object Release {
-  import sbtrelease._
-  import ReleaseStateTransformations._
-  import ReleasePlugin._
-  import ReleaseKeys._
-  import Utilities._
-  import com.typesafe.sbt.SbtPgp.PgpKeys._
-
-  val settings = releaseSettings ++ Seq (
-    ReleaseKeys.crossBuild := true,
-    ReleaseKeys.releaseProcess := Seq[ReleaseStep](
-      checkSnapshotDependencies,
-      inquireVersions,
-      runTest,
-      setReleaseVersion,
-      commitReleaseVersion,
-      tagRelease,
-      publishArtifacts.copy(action = publishSignedAction),
-      setNextVersion,
-      commitNextVersion,
-      pushChanges
-    )
+  val settings = Seq (
+    releaseCrossBuild := true,
+    releasePublishArtifactsAction := PgpKeys.publishSigned.value
   )
-
-  lazy val publishSignedAction = { st: State =>
-    val extracted = st.extract
-    val ref = extracted.get(thisProjectRef)
-    extracted.runAggregated(publishSigned in Global in ref, st)
-  }
 }
 
 object Eclipse {
   import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
   val settings = Seq (
-    EclipseKeys.createSrc            := EclipseCreateSrc.Default + EclipseCreateSrc.Resource,
-    EclipseKeys.projectFlavor        := EclipseProjectFlavor.Scala,
+    EclipseKeys.createSrc            := EclipseCreateSrc.Default,
+    EclipseKeys.projectFlavor        := EclipseProjectFlavor.ScalaIDE,
     EclipseKeys.executionEnvironment := Some(EclipseExecutionEnvironment.JavaSE17),
     EclipseKeys.withSource           := true
   )
@@ -151,7 +128,7 @@ object Eclipse {
 object Dependencies {
   final val slf4jVersion     = "1.7.12"
   final val logbackVersion   = "1.1.3"
-  final val scalaTestVersion = "2.2.4"
+  final val scalaTestVersion = "2.2.5"
 
   val slf4j     = "org.slf4j"      %  "slf4j-api"       % slf4jVersion
   val logback   = "ch.qos.logback" %  "logback-classic" % logbackVersion
