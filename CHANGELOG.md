@@ -10,3 +10,4 @@ changes to how it's coded or built, see the Git history.
       * I believe this is the desired behavior for most people, but if this
         change causes headaches for you, please file a ticket on GitHub. We
         can make the behavior optional with a compile-time switch.
+   * Support for Scala 2.12.0-M1 and 2.12.0-M2.

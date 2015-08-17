@@ -7,48 +7,126 @@ import com.typesafe.sbt.SbtPgp.autoImport._
 
 import scala.util.Properties.envOrNone
 
-object BuildSettings {
-  import Helpers._
+sealed trait Basics {
+  final val buildOrganization     = "org.log4s"
 
-  final val buildOrganization = "org.log4s"
-  final val buildScalaVersion = "2.11.7"
-  final val buildJavaVersion  = "1.7"
-  final val optimize          = true
+  final val buildScalaVersion     = "2.11.7"
+  final val extraScalaVersions    = Seq("2.10.5", "2.12.0-M1", "2.12.0-M2")
+  final val minimumJavaVersion    = "1.7"
+  final val defaultOptimize       = true
+  final val projectMainClass      = None
 
-  val buildScalaVersions = Seq("2.10.5", "2.11.7")
+  final val parallelBuild         = false
+  final val cachedResolution      = false
 
-  lazy val buildScalacOptions = Seq (
-    "-deprecation",
-    "-unchecked",
-    "-feature",
-    "-target:jvm-" + buildJavaVersion
-  ) ++ (
-    if (optimize) Seq("-optimize") else Seq.empty
-  )
+  final val buildOrganizationName = "Log4s"
+  final val buildOrganizationUrl  = Some("http://log4s.org/")
 
-  lazy val buildJavacOptions = Seq(
-    "-target", buildJavaVersion,
-    "-source", buildJavaVersion
-  )
-
-  lazy val siteSettings = site.settings ++ site.includeScaladoc()
-
-  lazy val buildSettings = siteSettings ++
-                           Seq (
-    organization := buildOrganization,
+  lazy val buildMetadata = Vector(
     licenses     := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
     homepage     := Some(url("http://log4s.org")),
     description  := "High-performance SLF4J wrapper that provides convenient Scala bindings using macros.",
     startYear    := Some(2013),
-    scmInfo      := Some(ScmInfo(url("http://github.com/Log4s/log4s"), "scm:git:git@github.com:Log4s/log4.git")),
-
-    scalaVersion       := buildScalaVersion,
-    crossScalaVersions := buildScalaVersions,
-    autoAPIMappings    := true,
-
-    scalacOptions ++= buildScalacOptions,
-    javacOptions  ++= buildJavacOptions
+    scmInfo      := Some(ScmInfo(url("http://github.com/Log4s/log4s"), "scm:git:git@github.com:Log4s/log4.git"))
   )
+
+  lazy val developerInfo = {
+    <developers>
+      <developer>
+        <id>sarah</id>
+        <name>Sarah Gerweck</name>
+        <email>sarah.a180@gmail.com</email>
+        <url>https://github.com/sarahgerweck</url>
+        <timezone>America/Los_Angeles</timezone>
+      </developer>
+    </developers>
+  }
+}
+
+object BuildSettings extends Basics {
+  import Helpers._
+
+  /* Overridable flags */
+  lazy val optimize     = boolFlag("OPTIMIZE") orElse boolFlag("OPTIMISE") getOrElse defaultOptimize
+  lazy val deprecation  = boolFlag("NO_DEPRECATION") map (!_) getOrElse true
+  lazy val inlineWarn   = boolFlag("INLINE_WARNINGS") getOrElse false
+  lazy val debug        = boolFlag("DEBUGGER") getOrElse false
+  lazy val debugPort    = envOrNone("DEBUGGER_PORT") map { _.toInt } getOrElse 5050
+  lazy val debugSuspend = boolFlag("DEBUGGER_SUSPEND") getOrElse true
+  lazy val unusedWarn   = boolFlag("UNUSED_WARNINGS") getOrElse false
+  lazy val importWarn   = boolFlag("IMPORT_WARNINGS") getOrElse false
+
+  val buildScalaVersions = buildScalaVersion +: extraScalaVersions
+
+  private[this] val sharedScalacOptions = Seq (
+    "-unchecked",
+    "-feature"
+  ) ++ (
+    if (deprecation) Seq("-deprecation") else Seq.empty
+  ) ++ (
+    if (inlineWarn) Seq("-Yinline-warnings") else Seq.empty
+  ) ++ (
+    if (unusedWarn) Seq("-Ywarn-unused") else Seq.empty
+  ) ++ (
+    if (importWarn) Seq("-Ywarn-unused-import") else Seq.empty
+  )
+  def addScalacOptions() = Def.derive {
+    scalacOptions ++= sharedScalacOptions ++ {
+      SVer(scalaBinaryVersion.value) match {
+        case j8 if j8.requireJava8 =>
+          Seq.empty
+        case nonJ8 =>
+          Seq (
+            "-target:jvm-" + minimumJavaVersion
+          ) ++ (
+            if (optimize) Seq("-optimize") else Seq.empty
+          )
+      }
+    }
+  }
+
+  private[this] val sharedJavacOptions = Seq.empty
+  def addJavacOptions() = Def.derive {
+    javacOptions ++= sharedJavacOptions ++ {
+      SVer(scalaBinaryVersion.value) match {
+        case j8 if j8.requireJava8 =>
+          Seq (
+            "-target", "1.8",
+            "-source", "1.8"
+          )
+        case nonJ8 =>
+          Seq (
+            "-target", minimumJavaVersion,
+            "-source", minimumJavaVersion
+          )
+      }
+    }
+  }
+
+  lazy val siteSettings = site.settings ++ site.includeScaladoc()
+
+  def sharedBuildSettings = buildMetadata ++
+                            siteSettings ++
+                            projectMainClass.toSeq.map(mainClass := Some(_)) ++
+                            Seq (
+    organization         :=  buildOrganization,
+    organizationName     :=  buildOrganizationName,
+    organizationHomepage :=  buildOrganizationUrl map { url(_) },
+
+    scalaVersion         :=  buildScalaVersion,
+    addScalacOptions(),
+    addJavacOptions(),
+    crossScalaVersions   :=  buildScalaVersions,
+
+    autoAPIMappings      :=  true,
+
+    updateOptions        :=  updateOptions.value.withCachedResolution(cachedResolution),
+    parallelExecution    :=  parallelBuild,
+
+    evictionWarningOptions in update :=
+      EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(false).withWarnScalaVersionEviction(false)
+  )
+
 }
 
 object Helpers {
@@ -57,6 +135,36 @@ object Helpers {
   def boolFlag(name: String): Option[Boolean] = getProp(name) map { parseBool _ }
   def boolFlag(name: String, default: Boolean): Boolean = boolFlag(name) getOrElse default
   def opts(names: String*): Option[String] = names.view.map(getProp _).foldLeft(None: Option[String]) { _ orElse _ }
+
+  sealed trait SVer {
+    def requireJava8: Boolean
+  }
+  object SVer {
+    def apply(scalaVersion: String): SVer = {
+      scalaVersion match {
+        case "2.10"      => SVer2_10
+        case "2.11"      => SVer2_11
+        case "2.12.0-M1" => SVer2_12M1
+        case "2.12.0-M2" => SVer2_12M2
+        case "2.12"      => SVer2_12
+      }
+    }
+  }
+  case object SVer2_10 extends SVer {
+    def requireJava8 = false
+  }
+  case object SVer2_11 extends SVer {
+    def requireJava8 = false
+  }
+  case object SVer2_12M1 extends SVer {
+    def requireJava8 = true
+  }
+  case object SVer2_12M2 extends SVer {
+    def requireJava8 = true
+  }
+  case object SVer2_12 extends SVer {
+    def requireJava8 = true
+  }
 }
 
 object Resolvers {
@@ -93,17 +201,7 @@ object PublishSettings {
         Some(sonaStage)
     },
 
-    pomExtra                := (
-      <developers>
-        <developer>
-          <id>sarah</id>
-          <name>Sarah Gerweck</name>
-          <email>sarah.a180@gmail.com</email>
-          <url>https://github.com/sarahgerweck</url>
-          <timezone>America/Los_Angeles</timezone>
-        </developer>
-      </developers>
-    )
+    pomExtra                := developerInfo
   )
 }
 
@@ -128,13 +226,17 @@ object Eclipse {
 object Dependencies {
   final val slf4jVersion     = "1.7.12"
   final val logbackVersion   = "1.1.3"
-  final val scalaTestVersion = "2.2.5"
 
   val slf4j     = "org.slf4j"      %  "slf4j-api"       % slf4jVersion
   val logback   = "ch.qos.logback" %  "logback-classic" % logbackVersion
-  val scalaTest = "org.scalatest"  %% "scalatest"       % scalaTestVersion
 
   def reflect(ver: String) = "org.scala-lang" % "scala-reflect" % ver
+
+  def scalaTest(scalaBinaryVersion: String): ModuleID = scalaBinaryVersion match {
+    case "2.12.0-M1" => "org.scalatest" %% "scalatest" % "2.2.5-M1"
+    case "2.12.0-M2" => "org.scalatest" %% "scalatest" % "2.2.5-M2"
+    case _           => "org.scalatest" %% "scalatest" % "2.2.5"
+  }
 }
 
 object Log4sBuild extends Build {
@@ -144,9 +246,10 @@ object Log4sBuild extends Build {
   import Resolvers._
   import Dependencies._
   import PublishSettings._
+  import Helpers._
 
   lazy val log4s = (project in file ("."))
-    .settings(buildSettings: _*)
+    .settings(sharedBuildSettings: _*)
     .settings(Eclipse.settings: _*)
     .settings(publishSettings: _*)
     .settings(Release.settings: _*)
@@ -155,9 +258,9 @@ object Log4sBuild extends Build {
 
       libraryDependencies ++= Seq (
         slf4j,
-        logback                     % "test",
-        scalaTest                   % "test",
-        reflect(scalaVersion.value) % "provided"
+        logback                       % "test",
+        scalaTest(scalaVersion.value) % "test",
+        reflect(scalaVersion.value)   % "provided"
       ),
 
       unmanagedSourceDirectories in Compile <+= (scalaBinaryVersion, baseDirectory) { (ver, dir) =>
