@@ -55,7 +55,7 @@ object MDC extends collection.mutable.Map[String,String] {
   def withCtx[A](kvs: (String,String)*)(v: => A): A = {
     val old =
       ( for {
-          (a,b) <- kvs
+          (a,b) <- kvs.toMap
         } yield {
           val tmp = (a, get(a))
           this(a) = b

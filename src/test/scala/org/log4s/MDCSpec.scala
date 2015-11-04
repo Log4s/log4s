@@ -34,6 +34,14 @@ class MDCSpec extends FlatSpec with Matchers {
     MDC.clear
   }
 
+  it should "handle duplicate keys in context" in {
+    MDC shouldBe empty
+    MDC.withCtx("a" -> "1", "b" -> "2", "a" -> "1", "a" -> "3") {
+      MDC shouldEqual Map("a" -> "3", "b" -> "2")
+    }
+    MDC shouldBe empty
+  }
+
   it should "set values" in {
     MDC.clear
     MDC get "a" shouldBe empty
