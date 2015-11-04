@@ -22,7 +22,7 @@ project's goals.
 
 To use Log4s, add the following to your SBT build:
 
-    libraryDependencies += "org.log4s" %% "log4s" % "1.1.5"
+    libraryDependencies += "org.log4s" %% "log4s" % "1.2.1"
 
 Scala 2.10 and 2.11 are both fully supported, and enabling macro paradise in
 the compiler is not required. You can just add it like any other dependency.
@@ -367,3 +367,12 @@ features so we can agree on the general design.
   * A `scalac` compiler flag or environment variable to automatically disable
     all logging below a certain level.
   * Marker support.
+
+
+### Contributors
+
+Here are all the contributors (chronologically). Thanks to all!
+
+  * [Sarah Gerweck](https://github.com/sarahgerweck/) (primary author)
+  * [Bryce Anderson](https://github.com/bryce-anderson)
+  * [David Ross](https://github.com/dyross)
