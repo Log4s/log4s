@@ -11,7 +11,7 @@ sealed trait Basics {
   final val buildOrganization     = "org.log4s"
 
   final val buildScalaVersion     = "2.11.7"
-  final val extraScalaVersions    = Seq("2.10.5", "2.12.0-M1", "2.12.0-M2")
+  final val extraScalaVersions    = Seq("2.10.5", "2.12.0-M1", "2.12.0-M2", "2.12.0-M3")
   final val minimumJavaVersion    = "1.7"
   final val defaultOptimize       = true
   final val projectMainClass      = None
@@ -146,6 +146,7 @@ object Helpers {
         case "2.11"      => SVer2_11
         case "2.12.0-M1" => SVer2_12M1
         case "2.12.0-M2" => SVer2_12M2
+        case "2.12.0-M3" => SVer2_12M3
         case "2.12"      => SVer2_12
       }
     }
@@ -160,6 +161,9 @@ object Helpers {
     def requireJava8 = true
   }
   case object SVer2_12M2 extends SVer {
+    def requireJava8 = true
+  }
+  case object SVer2_12M3 extends SVer {
     def requireJava8 = true
   }
   case object SVer2_12 extends SVer {
@@ -235,6 +239,7 @@ object Dependencies {
   def scalaTest(scalaBinaryVersion: String): ModuleID = scalaBinaryVersion match {
     case "2.12.0-M1" => "org.scalatest" %% "scalatest" % "2.2.5-M1"
     case "2.12.0-M2" => "org.scalatest" %% "scalatest" % "2.2.5-M2"
+    case "2.12.0-M3" => "org.scalatest" %% "scalatest" % "2.2.5-M3"
     case _           => "org.scalatest" %% "scalatest" % "2.2.5"
   }
 }
