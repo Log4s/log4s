@@ -22,10 +22,16 @@ project's goals.
 
 To use Log4s, add the following to your SBT build:
 
-    libraryDependencies += "org.log4s" %% "log4s" % "1.2.1"
+    libraryDependencies += "org.log4s" %% "log4s" % "1.3.0"
 
 Scala 2.10 and 2.11 are both fully supported, and enabling macro paradise in
 the compiler is not required. You can just add it like any other dependency.
+Scala 2.12 milestone builds are generally supported within a few days of when
+they are public.
+
+Scala 2.10 support will be maintained at least until six months after Scala
+2.12 is final, but support will be maintained beyond that until there are
+clear technical challenges with continuing that support.
 
 ## Examples ##
 

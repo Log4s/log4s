@@ -18,3 +18,6 @@ changes to how it's coded or built, see the Git history.
      duplicate MDC entries could lead to MDC value leaks, reported by
      [David Ross](https://github.com/dyross).
    * Support for Scala 2.12.0-M3.
+
+### 1.3.0
+   * Add support for Scala 2.12.0-M4.
