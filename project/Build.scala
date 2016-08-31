@@ -11,7 +11,7 @@ sealed trait Basics {
   final val buildOrganization     = "org.log4s"
 
   final val buildScalaVersion     = "2.11.8"
-  final val extraScalaVersions    = Seq("2.10.6", "2.12.0-M1", "2.12.0-M2", "2.12.0-M3", "2.12.0-M4")
+  final val extraScalaVersions    = Seq("2.10.6", "2.12.0-M5")
   final val minimumJavaVersion    = "1.7"
   final val defaultOptimize       = true
   final val projectMainClass      = None
@@ -144,10 +144,7 @@ object Helpers {
       scalaVersion match {
         case "2.10"      => SVer2_10
         case "2.11"      => SVer2_11
-        case "2.12.0-M1" => SVer2_12M1
-        case "2.12.0-M2" => SVer2_12M2
-        case "2.12.0-M3" => SVer2_12M3
-        case "2.12.0-M4" => SVer2_12M4
+        case "2.12.0-M5" => SVer2_12M5
         case "2.12"      => SVer2_12
       }
     }
@@ -158,16 +155,7 @@ object Helpers {
   case object SVer2_11 extends SVer {
     def requireJava8 = false
   }
-  case object SVer2_12M1 extends SVer {
-    def requireJava8 = true
-  }
-  case object SVer2_12M2 extends SVer {
-    def requireJava8 = true
-  }
-  case object SVer2_12M3 extends SVer {
-    def requireJava8 = true
-  }
-  case object SVer2_12M4 extends SVer {
+  case object SVer2_12M5 extends SVer {
     def requireJava8 = true
   }
   case object SVer2_12 extends SVer {
@@ -234,19 +222,13 @@ object Eclipse {
 object Dependencies {
   final val slf4jVersion     = "1.7.21"
   final val logbackVersion   = "1.1.7"
+  final val scalaTestVersion = "3.0.0"
 
   val slf4j     = "org.slf4j"      %  "slf4j-api"       % slf4jVersion
   val logback   = "ch.qos.logback" %  "logback-classic" % logbackVersion
+  val scalaTest = "org.scalatest"  %% "scalatest"       % scalaTestVersion
 
   def reflect(ver: String) = "org.scala-lang" % "scala-reflect" % ver
-
-  def scalaTest(scalaBinaryVersion: String): ModuleID = scalaBinaryVersion match {
-    case "2.12.0-M1" => "org.scalatest" %% "scalatest" % "2.2.5-M1"
-    case "2.12.0-M2" => "org.scalatest" %% "scalatest" % "2.2.5-M2"
-    case "2.12.0-M3" => "org.scalatest" %% "scalatest" % "2.2.5-M3"
-    case "2.12.0-M4" => "org.scalatest" %% "scalatest" % "2.2.6"
-    case _           => "org.scalatest" %% "scalatest" % "2.2.6"
-  }
 }
 
 object Log4sBuild extends Build {
@@ -268,9 +250,9 @@ object Log4sBuild extends Build {
 
       libraryDependencies ++= Seq (
         slf4j,
-        logback                       % "test",
-        scalaTest(scalaVersion.value) % "test",
-        reflect(scalaVersion.value)   % "provided"
+        logback                     % "test",
+        scalaTest                   % "test",
+        reflect(scalaVersion.value) % "provided"
       ),
 
       unmanagedSourceDirectories in Compile <+= (scalaBinaryVersion, baseDirectory) { (ver, dir) =>
