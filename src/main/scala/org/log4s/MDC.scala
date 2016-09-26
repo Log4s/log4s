@@ -3,7 +3,7 @@ package org.log4s
 import java.util.{ Map => JMap }
 import java.util.Collections.EMPTY_MAP
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 import org.slf4j.{ MDC => JMDC }
 
@@ -42,7 +42,7 @@ object MDC extends collection.mutable.Map[String,String] {
   /** Get an iterator over the values of this map. This requires making a copy of
     * the map, so it may cause performance problems if called frequently.
     */
-  final def iterator: Iterator[(String,String)] = copyMap.iterator
+  final def iterator: Iterator[(String,String)] = copyMap.asScala.iterator
 
   /** Get the size of this map This requires making a copy of the map, so it may
     * cause performance problems if called frequently.
