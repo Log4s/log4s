@@ -21,3 +21,7 @@ changes to how it's coded or built, see the Git history.
 
 ### 1.3.0
    * Add support for Scala 2.12.0-M4.
+
+### 1.3.1
+   * Modernize build for SBT 1.0.
+   * Add support for Scala 2.12.0-M5 and 2.12.0-RC1.
