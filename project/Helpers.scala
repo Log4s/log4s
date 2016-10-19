@@ -35,6 +35,7 @@ object Helpers {
         case "2.12.0-M4"  => SVer2_12M4
         case "2.12.0-M5"  => SVer2_12M5
         case "2.12.0-RC1" => SVer2_12RC1
+        case "2.12.0-RC2" => SVer2_12RC2
         case "2.12"       => SVer2_12
       }
     }
@@ -59,6 +60,9 @@ object Helpers {
     override val newOptimize = true
   }
   case object SVer2_12RC1 extends SVer {
+    override val newOptimize = true
+  }
+  case object SVer2_12RC2 extends SVer {
     override val newOptimize = true
   }
   case object SVer2_12 extends SVer {
