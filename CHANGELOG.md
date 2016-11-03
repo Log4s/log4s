@@ -28,3 +28,8 @@ changes to how it's coded or built, see the Git history.
 
 ### 1.3.2
    * Add support for Scala 2.12.0-RC2.
+
+### 1.3.3
+   * Build for Scala 2.12.0.
+   * Drop build support for 2.12 milestones
+   * Update to SBT 0.13.13
