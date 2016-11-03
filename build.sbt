@@ -14,10 +14,10 @@ lazy val log4s = (project in file ("."))
       reflect(scalaVersion.value)   % "provided"
     ),
 
-    unmanagedSourceDirectories in Compile <+= (scalaBinaryVersion, baseDirectory) { (ver, dir) =>
-      ver match {
-        case "2.10" => dir / "src" / "main" / "scala-2.10"
-        case _      => dir / "src" / "main" / "scala-2.11"
+    unmanagedSourceDirectories in Compile += {
+      scalaBinaryVersion.value match {
+        case "2.10" => baseDirectory.value / "src" / "main" / "scala-2.10"
+        case _      => baseDirectory.value / "src" / "main" / "scala-2.11"
       }
     }
   )
