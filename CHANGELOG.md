@@ -33,3 +33,7 @@ changes to how it's coded or built, see the Git history.
    * Build for Scala 2.12.0.
    * Drop build support for 2.12 milestones
    * Update to SBT 0.13.13
+
+### 1.3.4
+   * Bump to Scala 2.12.1.
+   * Further drop 2.12 milestones from build

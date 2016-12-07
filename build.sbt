@@ -9,9 +9,9 @@ lazy val log4s = (project in file ("."))
 
     libraryDependencies ++= Seq (
       slf4j,
-      logback                       % "test",
-      scalaTest(scalaVersion.value) % "test",
-      reflect(scalaVersion.value)   % "provided"
+      logback                     % "test",
+      scalatest                   % "test",
+      reflect(scalaVersion.value) % "provided"
     ),
 
     unmanagedSourceDirectories in Compile += {

@@ -29,13 +29,6 @@ object Helpers {
       scalaVersion match {
         case "2.10"       => SVer2_10
         case "2.11"       => SVer2_11
-        case "2.12.0-M1"  => SVer2_12M1
-        case "2.12.0-M2"  => SVer2_12M2
-        case "2.12.0-M3"  => SVer2_12M3
-        case "2.12.0-M4"  => SVer2_12M4
-        case "2.12.0-M5"  => SVer2_12M5
-        case "2.12.0-RC1" => SVer2_12RC1
-        case "2.12.0-RC2" => SVer2_12RC2
         case "2.12"       => SVer2_12
       }
     }
@@ -46,24 +39,6 @@ object Helpers {
   case object SVer2_11 extends SVer {
     override val supportsNewBackend = true
     override val requireJava8 = false
-  }
-  case object SVer2_12M1 extends SVer {
-  }
-  case object SVer2_12M2 extends SVer {
-  }
-  case object SVer2_12M3 extends SVer {
-  }
-  case object SVer2_12M4 extends SVer {
-    override val newOptimize = false
-  }
-  case object SVer2_12M5 extends SVer {
-    override val newOptimize = true
-  }
-  case object SVer2_12RC1 extends SVer {
-    override val newOptimize = true
-  }
-  case object SVer2_12RC2 extends SVer {
-    override val newOptimize = true
   }
   case object SVer2_12 extends SVer {
     override val newOptimize = true
