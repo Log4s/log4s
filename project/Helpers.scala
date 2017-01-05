@@ -26,10 +26,10 @@ object Helpers {
   }
   object SVer {
     def apply(scalaVersion: String): SVer = {
-      scalaVersion match {
-        case "2.10"       => SVer2_10
-        case "2.11"       => SVer2_11
-        case "2.12"       => SVer2_12
+      sbt.CrossVersion.partialVersion(scalaVersion) match {
+        case Some((2, 10))           => SVer2_10
+        case Some((2, 11))           => SVer2_11
+        case Some((2, n)) if n >= 12 => SVer2_12
       }
     }
   }
