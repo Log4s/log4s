@@ -379,3 +379,4 @@ Here are all the contributors (chronologically). Thanks to all!
   * [Sarah Gerweck](https://github.com/sarahgerweck/) (primary author)
   * [Bryce Anderson](https://github.com/bryce-anderson)
   * [David Ross](https://github.com/dyross)
+  * [Seth Tisue](https://github.com/SethTisue)
