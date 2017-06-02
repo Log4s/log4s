@@ -21,6 +21,7 @@ sealed trait Basics {
   final val extraScalaVersions    = Seq("2.10.6", "2.11.11")
   final val minimumJavaVersion    = "1.7"
   final val defaultOptimize       = true
+  final val defaultOptimizeGlobal = true
 
   final val parallelBuild         = false
   final val cachedResolution      = true
@@ -62,8 +63,6 @@ object BasicSettings extends AutoPlugin with Basics {
 
       scalaVersion         :=  buildScalaVersion,
       crossScalaVersions   :=  buildScalaVersions,
-      addScalacOptions(),
-      addJavacOptions(),
 
       autoAPIMappings      :=  true,
 
@@ -75,26 +74,29 @@ object BasicSettings extends AutoPlugin with Basics {
 
       evictionWarningOptions in update :=
         EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(false).withWarnScalaVersionEviction(false)
-    )
+    ) ++ {
+      addScalacOptions() ++ addJavacOptions()
+    }
   )
 
   /* Overridable flags */
-  lazy val optimize     = boolFlag("OPTIMIZE") orElse boolFlag("OPTIMISE") getOrElse defaultOptimize
-  lazy val deprecation  = boolFlag("NO_DEPRECATION") map (!_) getOrElse true
-  lazy val inlineWarn   = boolFlag("INLINE_WARNINGS") getOrElse false
-  lazy val debug        = boolFlag("DEBUGGER") getOrElse false
-  lazy val debugPort    = envOrNone("DEBUGGER_PORT") map { _.toInt } getOrElse 5050
-  lazy val debugSuspend = boolFlag("DEBUGGER_SUSPEND") getOrElse true
-  lazy val unusedWarn   = boolFlag("UNUSED_WARNINGS") getOrElse false
-  lazy val importWarn   = boolFlag("IMPORT_WARNINGS") getOrElse false
-  lazy val java8Flag    = boolFlag("BUILD_JAVA_8") getOrElse false
-  lazy val newBackend   = boolFlag("NEW_BCODE_BACKEND") getOrElse defaultNewBackend
+  lazy val optimize       = boolFlag("OPTIMIZE") orElse boolFlag("OPTIMISE") getOrElse defaultOptimize
+  lazy val optimizeGlobal = boolFlag("OPTIMIZE_GLOBAL") getOrElse defaultOptimizeGlobal
+  lazy val optimizeWarn   = boolFlag("OPTIMIZE_WARNINGS") getOrElse false
+  lazy val deprecation    = boolFlag("NO_DEPRECATION") map (!_) getOrElse true
+  lazy val inlineWarn     = boolFlag("INLINE_WARNINGS") getOrElse false
+  lazy val debug          = boolFlag("DEBUGGER") getOrElse false
+  lazy val debugPort      = envOrNone("DEBUGGER_PORT") map { _.toInt } getOrElse 5050
+  lazy val debugSuspend   = boolFlag("DEBUGGER_SUSPEND") getOrElse true
+  lazy val unusedWarn     = boolFlag("UNUSED_WARNINGS") getOrElse false
+  lazy val importWarn     = boolFlag("IMPORT_WARNINGS") getOrElse false
+  lazy val java8Flag      = boolFlag("BUILD_JAVA_8") getOrElse false
+  lazy val newBackend     = boolFlag("NEW_BCODE_BACKEND") getOrElse defaultNewBackend
 
   lazy val buildScalaVersions = buildScalaVersion +: extraScalaVersions
 
-  def addScalacOptions() = Def.derive {
+  def basicScalacOptions = Def.derive {
     scalacOptions ++= {
-      val sv = SVer(scalaBinaryVersion.value)
       var options = Seq.empty[String]
 
       options :+= "-unchecked"
@@ -102,34 +104,54 @@ object BasicSettings extends AutoPlugin with Basics {
       if (deprecation) {
         options :+= "-deprecation"
       }
-      if (inlineWarn) {
-        options :+= "-Yinline-warnings"
-      }
       if (unusedWarn) {
         options :+= "-Ywarn-unused"
       }
       if (importWarn) {
         options :+= "-Ywarn-unused-import"
       }
-      if (!sv.requireJava8) {
+      if (!sver.value.requireJava8) {
         options :+= "-target:jvm-" + minimumJavaVersion
       }
-      if (optimize) {
-        if (sv.supportsNewBackend && newBackend) {
-          options :+= "-Yopt:l:classpath"
-        } else if (sv.newOptimize) {
-          options :+= "-opt:_"
-        } else if (!sv.requireJava8) {
-          options :+= "-optimize"
-        }
-      }
-      if (sv.supportsNewBackend && newBackend && !sv.requireJava8) {
+      if (sver.value.backend == SupportsNewBackend && newBackend) {
         options :+= "-Ybackend:GenBCode"
       }
 
       options
     }
   }
+
+  def optimizationScalacOptions(optim: Boolean = optimize) = Def.derive {
+    scalacOptions ++= {
+      var options = Seq.empty[String]
+
+      if (optim) {
+        val useNewBackend = sver.value.backend == NewBackend || sver.value.supportsNewBackend && newBackend
+        if (useNewBackend) {
+          if (optimizeGlobal) {
+            options :+= "-opt:l:classpath"
+          } else {
+            options :+= "-opt:l:project"
+          }
+          if (optimizeWarn) {
+            options :+= "-opt-warnings:_"
+          }
+        } else {
+          options :+= "-optimize"
+          if (optimizeWarn) {
+            options :+= "-Yinline-warnings"
+          }
+        }
+      }
+
+      options
+    }
+  }
+
+  def addScalacOptions(optim: Boolean = optimize) = new Def.SettingList(Seq(
+    basicScalacOptions,
+    optimizationScalacOptions(optim)
+  ))
 
   def addJavacOptions() = Def.derive {
     javacOptions ++= {
@@ -150,5 +172,15 @@ object BasicSettings extends AutoPlugin with Basics {
 
       options
     }
+  }
+
+  def basicSiteSettings = Def.derive {
+    scalacOptions in (Compile,doc) ++= Seq(
+      "-groups",
+      "-implicits",
+      "-diagrams",
+      "-sourcepath", (baseDirectory in ThisBuild).value.getAbsolutePath,
+      "-doc-source-url", s"https://github.com/${githubOrganization}/${githubProject}/blob/master€{FILE_PATH}.scala"
+    )
   }
 }
