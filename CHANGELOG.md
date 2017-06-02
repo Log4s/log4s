@@ -37,3 +37,6 @@ changes to how it's coded or built, see the Git history.
 ### 1.3.4
    * Bump to Scala 2.12.1.
    * Further drop 2.12 milestones from build
+
+### 1.3.5
+   * Minor version updates.
