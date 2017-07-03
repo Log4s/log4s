@@ -40,3 +40,6 @@ changes to how it's coded or built, see the Git history.
 
 ### 1.3.5
    * Minor version updates.
+
+### 1.3.6
+   * Add support for Scala 2.13.0-M1.

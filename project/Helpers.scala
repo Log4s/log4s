@@ -47,7 +47,7 @@ object Helpers {
       CrossVersion.partialVersion(scalaVersion) match {
         case Some((2, 10))           => SVer2_10
         case Some((2, 11))           => SVer2_11
-        case (Some(2, 12))           => SVer2_12
+        case Some((2, 12))           => SVer2_12
         case Some((2, n)) if n >= 13 => SVer2_13
         case _ =>
           throw new IllegalArgumentException(s"Scala version $scalaVersion is not supported")
