@@ -16,6 +16,7 @@ sealed trait Basics {
   final val githubProject         = "log4s"
   final val projectDescription    = "High-performance SLF4J wrapper for Scala"
   final val projectStartYear      = 2013
+  final val projectHomepage       = Some(url("http://log4s.org"))
 
   final val buildScalaVersion     = "2.12.2"
   final val extraScalaVersions    = Seq("2.10.6", "2.11.11")
@@ -32,7 +33,7 @@ sealed trait Basics {
   lazy val githubPage = url(s"https://github.com/${githubOrganization}/${githubProject}")
   lazy val buildMetadata = Vector(
     licenses    := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
-    homepage    := Some(url("http://log4s.org")),
+    homepage    := Some(projectHomepage.getOrElse(githubPage)),
     description := projectDescription,
     startYear   := Some(projectStartYear),
     scmInfo     := Some(ScmInfo(githubPage, s"scm:git:git@github.com:${githubOrganization}/${githubProject}.git"))
@@ -83,6 +84,7 @@ object BasicSettings extends AutoPlugin with Basics {
   lazy val optimize       = boolFlag("OPTIMIZE") orElse boolFlag("OPTIMISE") getOrElse defaultOptimize
   lazy val optimizeGlobal = boolFlag("OPTIMIZE_GLOBAL") getOrElse defaultOptimizeGlobal
   lazy val optimizeWarn   = boolFlag("OPTIMIZE_WARNINGS") getOrElse false
+  lazy val noFatalWarn    = boolFlag("NO_FATAL_WARNINGS") getOrElse false
   lazy val deprecation    = boolFlag("NO_DEPRECATION") map (!_) getOrElse true
   lazy val inlineWarn     = boolFlag("INLINE_WARNINGS") getOrElse false
   lazy val debug          = boolFlag("DEBUGGER") getOrElse false
