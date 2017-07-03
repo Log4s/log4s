@@ -47,7 +47,8 @@ object Helpers {
       CrossVersion.partialVersion(scalaVersion) match {
         case Some((2, 10))           => SVer2_10
         case Some((2, 11))           => SVer2_11
-        case Some((2, n)) if n >= 12 => SVer2_12
+        case (Some(2, 12))           => SVer2_12
+        case Some((2, n)) if n >= 13 => SVer2_13
         case _ =>
           throw new IllegalArgumentException(s"Scala version $scalaVersion is not supported")
       }
@@ -62,6 +63,10 @@ object Helpers {
     override final val requireJava8 = false
   }
   case object SVer2_12 extends SVer {
+    override final val backend = NewBackend
+    override final val requireJava8 = true
+  }
+  case object SVer2_13 extends SVer {
     override final val backend = NewBackend
     override final val requireJava8 = true
   }

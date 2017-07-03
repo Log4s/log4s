@@ -19,7 +19,7 @@ sealed trait Basics {
   final val projectHomepage       = Some(url("http://log4s.org"))
 
   final val buildScalaVersion     = "2.12.2"
-  final val extraScalaVersions    = Seq("2.10.6", "2.11.11")
+  final val extraScalaVersions    = Seq("2.10.6", "2.11.11", "2.13.0-M1")
   final val minimumJavaVersion    = "1.7"
   final val defaultOptimize       = true
   final val defaultOptimizeGlobal = true
