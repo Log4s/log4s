@@ -64,9 +64,15 @@ private[log4s] object LoggerMacros {
       if (typeParams.isEmpty) {
         loggerByParam(q"classOf[$typeSymbol]")
       } else {
-        val typeArgs = List.fill(typeParams.length)(WildcardType)
-        val typeConstructor = tq"$typeSymbol[..${typeArgs}]"
-        loggerByParam(q"classOf[$typeConstructor]")
+        if (typeParams.exists(_.asType.typeParams.nonEmpty)) {
+          /* We have at least one higher-kinded type: fall back to by-name logger construction, as
+           * there's no simple way to declare a higher-kinded type with an "any" parameter. */
+          loggerBySymbolName(s)
+        } else {
+          val typeArgs = List.fill(typeParams.length)(WildcardType)
+          val typeConstructor = tq"$typeSymbol[..${typeArgs}]"
+          loggerByParam(q"classOf[$typeConstructor]")
+        }
       }
     }
 

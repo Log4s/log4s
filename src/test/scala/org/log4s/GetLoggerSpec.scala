@@ -1,5 +1,7 @@
 package org.log4s
 
+import language.higherKinds
+
 import org.scalatest._
 
 /** Test suite for the behavior of `getLogger`.
@@ -103,6 +105,16 @@ class GetLoggerSpec extends FlatSpec with Matchers with GivenWhenThen with Logge
   it should "support explicit logger names" in {
     getLogger("a.b.c").name shouldEqual "a.b.c"
   }
+
+  it should "support higher-kinded types" in {
+    val hkt = new GetLoggerSpecTLKind1[Seq]
+    hkt.logger.name shouldEqual "org.log4s.GetLoggerSpecTLKind1"
+  }
+
+  it should "support higher-kinded nested types" in {
+    val hkt = new GetLoggerSpecKinds.NestedKind1[Seq]
+    hkt.logger.name shouldEqual "org.log4s.GetLoggerSpecKinds.NestedKind1"
+  }
 }
 
 private class GetLoggerSpecParam[A] {
@@ -140,4 +152,14 @@ private object GetLoggerSpecTLO {
 
 package object packageScoped {
   val logger = org.log4s.getLogger
+}
+
+private object GetLoggerSpecKinds {
+  class NestedKind1[F[_]] {
+    val logger = getLogger
+  }
+}
+
+private class GetLoggerSpecTLKind1[F[_]] {
+  val logger = getLogger
 }

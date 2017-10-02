@@ -47,3 +47,6 @@ changes to how it's coded or built, see the Git history.
 ### 1.4.0
    * Update to Scala 2.12.3.
    * Update to SBT 1.0.2.
+   * Fix [#18](https://github.com/Log4s/log4s/issues/18), which prevented
+     `getLogger` from correctly getting the logger for a top-level class with
+     a higher-kinded type parameter.
