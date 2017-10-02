@@ -25,7 +25,7 @@ object Helpers {
     transformer.transform(node)(0)
   }
 
-  final lazy val sver = Def.map(scalaBinaryVersion)(SVer.apply _)
+  final def sver = Def.map(scalaBinaryVersion)(SVer.apply _)
 
   sealed trait Backend
   case object NewBackend extends Backend

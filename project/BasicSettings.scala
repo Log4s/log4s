@@ -125,10 +125,11 @@ object BasicSettings extends AutoPlugin with Basics {
 
   def optimizationScalacOptions(optim: Boolean = optimize) = Def.derive {
     scalacOptions ++= {
+      val sval = sver.value
       var options = Seq.empty[String]
 
       if (optim) {
-        val useNewBackend = sver.value.backend == NewBackend || sver.value.supportsNewBackend && newBackend
+        val useNewBackend = sval.backend == NewBackend || sval.supportsNewBackend && newBackend
         if (useNewBackend) {
           if (optimizeGlobal) {
             options :+= "-opt:l:classpath"
