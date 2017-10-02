@@ -43,3 +43,7 @@ changes to how it's coded or built, see the Git history.
 
 ### 1.3.6
    * Add support for Scala 2.13.0-M1.
+
+### 1.4.0
+   * Update to Scala 2.12.3.
+   * Update to SBT 1.0.2.
