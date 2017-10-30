@@ -1,66 +1,37 @@
+/* Note: This file is shared among many projects. Avoid putting project-specific things here. */
+
 import sbt._
-import Keys._
-
-import scala.util.Properties.envOrNone
-
-import sbtrelease.ReleasePlugin.autoImport._
-import com.typesafe.sbt.site._
+import sbt.Keys._
 
 import Helpers._
 
-sealed trait Basics {
-  final val buildOrganization     = "org.log4s"
-  final val buildOrganizationName = "Log4s"
-  final val buildOrganizationUrl  = Some("http://log4s.org/")
-  final val githubOrganization    = "Log4s"
-  final val githubProject         = "log4s"
-  final val projectDescription    = "High-performance SLF4J wrapper for Scala"
-  final val projectStartYear      = 2013
-  final val projectHomepage       = Some(url("http://log4s.org"))
-
-  final val buildScalaVersion     = "2.12.3"
-  final val extraScalaVersions    = Seq("2.10.6", "2.11.11", "2.13.0-M1")
-  final val minimumJavaVersion    = "1.7"
-  final val defaultOptimize       = true
-  final val defaultOptimizeGlobal = true
-
-  final val parallelBuild         = false
-  final val cachedResolution      = true
-
-  final val defaultNewBackend     = false
-
-  /* Metadata definitions */
-  lazy val githubPage = url(s"https://github.com/${githubOrganization}/${githubProject}")
-  lazy val buildMetadata = Vector(
-    licenses    := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
-    homepage    := Some(projectHomepage.getOrElse(githubPage)),
-    description := projectDescription,
-    startYear   := Some(projectStartYear),
-    scmInfo     := Some(ScmInfo(githubPage, s"scm:git:git@github.com:${githubOrganization}/${githubProject}.git"))
-  )
-
-  lazy val developerInfo = {
-    <developers>
-      <developer>
-        <id>sarah</id>
-        <name>Sarah Gerweck</name>
-        <email>sarah.a180@gmail.com</email>
-        <url>https://github.com/sarahgerweck</url>
-        <timezone>America/Los_Angeles</timezone>
-      </developer>
-    </developers>
-  }
+object BasicSettings extends AutoPlugin with BasicSettings {
+  override def projectSettings = basicSettings
 }
 
-object BasicSettings extends AutoPlugin with Basics {
-  override def requires = SiteScaladocPlugin
+trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
+  /* Overridable flags */
+  lazy val optimize       = boolFlag("OPTIMIZE") orElse boolFlag("OPTIMISE") getOrElse defaultOptimize
+  lazy val optimizeGlobal = boolFlag("OPTIMIZE_GLOBAL") getOrElse defaultOptimizeGlobal
+  lazy val optimizeWarn   = boolFlag("OPTIMIZE_WARNINGS") getOrElse false
+  lazy val noFatalWarn    = boolFlag("NO_FATAL_WARNINGS") getOrElse false
+  lazy val deprecation    = boolFlag("NO_DEPRECATION") map (!_) getOrElse true
+  lazy val inlineWarn     = boolFlag("INLINE_WARNINGS") getOrElse false
+  lazy val debug          = boolFlag("DEBUGGER") getOrElse false
+  lazy val debugPort      = intFlag("DEBUGGER_PORT", 5050)
+  lazy val debugSuspend   = boolFlag("DEBUGGER_SUSPEND") getOrElse true
+  lazy val unusedWarn     = boolFlag("UNUSED_WARNINGS") getOrElse false
+  lazy val importWarn     = boolFlag("IMPORT_WARNINGS") getOrElse false
+  lazy val findbugsHtml   = boolFlag("FINDBUGS_HTML") getOrElse !isJenkins
+  lazy val newBackend     = boolFlag("NEW_BCODE_BACKEND") getOrElse defaultNewBackend
+  lazy val noBuildDocs    = boolFlag("NO_SBT_DOCS").getOrElse(false) && !isJenkins
 
-  override lazy val projectSettings = (
+  lazy val basicSettings = new Def.SettingList(
     buildMetadata ++
     Seq (
       organization         :=  buildOrganization,
       organizationName     :=  buildOrganizationName,
-      organizationHomepage :=  buildOrganizationUrl map { url _ },
+      organizationHomepage :=  buildOrganizationUrl.orElse(if (githubOrgPageFallback) Some(githubOrgPage) else None),
 
       scalaVersion         :=  buildScalaVersion,
       crossScalaVersions   :=  buildScalaVersions,
@@ -70,36 +41,36 @@ object BasicSettings extends AutoPlugin with Basics {
       updateOptions        :=  updateOptions.value.withCachedResolution(cachedResolution),
       parallelExecution    :=  parallelBuild,
 
-      /* Many OSS projects push here and then appear in Maven Central later */
-      resolvers            +=  Resolver.sonatypeRepo("releases"),
-
       evictionWarningOptions in update :=
         EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(false).withWarnScalaVersionEviction(false)
-    ) ++ {
-      addScalacOptions() ++ addJavacOptions()
-    }
+    ) ++ (
+      if (noBuildDocs) {
+        Seq(sources in (Compile, doc) := Seq.empty)
+      } else {
+        Seq.empty
+      }
+    ) ++ (
+      if (autoAddCompileOptions) {
+        addScalacOptions() ++ addJavacOptions()
+      } else {
+        Seq.empty
+      }
+    ) ++ (
+      if (sonatypeResolver) {
+        /* Many OSS projects push here and then appear in Maven Central later */
+        Seq(resolvers += Resolver.sonatypeRepo("releases"))
+      } else {
+        Seq.empty
+      }
+    )
   )
-
-  /* Overridable flags */
-  lazy val optimize       = boolFlag("OPTIMIZE") orElse boolFlag("OPTIMISE") getOrElse defaultOptimize
-  lazy val optimizeGlobal = boolFlag("OPTIMIZE_GLOBAL") getOrElse defaultOptimizeGlobal
-  lazy val optimizeWarn   = boolFlag("OPTIMIZE_WARNINGS") getOrElse false
-  lazy val noFatalWarn    = boolFlag("NO_FATAL_WARNINGS") getOrElse false
-  lazy val deprecation    = boolFlag("NO_DEPRECATION") map (!_) getOrElse true
-  lazy val inlineWarn     = boolFlag("INLINE_WARNINGS") getOrElse false
-  lazy val debug          = boolFlag("DEBUGGER") getOrElse false
-  lazy val debugPort      = envOrNone("DEBUGGER_PORT") map { _.toInt } getOrElse 5050
-  lazy val debugSuspend   = boolFlag("DEBUGGER_SUSPEND") getOrElse true
-  lazy val unusedWarn     = boolFlag("UNUSED_WARNINGS") getOrElse false
-  lazy val importWarn     = boolFlag("IMPORT_WARNINGS") getOrElse false
-  lazy val java8Flag      = boolFlag("BUILD_JAVA_8") getOrElse false
-  lazy val newBackend     = boolFlag("NEW_BCODE_BACKEND") getOrElse defaultNewBackend
 
   lazy val buildScalaVersions = buildScalaVersion +: extraScalaVersions
 
   def basicScalacOptions = Def.derive {
     scalacOptions ++= {
       var options = Seq.empty[String]
+      val sv = sver.value
 
       options :+= "-unchecked"
       options :+= "-feature"
@@ -112,10 +83,10 @@ object BasicSettings extends AutoPlugin with Basics {
       if (importWarn) {
         options :+= "-Ywarn-unused-import"
       }
-      if (!sver.value.requireJava8) {
+      if (!sv.requireJava8) {
         options :+= "-target:jvm-" + minimumJavaVersion
       }
-      if (sver.value.backend == SupportsNewBackend && newBackend) {
+      if (sv.backend == SupportsNewBackend && newBackend) {
         options :+= "-Ybackend:GenBCode"
       }
 
@@ -125,20 +96,41 @@ object BasicSettings extends AutoPlugin with Basics {
 
   def optimizationScalacOptions(optim: Boolean = optimize) = Def.derive {
     scalacOptions ++= {
-      val sval = sver.value
       var options = Seq.empty[String]
+      val sv = sver.value
+      val fos = forceOldInlineSyntax.value
 
       if (optim) {
-        val useNewBackend = sval.backend == NewBackend || sval.supportsNewBackend && newBackend
-        if (useNewBackend) {
+        def doNewWarn(): Unit = {
+          if (optimizeWarn) {
+            options :+= "-opt-warnings:_"
+          }
+        }
+
+        if (sv.backend == NewBackend && !fos) {
+          options :+= "-opt:l:inline"
+
+          val inlineFrom = {
+            var patterns = Seq.empty[String]
+            if (optimizeGlobal) {
+              patterns :+= "**"
+            } else {
+              patterns :+= "<sources>"
+            }
+            patterns ++= inlinePatterns
+            patterns
+          }
+
+          options :+= inlineFrom.mkString("-opt-inline-from:", ":", "")
+
+          doNewWarn()
+        } else if (sv.backend == NewBackend && fos || sv.backend == SupportsNewBackend && newBackend) {
           if (optimizeGlobal) {
             options :+= "-opt:l:classpath"
           } else {
             options :+= "-opt:l:project"
           }
-          if (optimizeWarn) {
-            options :+= "-opt-warnings:_"
-          }
+          doNewWarn()
         } else {
           options :+= "-optimize"
           if (optimizeWarn) {
@@ -177,13 +169,5 @@ object BasicSettings extends AutoPlugin with Basics {
     }
   }
 
-  def basicSiteSettings = Def.derive {
-    scalacOptions in (Compile,doc) ++= Seq(
-      "-groups",
-      "-implicits",
-      "-diagrams",
-      "-sourcepath", (baseDirectory in ThisBuild).value.getAbsolutePath,
-      "-doc-source-url", s"https://github.com/${githubOrganization}/${githubProject}/blob/master€{FILE_PATH}.scala"
-    )
-  }
+  private[this] lazy val githubOrgPage = url(s"https://github.com/${githubOrganization}")
 }

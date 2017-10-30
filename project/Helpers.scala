@@ -1,5 +1,5 @@
 import sbt._
-import Keys._
+import sbt.Keys._
 
 import HelpersImpl._
 object Helpers extends AnyRef with PropertyHelper with VersionHelper with PomHelper
@@ -14,6 +14,8 @@ object HelpersImpl {
     def parseBool(str: String): Boolean = boolNames(str.trim.toLowerCase)
     def boolFlag(name: String): Option[Boolean] = getProp(name).map(parseBool)
     def boolFlag(name: String, default: Boolean): Boolean = boolFlag(name) getOrElse default
+    def intFlag(name: String) = getProp(name).map(_.toInt)
+    def intFlag(name: String, default: Int): Int = intFlag(name) getOrElse default
     def opts(names: String*): Option[String] = names.collectFirst(Function.unlift(getProp))
 
     lazy val buildNumberOpt = sys.env.get("BUILD_NUMBER")
@@ -26,7 +28,7 @@ object HelpersImpl {
     }
 
     final lazy val forceOldInlineSyntax: Def.Initialize[Boolean] = {
-      val pat = """(?x)^ 2\.12\.[0-2] (?:[^\d].*)? $""".r
+      val pat = """(?x)^ (?: 2\.12\.[0-2] (?:[^\d].*)? ) | (?: 2\.13\.0 .+ ) $""".r
       Def.map(scalaVersion) {
         case pat() => true
         case _     => false
