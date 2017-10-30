@@ -4,6 +4,7 @@ import Keys._
 import com.typesafe.sbt.site._
 
 object SiteSettingsPlugin extends AutoPlugin {
+  override def trigger = allRequirements
   override def requires = SiteScaladocPlugin
 
   override lazy val projectSettings = Seq(
