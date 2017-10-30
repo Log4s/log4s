@@ -1,7 +1,7 @@
 import Dependencies._
 
 lazy val log4s = (project in file ("."))
-  .enablePlugins(BasicSettings)
+  .enablePlugins(BasicSettings, SiteSettingsPlugin)
   .settings(Publish.settings: _*)
   .settings(Release.settings: _*)
   .settings(
