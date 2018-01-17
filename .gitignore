@@ -4,6 +4,9 @@
 target
 bin
 
+# VS Code files
+.history
+
 # SBT build files
 .cache
 .cache-main
