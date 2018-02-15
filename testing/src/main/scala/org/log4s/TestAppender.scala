@@ -58,4 +58,30 @@ object TestAppender {
   private def resetQueue(): Unit = synchronized {
     loggingEvents = None
   }
+
+  /** Run a block of code while the provided appender capturing the events
+    *
+    * Only one of these blocks can be active at a time. The system will impose synchronization to enforce this,
+    * so you may have deadlocks if you have several of these blocks running concurrently and producing values for one another.
+    *
+    * This will only allow you to dequeue events from the same thread that called `withAppender`, so you should
+    * use `Await` if you are testing asynchronous code (or you can manage the queue yourself).
+   */
+  def withAppender[A](mustStartEmpty: Boolean = true, mustEndEmpty: Boolean = false)(f: => A): A = synchronized {
+    if (!mustStartEmpty) {
+      resetQueue()
+    }
+    newQueue()
+    val result = Try(f)
+    val endSize = events.size
+    resetQueue()
+    result
+      .map { r =>
+        if (mustEndEmpty && endSize != 0) {
+          throw new IllegalStateException(s"Expected to code to consume all log elements, but $endSize were left")
+        }
+        r
+      }
+      .get
+  }
 }
