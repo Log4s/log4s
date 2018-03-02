@@ -28,7 +28,7 @@ object HelpersImpl {
     }
 
     final lazy val forceOldInlineSyntax: Def.Initialize[Boolean] = {
-      val pat = """(?x)^ (?: 2\.12\.[0-2] (?:[^\d].*)? ) | (?: 2\.13\.0 .+ ) $""".r
+      val pat = """(?x)^ 2\.12\.[0-2] (?:[^\d].*)? $""".r
       Def.map(scalaVersion) {
         case pat() => true
         case _     => false
