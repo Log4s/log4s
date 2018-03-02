@@ -5,8 +5,7 @@
     </encoder>
   </appender>
 
-  <appender name="TEST" class="org.log4s.TestAppender">
-  </appender>
+  <appender name="TEST" class="org.log4s.TestAppender"/>
 
   <logger name="test" additivity="false" level="TRACE">
     <!-- We don't want to print these: we want to capture them for testing. -->
