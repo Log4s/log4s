@@ -28,7 +28,9 @@ Scala 2.10, 2.11, and 2.12 are fully supported, and enabling macro paradise
 in the 2.10 compiler is not required: You can just add it like any other
 dependency.
 
-Scala 2.10 support will be maintained at least until at least June 2017.
+Scala 2.10 support is beyond its support window: it may be removed in any
+minor release if there's a reason. (It will not be removed in a patch
+release.)
 
 ## Examples ##
 
