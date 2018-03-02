@@ -3,7 +3,7 @@
 Only changes affecting users of the library will be noted here. For internal
 changes to how it's coded or built, see the Git history.
 
-### 1.2.0
+## 1.2
    * Improve naming of package loggers.
       * Previously, package loggers were named by the package name, followed
         by `.package`. Now, the trailing `.package` is no longer present.
@@ -13,13 +13,11 @@ changes to how it's coded or built, see the Git history.
    * Support for Scala 2.12.0-M1 and 2.12.0-M2.
 
 #### 1.2.1
-
    * Fix an [issue](https://github.com/Log4s/log4s/issues/10) where
-     duplicate MDC entries could lead to MDC value leaks, reported by
-     [David Ross](https://github.com/dyross).
+     duplicate MDC entries could lead to MDC value leaks, reported by [David Ross](https://github.com/dyross).
    * Support for Scala 2.12.0-M3.
 
-### 1.3.0
+## 1.3
    * Add support for Scala 2.12.0-M4.
 
 ### 1.3.1
@@ -44,9 +42,14 @@ changes to how it's coded or built, see the Git history.
 ### 1.3.6
    * Add support for Scala 2.13.0-M1.
 
-### 1.4.0
+## 1.4
    * Update to Scala 2.12.3.
    * Update to SBT 1.0.2.
    * Fix [#18](https://github.com/Log4s/log4s/issues/18), which prevented
      `getLogger` from correctly getting the logger for a top-level class with
      a higher-kinded type parameter.
+
+## 1.5
+   * Update to Scala 2.12.4.
+   * Update to SBT 1.1.1.
+   * Expose a new `log4s-testing`. This is experimental at this time.
