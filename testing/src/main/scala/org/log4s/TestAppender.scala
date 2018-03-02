@@ -31,7 +31,7 @@ class TestAppender extends AppenderBase[ILoggingEvent] {
 }
 
 object TestAppender {
-  private var loggingEvents: Option[mutable.Queue[ILoggingEvent]] = None
+  private var loggingEvents: Option[mutable.Queue[LoggedEvent]] = None
 
   @inline private[this] def events = {
     require(loggingEvents.isDefined, "Illegal operation with no active queue")
@@ -39,10 +39,10 @@ object TestAppender {
   }
 
   private def addEvent(event: ILoggingEvent): Unit = synchronized {
-    events += event
+    events += new LoggedEvent(event)
   }
 
-  def dequeue: Option[ILoggingEvent] = synchronized {
+  def dequeue: Option[LoggedEvent] = synchronized {
     Try(events.dequeue).toOption
   }
 

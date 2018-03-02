@@ -1,7 +1,6 @@
 package org.log4s
 
 import scala.collection.JavaConverters._
-import scala.collection.mutable
 
 import org.scalatest._
 
@@ -128,8 +127,10 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
       }
     }
     When("doing manual MDC context manipulations")
-    MDC += "b" -> "c"
-    MDC += "f" -> "a"
+    locally {
+      MDC += "b" -> "c"
+      MDC += "f" -> "a"
+    }
     try {
       testLogger.debug("Test message 2")
       event mdcSatisfies { mdc =>
@@ -146,39 +147,44 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
   }
 
   private[this] implicit class ComparableThrowable(val t: Throwable) {
-    def shouldMatch (tp: IThrowableProxy) {
-      t.getMessage shouldEqual tp.getMessage
-      t.getCause match {
-        case null => tp.getCause should be (null)
-        case c    => c shouldMatch tp.getCause
+    def shouldMatch (tp: LoggedThrowable): Unit = {
+      Option(t.getMessage) shouldEqual tp.message
+      Option(t.getCause) match {
+        case None => tp.cause should not be 'defined
+        case Some(c) =>
+          tp.cause should be ('defined)
+          tp.cause foreach (c shouldMatch _)
       }
-      t.getClass.getCanonicalName shouldEqual tp.getClassName
+      t.getClass.getCanonicalName shouldEqual tp.className
     }
   }
 
   private[this] object event {
-    def satisfies[A](fn: ILoggingEvent => A): Unit = {
+    def satisfies[A](fn: LoggedEvent => A): Unit = {
       val eventOpt = TestAppender.dequeue
       eventOpt should be ('defined)
       eventOpt foreach fn
     }
-    def mdcSatisfies[A](fn: mutable.Map[String, String] => A): Unit = {
+    def mdcSatisfies[A](fn: scala.collection.Map[String, String] => A): Unit = {
       this satisfies { event =>
-        fn(event.getMDCPropertyMap.asScala)
+        fn(event.mdc)
       }
     }
     def hasData (msg: String, level: Lvl, throwable: Option[Throwable]) = {
       this satisfies { event =>
-        event.getFormattedMessage shouldEqual msg
-        event.getLevel shouldEqual level
+        event.formattedMessage shouldEqual msg
+        event.level shouldEqual level
 
-        event.getArgumentArray should be (null)
-        event.getLoggerName shouldEqual "test"
+        event.inner.getArgumentArray should be (null)
+        event.loggerName shouldEqual "test"
 
-        val tp = event.getThrowableProxy
+        val tp = event.throwable
         throwable match {
-          case Some(t) => t shouldMatch tp
-          case None    => tp should be (null)
+          case Some(t) =>
+            tp should be ('defined)
+            tp foreach (t shouldMatch _)
+          case None    =>
+            tp should not be 'defined
         }
       }
     }
