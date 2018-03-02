@@ -1,9 +1,12 @@
 package org.log4s
 
+import scala.collection.JavaConverters._
+import scala.collection.mutable
+
 import org.scalatest._
 
 import ch.qos.logback.classic.{ Level => Lvl }
-import ch.qos.logback.classic.spi.IThrowableProxy
+import ch.qos.logback.classic.spi.{ ILoggingEvent, IThrowableProxy }
 
 /** Test suite for the behavior of Log4s loggers.
   *
@@ -114,6 +117,34 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
     event hasData ("errorError2", Lvl.ERROR, Some(e2))
   }
 
+  it should "handle MDC behavior" in {
+    When("doing normal logging using MDC.withCtx")
+    MDC.withCtx("a" -> "b") {
+      testLogger.debug("Test message")
+      event mdcSatisfies { mdc =>
+        mdc should have size 1
+        mdc should contain key ("a")
+        mdc("a") shouldEqual "b"
+      }
+    }
+    When("doing manual MDC context manipulations")
+    MDC += "b" -> "c"
+    MDC += "f" -> "a"
+    try {
+      testLogger.debug("Test message 2")
+      event mdcSatisfies { mdc =>
+        mdc should have size 2
+        mdc should contain key ("b")
+        mdc should contain key ("f")
+        mdc("b") should equal ("c")
+        mdc("f") should equal ("a")
+      }
+    } finally {
+      MDC -= "b"
+      MDC -= "f"
+    }
+  }
+
   private[this] implicit class ComparableThrowable(val t: Throwable) {
     def shouldMatch (tp: IThrowableProxy) {
       t.getMessage shouldEqual tp.getMessage
@@ -126,12 +157,18 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
   }
 
   private[this] object event {
-    def hasData (msg: String, level: Lvl, throwable: Option[Throwable]) = {
+    def satisfies[A](fn: ILoggingEvent => A): Unit = {
       val eventOpt = TestAppender.dequeue
-
       eventOpt should be ('defined)
-
-      eventOpt foreach { event =>
+      eventOpt foreach fn
+    }
+    def mdcSatisfies[A](fn: mutable.Map[String, String] => A): Unit = {
+      this satisfies { event =>
+        fn(event.getMDCPropertyMap.asScala)
+      }
+    }
+    def hasData (msg: String, level: Lvl, throwable: Option[Throwable]) = {
+      this satisfies { event =>
         event.getFormattedMessage shouldEqual msg
         event.getLevel shouldEqual level
 
