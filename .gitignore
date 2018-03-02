@@ -11,7 +11,6 @@ bin
 .cache
 .cache-main
 .cache-tests
-project/project
 
 # Eclipse files
 .project
