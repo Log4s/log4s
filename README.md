@@ -32,13 +32,14 @@ Scala 2.10 support is beyond its support window: it may be removed in any
 minor release if there's a reason. (It will not be removed in a patch
 release.)
 
-## Examples ##
+## Topics ##
 
 - [Getting a logger](#getting-a-logger)
 - [Logging messages](#logging-messages)
 - [Exception logging](#exception-logging)
 - [Diagnostic contexts](#diagnostic-contexts)
 - [Unsupported features](#unsupported-features)
+- [Testing](#testing)
 
 ### Getting a logger ###
 
@@ -373,8 +374,114 @@ features so we can agree on the general design.
     all logging below a certain level.
   * Marker support.
 
+### Testing
 
-### Contributors
+There is a Logback-specific testing library that allows you to do mock-object
+style testing of your log messages if you'd like. This was built for internal
+testing of Log4s, but it has been made public by request.
+
+#### Setup ####
+
+This only works if you are using Logback as your logging framework, at
+least during testing. (Doing this will not interfere with using a different
+framework for your runtime logging if you correctly configure the two
+classpaths.)
+
+##### SBT config #####
+
+    libraryDependencies += "org.log4s" %% "log4s-testing" % log4sVersion % "test"
+
+I recommend you use a `val log4sVersion` to match the version number with the
+main Log4s dependency.
+
+##### Logback config #####
+
+You'll then want to add lines like the following in your `logback-test.xml`
+
+```xml
+<appender name="TEST" class="org.log4s.TestAppender"/>
+<logger name="org.log4s.abc" additivity="false" level="TRACE">
+  <!-- Set additivity to `false` if you don't want this logging to actually go to the main output. -->
+  <appender-ref ref="TEST" />
+</logger>
+```
+
+Full documentation of this is beyond the scope of this document, but you need
+to create the custom appender and register it with the appropriate categories.
+Note that Logback's Groovy-based configuration is more convenient and flexible
+than the XML for more complicated logging configurations, but it's less
+familiar and adds an extra runtime dependency on Groovy.
+
+
+#### Usage ####
+
+The steps are relatively simple
+
+1. Get access to a logger that hooked up to your appender
+1. Write one or more events to that logger
+1. Call into the TestAppender object to dequeue the events and inspect them
+
+Here's a simple example of code you might write:
+
+```scala
+import org.log4s._
+import org.scalatest._
+
+/* An auto-named logger would work just as well as long as that logger
+ * is hooked up in your Logback configuration. */
+val testLogger = getLogger("org.log4s.abc")
+
+TestAppender.withAppender() {
+  testLogger.debug("Here's a test message")
+  val eventOpt = TestAppender.dequeue
+  eventOpt should be ('defined)
+  eventOpt foreach { e =>
+    e.message should equal ("Here's a test message")
+    e.throwable should not be 'defined
+  }
+}
+```
+
+More examples are available if you look through the various test classes
+in this project.
+
+#### Should I test my logging?
+
+Testing scope and philosophy is a complex topic far beyond the reach of this
+docuemnt, but I can give some general guidance based on my personal views.
+
+Good tests validate the behavior that callers or users should expect when
+interacting with your code, but not arbitrary implementation details. Quality
+tests don't fail just because you changed something—unless that thing impacts
+the expected behavior of the code. My view is effectively that tests should
+attempt to fully verify the black-box behavior of a piece of code while
+ignoring details that do not affect black-box behavior. (However, white-box
+development techniques may be useful to provide this verification, and
+judgment is required in the drawing of the lines.)
+
+I'll give two examples.
+
+At one extreme is a trace statement that is used for developer debugging. You
+probably would not benefit from crying wolf with a test failure just because
+you added an additional bit of detail to a debug statement or you changed its
+punctuation. In my opinion, this log statement is probably not part of the
+code's specification and should not be tested.
+
+At the other extreme would be a scenario where you're using your logging
+framework to generate audit logs that track access to secured resources. This
+is important functionality that may be required for regulatory compliance. It
+is _strongly_ advisable to develop tests that ensure this log is written as
+expected. I would probably consider a white-box unit test to ensure the messages
+went to the right logger in the right format and a black-box test that inspected
+the actual output log files to ensure events were being written in an end-to-end
+manner.
+
+Most real situations will lie between these two extremes, and you will need to
+use judgment. In my estimation, most applications probably do not need or want
+tests that verify the details of their logging, but there are many situations
+where this testing is approrpiate.
+
+## Contributors
 
 Here are all the contributors (chronologically). Thanks to all!
 

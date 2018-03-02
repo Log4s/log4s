@@ -146,6 +146,18 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
     }
   }
 
+  it should "run the example TestAppender code" in {
+    TestAppender.withAppender() {
+      testLogger.debug("Here's a test message")
+      val eventOpt = TestAppender.dequeue
+      eventOpt should be ('defined)
+      eventOpt foreach { e =>
+        e.message should equal ("Here's a test message")
+        e.throwable should not be 'defined
+      }
+    }
+  }
+
   private[this] implicit class ComparableThrowable(val t: Throwable) {
     def shouldMatch (tp: LoggedThrowable): Unit = {
       Option(t.getMessage) shouldEqual tp.message
