@@ -46,6 +46,10 @@ object TestAppender {
     Try(events.dequeue).toOption
   }
 
+  def dequeueAll(p: LoggedEvent => Boolean = Function.const(true)): Seq[LoggedEvent] = synchronized {
+    events.dequeueAll(p)
+  }
+
   private def newQueue(): Unit = synchronized {
     loggingEvents match {
       case Some(_) =>
@@ -64,23 +68,28 @@ object TestAppender {
     * Only one of these blocks can be active at a time. The system will impose synchronization to enforce this,
     * so you may have deadlocks if you have several of these blocks running concurrently and producing values for one another.
     *
-    * This will only allow you to dequeue events from the same thread that called `withAppender`, so you should
+    * This will only allow you to process events from the same thread that called `withAppender`, so you should
     * use `Await` if you are testing asynchronous code (or you can manage the queue yourself).
    */
-  def withAppender[A](mustStartEmpty: Boolean = true, mustEndEmpty: Boolean = false)(f: => A): A = synchronized {
-    if (!mustStartEmpty) {
-      resetQueue()
+  def withAppender[A](mustStartEmpty: Boolean = true, mustEndEmpty: Boolean = false, autoClear: Boolean = true)(f: => A): A = synchronized {
+    if (mustStartEmpty) {
+      require(events.isEmpty)
     }
-    newQueue()
+    if (autoClear) {
+      events.clear
+    }
     val result = Try(f)
     val endSize = events.size
-    resetQueue()
+    if (autoClear) {
+      events.clear
+    }
     result
-      .map { r =>
+      .flatMap { r =>
         if (mustEndEmpty && endSize != 0) {
-          throw new IllegalStateException(s"Expected to code to consume all log elements, but $endSize were left")
+          Failure(new IllegalStateException(s"Expected to code to consume all log elements, but $endSize were left"))
+        } else {
+          Success(r)
         }
-        r
       }
       .get
   }
