@@ -22,11 +22,16 @@ releaseProcess := Seq[ReleaseStep](
   pushChanges
 )
 
+def jsOpts = new Def.SettingList(Seq(
+  scalacOptions += "-P:scalajs:sjsDefinedByDefault",
+  scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+))
+
 lazy val root: Project = (project in file ("."))
   .enablePlugins(BasicSettings)
   .settings(Publish.settings: _*)
   .settings(Release.settings: _*)
-  .aggregate(core, testing)
+  .aggregate(coreJVM, coreJS, testingJVM, testingJS)
   .settings (
     name := "Log4s Root",
 
@@ -40,7 +45,7 @@ lazy val root: Project = (project in file ("."))
     skip in Test := true
   )
 
-lazy val core: Project = (project in file ("core"))
+lazy val core = (crossProject in file ("core"))
   .enablePlugins(BasicSettings, SiteSettingsPlugin)
   .dependsOn(testing % "test")
   .settings(Publish.settings: _*)
@@ -76,20 +81,29 @@ lazy val core: Project = (project in file ("core"))
 
     libraryDependencies ++= Seq (
       slf4j,
-      logback                     % "test",
-      scalatest                   % "test",
-      reflect(scalaVersion.value) % "provided"
+      logback                     %   "test",
+      "org.scalatest"             %%% "scalatest" % scalatestVersion % "test",
+      reflect(scalaVersion.value) %   "provided"
     ),
 
-    unmanagedSourceDirectories in Compile += {
+    unmanagedSourceDirectories in Compile ++= {
       scalaBinaryVersion.value match {
-        case "2.10" => baseDirectory.value / "src" / "main" / "scala-2.10"
-        case _      => baseDirectory.value / "src" / "main" / "scala-2.11"
+        case "2.10" | "2.11" =>
+          Seq.empty
+        case _ =>
+          Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-2.11")
       }
     }
   )
+  .jvmSettings(
+    libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
+  )
+  .jsSettings(jsOpts)
 
-lazy val testing: Project = (project in file ("testing"))
+lazy val coreJS = core.js
+lazy val coreJVM = core.jvm
+
+lazy val testing = (crossProject in file ("testing"))
   .enablePlugins(BasicSettings, SiteSettingsPlugin)
   .settings(Publish.settings: _*)
   .settings(Release.settings: _*)
@@ -102,3 +116,7 @@ lazy val testing: Project = (project in file ("testing"))
       logback
     )
   )
+  .jsSettings(jsOpts)
+
+lazy val testingJS = testing.js
+lazy val testingJVM = testing.jvm

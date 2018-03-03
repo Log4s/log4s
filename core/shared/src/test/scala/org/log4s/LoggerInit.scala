@@ -16,6 +16,7 @@ object LoggerInit {
 
 trait LoggerInit {
   locally {
+    PlatformInit.init()
     // Don't really do anything except hit my synchronized logger
     LoggerInit.logger
   }

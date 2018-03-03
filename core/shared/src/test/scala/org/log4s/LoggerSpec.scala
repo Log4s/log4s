@@ -1,11 +1,8 @@
 package org.log4s
 
-import scala.collection.JavaConverters._
-
 import org.scalatest._
 
 import ch.qos.logback.classic.{ Level => Lvl }
-import ch.qos.logback.classic.spi.{ ILoggingEvent, IThrowableProxy }
 
 /** Test suite for the behavior of Log4s loggers.
   *
