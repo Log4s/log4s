@@ -167,7 +167,7 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
           tp.cause should be ('defined)
           tp.cause foreach (c shouldMatch _)
       }
-      t.getClass.getCanonicalName shouldEqual tp.className
+      t.getClass.getName shouldEqual tp.className
     }
   }
 
