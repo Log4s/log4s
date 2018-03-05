@@ -19,6 +19,11 @@ trait SettingTemplate {
   val defaultOptimize: Boolean = true
   val defaultOptimizeGlobal: Boolean = false
   val inlinePatterns: Seq[String] = Seq("!akka.**","!slick.**")
+  val defaultDisableAssertions: Boolean = false
+  val defaultWarnUnused: Boolean = false
+  val defaultWarnImport: Boolean = false
+  val defaultWarnInline: Boolean = false
+  val extraScalacOptions: Seq[String] = Seq.empty
   val autoAddCompileOptions: Boolean = true
 
   val parallelBuild: Boolean = true
