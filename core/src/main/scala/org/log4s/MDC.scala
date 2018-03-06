@@ -35,7 +35,7 @@ object MDC extends collection.mutable.Map[String,String] {
     this
   }
 
-  override final def clear() { JMDC.clear() }
+  override final def clear() = { JMDC.clear() }
 
   final def get(key: String): Option[String] = Option(JMDC.get(key))
 

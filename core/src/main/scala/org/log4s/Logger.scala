@@ -2,13 +2,7 @@ package org.log4s
 
 import language.experimental.macros
 
-import java.util.{ Map => JMap }
-
-import scala.collection.JavaConversions._
-import scala.reflect.macros.Context
-
 import org.slf4j.{ Logger => JLogger }
-import org.slf4j.LoggerFactory.{ getLogger => getJLogger }
 
 object Logger {
   final val singletonsByName = true
@@ -17,7 +11,7 @@ object Logger {
   sealed trait LevelLogger extends Any {
     def isEnabled: Boolean
     def apply(msg: => String): Unit
-    def apply(t: Throwable)(msg: => String)
+    def apply(t: Throwable)(msg: => String): Unit
   }
 
   final class TraceLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
