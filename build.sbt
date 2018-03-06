@@ -47,6 +47,7 @@ lazy val testing: Project = (project in file ("testing"))
   .settings(Release.settings: _*)
   .settings(
     name := "Log4s Testing",
+    description := "Utilities to help with build-time unit tests for logging",
     libraryDependencies ++= Seq (
       slf4j,
       logback
