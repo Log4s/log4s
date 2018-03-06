@@ -6,6 +6,7 @@ bin
 
 # VS Code files
 .history
+.vscode
 
 # SBT build files
 .cache
