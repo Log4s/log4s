@@ -86,12 +86,12 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
     event hasData ("warn2", Lvl.WARN, None)
 
     When("doing static error logging")
-    val e1 = new Exception()
+    val e1 = new Exception( /* no message */ )
     testLogger.warn(e1)("warnErrorLiteral")
     event hasData ("warnErrorLiteral", Lvl.WARN, Some(e1))
 
     When("doing dynamic error logging")
-    val e2 = new Exception()
+    val e2 = new Exception("test message e2")
     testLogger.warn(Some(e2).get)(s"warnError${0+2}")
     event hasData ("warnError2", Lvl.WARN, Some(e2))
   }
@@ -106,12 +106,12 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
     event hasData ("error2", Lvl.ERROR, None)
 
     When("doing static error logging")
-    val e1 = new Exception()
+    val e1 = new Exception("test message e1")
     testLogger.error(e1)("errorErrorLiteral")
     event hasData ("errorErrorLiteral", Lvl.ERROR, Some(e1))
 
     When("doing dynamic error logging")
-    val e2 = new Exception()
+    val e2 = new Exception(/* no message */)
     testLogger.error(Some(e2).get)(s"errorError${0+2}")
     event hasData ("errorError2", Lvl.ERROR, Some(e2))
   }
