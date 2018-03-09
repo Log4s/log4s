@@ -8,6 +8,19 @@ sealed trait LogLevel {
   /** The name of the SLF4J method that does logging at this level */
   private[log4s] def methodName = name.toLowerCase
 }
+object LogLevel {
+  def forName(name: String): LogLevel = {
+    name.toLowerCase match {
+      case "trace" => Trace
+      case "debug" => Debug
+      case "info"  => Info
+      case "warn"  => Warn
+      case "error" => Error
+      case _ =>
+        throw new IllegalArgumentException(s"No log level named $name")
+    }
+  }
+}
 
 /** The highest logging severity. This generally indicates an
   * application or system error that causes undesired outcomes.
