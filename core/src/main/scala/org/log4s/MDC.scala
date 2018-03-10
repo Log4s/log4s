@@ -76,4 +76,3 @@ object MDC extends collection.mutable.Map[String,String] {
     }
   }
 }
-
