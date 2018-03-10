@@ -51,8 +51,8 @@ lazy val core: Project = (project in file ("core"))
     mimaPreviousArtifacts := {
       /* I'm using the first & last version of each minor release rather than
        * including every single patch-level update. */
-      val `2.11Versions` = Set("1.0.3", "1.0.5", "1.1.0", "1.1.5", "1.2.0", "1.2.1", "1.3.0")
-      val `2.12Versions` = Set("1.3.3", "1.3.6", "1.4.0", "1.5.0")
+      def `2.11Versions` = Set("1.0.3", "1.0.5", "1.1.0", "1.1.5", "1.2.0", "1.2.1", "1.3.0")
+      def `2.12Versions` = Set("1.3.3", "1.3.6", "1.4.0", "1.5.0")
       val checkVersions = scalaBinaryVersion.value match {
         case "2.10" | "2.11" => `2.11Versions` ++ `2.12Versions`
         case "2.12"          => `2.12Versions`
@@ -61,9 +61,7 @@ lazy val core: Project = (project in file ("core"))
           sLog.value.info(s"No known MIMA artifacts for: $other")
           Set.empty
       }
-      checkVersions .map { vers =>
-        organization.value %% artifact.value.name % vers
-      }
+      checkVersions.map(organization.value %% artifact.value.name % _)
     },
     mimaBinaryIssueFilters ++= {
       import com.typesafe.tools.mima.core._
