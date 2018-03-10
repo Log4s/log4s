@@ -48,7 +48,33 @@ lazy val core: Project = (project in file ("core"))
   .settings(
     name := "Log4s",
 
-    mimaPreviousArtifacts := Set(organization.value %% artifact.value.name % "1.5.0"),
+    mimaPreviousArtifacts := {
+      /* I'm using the first & last version of each minor release rather than
+       * including every single patch-level update. */
+      val `2.11Versions` = Set("1.0.3", "1.0.5", "1.1.0", "1.1.5", "1.2.0", "1.2.1", "1.3.0")
+      val `2.12Versions` = Set("1.3.3", "1.3.6", "1.4.0", "1.5.0")
+      val checkVersions = scalaBinaryVersion.value match {
+        case "2.10" | "2.11" => `2.11Versions` ++ `2.12Versions`
+        case "2.12"          => `2.12Versions`
+        case "2.13.0-M2"     => Set("1.5.0")
+        case other           =>
+          sLog.value.info(s"No known MIMA artifacts for: $other")
+          Set.empty
+      }
+      checkVersions .map { vers =>
+        organization.value %% artifact.value.name % vers
+      }
+    },
+    mimaBinaryIssueFilters ++= {
+      import com.typesafe.tools.mima.core._
+      import ProblemFilters.exclude
+      /* import com.typesafe.tools.mima.core.ProblemFilters._ */
+      /* These macros are not part of the runtime and are not a binary compatibility concern */
+      Seq(
+        exclude[IncompatibleResultTypeProblem]("org.log4s.LoggerMacros.*"),
+        exclude[IncompatibleMethTypeProblem]("org.log4s.LoggerMacros.getLoggerImpl")
+      )
+    },
 
     libraryDependencies ++= Seq (
       slf4j,
@@ -72,6 +98,7 @@ lazy val testing: Project = (project in file ("testing"))
   .settings(
     name := "Log4s Testing",
     description := "Utilities to help with build-time unit tests for logging",
+    mimaPreviousArtifacts := Set(organization.value %% artifact.value.name % "1.5.0"),
     libraryDependencies ++= Seq (
       slf4j,
       logback
