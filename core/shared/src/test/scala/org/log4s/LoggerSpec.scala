@@ -1,11 +1,8 @@
 package org.log4s
 
-import scala.collection.JavaConverters._
-
 import org.scalatest._
 
 import ch.qos.logback.classic.{ Level => Lvl }
-import ch.qos.logback.classic.spi.{ ILoggingEvent, IThrowableProxy }
 
 /** Test suite for the behavior of Log4s loggers.
   *
@@ -150,10 +147,10 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
     TestAppender.withAppender() {
       testLogger.debug("Here's a test message")
       val eventOpt = TestAppender.dequeue
-      eventOpt should be ('defined)
+      eventOpt.isDefined should equal (true)
       eventOpt foreach { e =>
         e.message should equal ("Here's a test message")
-        e.throwable should not be 'defined
+        e.throwable.isDefined should equal (false)
       }
     }
   }
@@ -162,9 +159,9 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
     def shouldMatch (tp: LoggedThrowable): Unit = {
       Option(t.getMessage) shouldEqual tp.message
       Option(t.getCause) match {
-        case None => tp.cause should not be 'defined
+        case None => tp.cause.isDefined should equal (false)
         case Some(c) =>
-          tp.cause should be ('defined)
+          tp.cause.isDefined should equal (true)
           tp.cause foreach (c shouldMatch _)
       }
       t.getClass.getName shouldEqual tp.className
@@ -174,7 +171,7 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
   private[this] object event {
     def satisfies[A](fn: LoggedEvent => A): Unit = {
       val eventOpt = TestAppender.dequeue
-      eventOpt should be ('defined)
+      eventOpt.isDefined should equal (true)
       eventOpt foreach fn
     }
     def mdcSatisfies[A](fn: scala.collection.Map[String, String] => A): Unit = {
@@ -193,10 +190,10 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
         val tp = event.throwable
         throwable match {
           case Some(t) =>
-            tp should be ('defined)
+            tp.isDefined should equal (true)
             tp foreach (t shouldMatch _)
           case None    =>
-            tp should not be 'defined
+            tp.isDefined should equal (false)
         }
       }
     }
