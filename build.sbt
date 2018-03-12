@@ -82,6 +82,7 @@ lazy val core = (crossProject in file ("core"))
     libraryDependencies ++= Seq (
       slf4j,
       logback                     %   "test",
+      "org.scalacheck"            %%% "scalacheck" % scalacheckVersion % "test",
       "org.scalatest"             %%% "scalatest" % scalatestVersion % "test",
       reflect(scalaVersion.value) %   "provided"
     ),
