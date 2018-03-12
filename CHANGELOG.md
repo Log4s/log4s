@@ -65,3 +65,8 @@ changes to how it's coded or built, see the Git history.
 * Update to Scala 2.12.4.
 * Update to SBT 1.1.1.
 * Expose a new `log4s-testing`. This is experimental at this time.
+
+## 1.6
+
+* **Experimental** support for Scala.JS
+  * This is functional, but any JavaScript-specific APIs may change.
