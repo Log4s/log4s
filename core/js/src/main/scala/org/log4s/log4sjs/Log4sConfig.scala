@@ -8,8 +8,18 @@ import scala.math.Ordered._
 import scala.scalajs.js
 import js.annotation._
 
+/** The public interface for log configuration */
+trait Log4sConfig {
+  def setLoggerThreshold(name: String, threshold: LogThreshold): Unit
+  def setLoggerThreshold(name: String, level: LogLevel): Unit
+  def resetLoggerThreshold(name: String): Unit
 
-object Log4sConfig { thisConfig =>
+  def addLoggerAppender[A: Log4sAppender.Provider](name: String, appender: A): Unit
+  def setLoggerAppenders[A: Log4sAppender.Provider](name: String, additive: Boolean, appenders: Seq[A]): Unit
+  def resetLoggerAppenders(name: String): Unit
+}
+
+object Log4sConfig extends Log4sConfig { thisConfig =>
   private[this] lazy val standardAppender = new Log4sConsoleAppender
 
   private[this] lazy val defaultAppenderSetting = AppenderSetting(Nil, true)
