@@ -123,23 +123,28 @@ object Log4sConfig { thisConfig =>
     setLoggerThreshold(name, LogThreshold.forName(threshold))
   }
 
-  @JSExportTopLevel("Config.setCategoryAppenders")
-  def setCategoryAppendersDynamic(name: String, additive: Boolean, appenders: js.Array[Log4sAppender.DynamicType]): Unit = {
-    setCategoryAppenders(name, additive, appenders)
+  @JSExportTopLevel("Config.resetLoggerThreshold")
+  def resetLoggerThreshold(name: String): Unit = {
+    logger(name, threshold = Some(None))
   }
 
-  def setCategoryAppenders[A: Log4sAppender.Provider](name: String, additive: Boolean, appenders: Seq[A]): Unit = {
+  @JSExportTopLevel("Config.setLoggerAppenders")
+  def setLoggerAppendersDynamic(name: String, additive: Boolean, appenders: js.Array[Log4sAppender.DynamicType]): Unit = {
+    setLoggerAppenders(name, additive, appenders)
+  }
+
+  def setLoggerAppenders[A: Log4sAppender.Provider](name: String, additive: Boolean, appenders: Seq[A]): Unit = {
     val appenderSeq: immutable.Seq[Log4sAppender] = appenders.map(Log4sAppender.from(_))(breakOut)
     logger(name, appenders = Some(Some(AppenderSetting(appenderSeq, additive))))
   }
 
-  /** Add an appender for a given category */
-  @JSExportTopLevel("Config.addCategoryAppender")
-  def addCategoryAppenderDynamic(name: String, appender: Log4sAppender.DynamicType): Unit = {
-    addCategoryAppender(name, appender)
+  /** Add an appender for a given logger */
+  @JSExportTopLevel("Config.addLoggerAppender")
+  def addLoggerAppenderDynamic(name: String, appender: Log4sAppender.DynamicType): Unit = {
+    addLoggerAppender(name, appender)
   }
 
-  def addCategoryAppender[A: Log4sAppender.Provider](name: String, appender: A): Unit = {
+  def addLoggerAppender[A: Log4sAppender.Provider](name: String, appender: A): Unit = {
     val parts = CategoryParser(name)
     val currentState = LoggerState.get(parts)
     val currentAppenderSetting = currentState.appenders.getOrElse(AppenderSetting(Nil, true))

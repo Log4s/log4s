@@ -73,6 +73,6 @@ object PlatformInit extends IPlatformInit {
         testAppender.append(logbackEvent)
       }
     }
-    Log4sConfig.addCategoryAppender("test", log4sAppender)
+    Log4sConfig.addLoggerAppender("test", log4sAppender)
   }
 }
