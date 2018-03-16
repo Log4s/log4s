@@ -1,5 +1,9 @@
 # Log4s
 
+**Note:** version 1.6 now has *experimental* support for
+[Scala.js](https://www.scala-js.org/). See the table of contents below for
+documentation.
+
 To get started quickly, you can add this dependency to your `build.sbt`
 
     libraryDependencies += "org.log4s" %% "log4s" % "1.5.0"
