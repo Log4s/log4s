@@ -32,8 +32,8 @@ object Log4sMDC {
   def getCopyOfContextMap(): js.Dictionary[String] = MDC.toMap.toJSDictionary
 
   @JSExport
-  def withCtx[A](key: String, value: String)(fn: js.Function0[A]): A = {
-    MDC.withCtx(key -> value)(fn())
+  def withCtx[A](key: String, value: String): js.Function1[js.Function0[_], _] = {
+    withCtx(js.Dictionary(key -> value))
   }
 
   @JSExport

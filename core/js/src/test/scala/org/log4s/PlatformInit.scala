@@ -8,7 +8,7 @@ import js.Dynamic.{ global => g }
 import org.log4s.log4sjs._
 
 object PlatformInit extends IPlatformInit {
-  private[this] final val showInit: Boolean = true
+  private[this] final val showInit: Boolean = false
   def init(): Unit = {
     if (showInit) {
       g.console.log("Initializing Scala.JS platform")
@@ -37,7 +37,6 @@ object PlatformInit extends IPlatformInit {
           def getThreadName() = ""
           def getThrowableProxy() = {
             import ExceptionInfo._
-            js.Dynamic.global.console.log("findme")
             val throwable = event.throwable match {
               case te: ThrowableException => Some(te.throwable)
               case _                      => None
@@ -74,6 +73,6 @@ object PlatformInit extends IPlatformInit {
         testAppender.append(logbackEvent)
       }
     }
-    Log4sConfig.addCategoryAppender("test", log4sAppender)
+    Log4sConfig.addLoggerAppender("test", log4sAppender)
   }
 }

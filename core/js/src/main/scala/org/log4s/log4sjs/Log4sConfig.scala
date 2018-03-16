@@ -8,14 +8,24 @@ import scala.math.Ordered._
 import scala.scalajs.js
 import js.annotation._
 
-case class AppenderSetting(appenders: immutable.Seq[Log4sAppender.Type], additive: Boolean)
+/** The public interface for log configuration */
+trait Log4sConfig {
+  def setLoggerThreshold(name: String, threshold: LogThreshold): Unit
+  def setLoggerThreshold(name: String, level: LogLevel): Unit
+  def resetLoggerThreshold(name: String): Unit
 
-object Log4sConfig { thisConfig =>
+  def addLoggerAppender[A: Log4sAppender.Provider](name: String, appender: A): Unit
+  def setLoggerAppenders[A: Log4sAppender.Provider](name: String, additive: Boolean, appenders: Seq[A]): Unit
+  def resetLoggerAppenders(name: String): Unit
+}
+
+object Log4sConfig extends Log4sConfig { thisConfig =>
   private[this] lazy val standardAppender = new Log4sConsoleAppender
 
   private[this] lazy val defaultAppenderSetting = AppenderSetting(Nil, true)
 
-  private[this] case class ConcreteLoggerState(threshold: LogLevel, appenders: Iterable[Log4sAppender]) {
+  private[this] case class AppenderSetting(appenders: immutable.Seq[Log4sAppender.Type], additive: Boolean)
+  private[this] case class ConcreteLoggerState(threshold: LogThreshold, appenders: Iterable[Log4sAppender]) {
     def withChild(ls: LoggerState): ConcreteLoggerState = {
       val newThreshold = ls.threshold.getOrElse(threshold)
       val newAppenders = {
@@ -30,11 +40,11 @@ object Log4sConfig { thisConfig =>
     }
 
     def isEnabled(ll: LogLevel): Boolean = {
-      ll >= threshold
+      threshold <= LevelThreshold(ll)
     }
   }
 
-  private[this] case class LoggerState(threshold: Option[LogLevel] = None, appenders: Option[AppenderSetting] = None)
+  private[this] case class LoggerState(threshold: Option[LogThreshold] = None, appenders: Option[AppenderSetting] = None)
 
   private[this] lazy val emptyLoggerState = LoggerState()
 
@@ -43,7 +53,7 @@ object Log4sConfig { thisConfig =>
       var state: LoggerState = emptyLoggerState)
 
   private[this] object LoggerState {
-    private[this] val defaultRootState = ConcreteLoggerState(Trace, Seq(standardAppender))
+    private[this] val defaultRootState = ConcreteLoggerState(AllThreshold, Seq(standardAppender))
     private[this] val root = new Node()
 
     def apply(parts: Seq[String]): ConcreteLoggerState = {
@@ -95,8 +105,8 @@ object Log4sConfig { thisConfig =>
     }
   }
 
-  def logger(name: String, threshold: Option[Option[LogLevel]] = None, appenders: Option[Option[AppenderSetting]] = None): Unit = {
-    val parts = CategoryParser(name)
+  private[this] def logger(name: String, threshold: Option[Option[LogThreshold]] = None, appenders: Option[Option[AppenderSetting]] = None): Unit = {
+    val parts = LoggerParser(name)
     val currentState = LoggerState.get(parts)
     var updatedState = currentState
     for (t <- threshold) {
@@ -109,38 +119,53 @@ object Log4sConfig { thisConfig =>
   }
 
   @JSExportTopLevel("Config.setLoggerThreshold")
-  def setLoggerThreshold(name: String, threshold: LogLevel): Unit = {
+  def setLoggerThreshold(name: String, threshold: LogThreshold): Unit = {
     logger(name, threshold = Some(Option(threshold)))
   }
 
   @JSExportTopLevel("Config.setLoggerThreshold")
+  def setLoggerThreshold(name: String, level: LogLevel): Unit = {
+    logger(name, threshold = Some(Option(LevelThreshold(level))))
+  }
+
+  @JSExportTopLevel("Config.setLoggerThreshold")
   def setLoggerThreshold(name: String, threshold: String): Unit = {
-    setLoggerThreshold(name, LogLevel.forName(threshold))
+    setLoggerThreshold(name, LogThreshold.forName(threshold))
   }
 
-  @JSExportTopLevel("Config.setCategoryAppenders")
-  def setCategoryAppendersDynamic(name: String, additive: Boolean, appenders: js.Array[Log4sAppender.DynamicType]): Unit = {
-    setCategoryAppenders(name, additive, appenders)
+  @JSExportTopLevel("Config.resetLoggerThreshold")
+  def resetLoggerThreshold(name: String): Unit = {
+    logger(name, threshold = Some(None))
   }
 
-  def setCategoryAppenders[A: Log4sAppender.Provider](name: String, additive: Boolean, appenders: Seq[A]): Unit = {
+  @JSExportTopLevel("Config.setLoggerAppenders")
+  def setLoggerAppendersDynamic(name: String, additive: Boolean, appenders: js.Array[Log4sAppender.DynamicType]): Unit = {
+    setLoggerAppenders(name, additive, appenders)
+  }
+
+  def setLoggerAppenders[A: Log4sAppender.Provider](name: String, additive: Boolean, appenders: Seq[A]): Unit = {
     val appenderSeq: immutable.Seq[Log4sAppender] = appenders.map(Log4sAppender.from(_))(breakOut)
     logger(name, appenders = Some(Some(AppenderSetting(appenderSeq, additive))))
   }
 
-  /** Add an appender for a given category */
-  @JSExportTopLevel("Config.addCategoryAppender")
-  def addCategoryAppenderDynamic(name: String, appender: Log4sAppender.DynamicType): Unit = {
-    addCategoryAppender(name, appender)
+  /** Add an appender for a given logger */
+  @JSExportTopLevel("Config.addLoggerAppender")
+  def addLoggerAppenderDynamic(name: String, appender: Log4sAppender.DynamicType): Unit = {
+    addLoggerAppender(name, appender)
   }
 
-  def addCategoryAppender[A: Log4sAppender.Provider](name: String, appender: A): Unit = {
-    val parts = CategoryParser(name)
+  def addLoggerAppender[A: Log4sAppender.Provider](name: String, appender: A): Unit = {
+    val parts = LoggerParser(name)
     val currentState = LoggerState.get(parts)
     val currentAppenderSetting = currentState.appenders.getOrElse(AppenderSetting(Nil, true))
     val newAppenderSetting = currentAppenderSetting.copy(appenders = currentAppenderSetting.appenders :+ Log4sAppender.from(appender))
     val updatedState = currentState.copy(appenders = Some(newAppenderSetting))
     LoggerState(parts) = updatedState
+  }
+
+  @JSExportTopLevel("Config.resetLoggerAppenders")
+  def resetLoggerAppenders(name: String) = {
+    logger(name, appenders = Some(None))
   }
 
   private[log4sjs] final def doLog(e: LoggedEvent): Unit = {
@@ -157,14 +182,5 @@ object Log4sConfig { thisConfig =>
   }
 
   private[log4sjs] final def isNameEnabled(name: String, ll: LogLevel): Boolean =
-    isPathEnabled(CategoryParser(name), ll)
-
-  private[this] def levelNumber(ll: LogLevel): Byte = ll match {
-    case Trace => 1
-    case Debug => 2
-    case Info  => 3
-    case Warn  => 4
-    case Error => 5
-  }
-  private[this] implicit val logLevelOrdering: Ordering[LogLevel] = Ordering by levelNumber
+    isPathEnabled(LoggerParser(name), ll)
 }

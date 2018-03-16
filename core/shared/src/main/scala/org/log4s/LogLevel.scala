@@ -6,6 +6,7 @@ import js.annotation._
 /** A severity level that can be assigned to log statements. */
 sealed trait LogLevel {
   /** The name of this log level. It is spelled with initial capitals */
+  @JSExport
   def name: String = this.toString
 
   /** The name of the SLF4J method that does logging at this level */

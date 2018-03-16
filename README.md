@@ -1,5 +1,9 @@
 # Log4s
 
+**Note:** version 1.6 now has *experimental* support for
+[Scala.js](https://www.scala-js.org/). See the table of contents below for
+documentation.
+
 To get started quickly, you can add this dependency to your `build.sbt`
 
     libraryDependencies += "org.log4s" %% "log4s" % "1.5.0"
@@ -13,6 +17,7 @@ To get started quickly, you can add this dependency to your `build.sbt`
   - [Performing logging](#logging-messages)
   - [Exception logging](#exception-logging)
   - [Diagnostic contexts](#diagnostic-contexts)
+- [Scala.js support](#scalajs-support)
 - [Log4s Testing](#testing)
 - [Unsupported features](#unsupported-features)
 - [Contributors](#contributors)
@@ -378,6 +383,174 @@ storage in a map which adds slight memory overhead. If you are in a tight loop
 with nested contexts, you may have better performance if you add and remove
 values directly. These performance costs apply only to the block-based API,
 not the map-style API.
+
+## Scala.js Support
+
+**Scala.js support is currently experimental.** It should be stable enough to
+use reliably, but there may be API changes in the future. If there are changes,
+they would likely be to either the configuration system or to the JavaScript native APIs.
+
+Many Scala.js-specific APIs are in the `org.log4s.log4sjs` package. It is not
+currently recommended that you import this full package. There may be many public
+APIs in here that become private later.
+
+### Scala-defined usage
+
+Your Scala code that targets JavaScript can retrieve and use loggers *exactly* the same way
+that you would when targeting the JVM, fulfilling the basic promise of Scala.js.
+
+#### Configuration
+
+Unlike when targeting the JVM, standard frameworks like Logback or Log4j are
+not available to do the configuration of the logging system. Instead, there is
+an API that you can call to adjust logging thresholds and appenders.
+
+Normally, you will call this API very early on during your application's
+startup to set up your logging configuration. However, you can adjust the
+settings at any time.
+
+```scala
+import org.log4s._
+
+def initLogging(): Unit = {
+  import Log4sConfig._
+
+  /* Set `org.log4s.foo` and any children to log only Info or higher */
+  setLoggerThreshold("org.log4s.foo", Info)
+
+  /* Set `org.log4s` to not log anything. This will not override the specific
+   * setting we already applied to `org.log4s.foo`. */
+  setLoggerThreshold("org.log4s", OffThreshold)
+
+  /* Set to log everything */
+  setLoggerThreshold("", AllThreshold)
+
+  /* Unset a previously customized threshold. *Now* this category will inherit
+   * from the parent level, which we disabled. */
+  resetLoggerThreshold("org.log4s.foo")
+
+  /* Add a custom appender */
+  val myAppender = { ev: log4sjs.LoggedEvent => ??? }
+  /* Add a custom appender, leaving others in place */
+  addLoggerAppender("org.example", myAppender)
+
+  /* Set the specific appenders. The `additive` parameter controls whether
+   * this is in addition to the appenders of the parent logger. The `false`
+   * here means to *not* include any parent appenders. */
+  setLoggerAppenders("org.log4s.audit", false, Seq(myAppender))
+
+  /* The `true` here means that myAppender` from the `audit` logger will still
+  /* be called since it allows additive inheritance. */
+  val appender2 = { ev: log4sjs.LoggedEvent => ??? }
+  setLoggerAppenders("org.log4s.audit.detailed", true, Seq(appender2))
+
+  /* Resets the logger to default settings. This also adjusts the
+   * `org.log4s.audit.detailed` appenders, since that logger inherits
+   * appenders from its parents */
+  resetLoggerAppenders("org.log4s.audit")
+}
+```
+
+### JavaScript direct usage
+
+To JavaScript, Log4s exposes a few key methods as a module so that you can
+access logging facilities from any JavaScript code you might have. You should
+consult the Scala.js documentation for how to get access to your modules from
+JavaScript.
+
+Note that all the examples below will assume you have already imported the
+module under the name `log4s`, which could look like this for a separately
+packaged log4s.
+
+```javascript
+var log4s = require('log4s-opt.js')
+```
+
+#### Basic logging
+
+`getLogger` is a top-level function that takes a String and gives you back a
+logger object, just as you'd expect in Scala.
+
+The methods on a logger are straightforward:
+
+```javascript
+var logger = log4s.getLogger("org.log4s")
+
+logger.debug("testing")
+
+if (logger.isWarnEnabled) {
+  logger.warn("Something went wrong", new Error())
+}
+```
+
+The names of the log levels are the same as in Scala. Note that doing
+trace-level logging does not trigger the JavaScript's console trace, which
+automatically dumps a stack trace. if you want this behavior, you can always
+add a custom appender that inspects the level. If you have advanced needs in
+this area, please file a feature request.
+
+#### MDCs in JavaScript
+
+The MDC is available through JavaScript just as it is in Scala. Here's an example
+
+```javascript
+/* Clear the MDC before we start */
+log4s.MDC.clear()
+
+log4s.MDC.put("user", "john.doe")
+/* Do some logging */
+log4s.MDC.remove("user")
+/* Fetch an MDC value (usually not recommended) */
+log4s.MDC.get("user")
+/* Or get a copy of the entire MDC (also not usually recommended) */
+log4s.MDC.getCopyOfContextMap()
+```
+
+Just as in Scala, there's a "with context" method that automatically handles
+any cleanup for you. It's not quite as convenient in JavaScript as in Scala,
+but it can still be a good way to ensure your MDC gets cleaned up. These are
+curried functions: you pass it a context and then it gives you new function to
+which you pass a zero-argument function that does the work.
+
+```javascript
+var logger = log4s.getLogger("com.example")
+/* With a single MDC value */
+log4s.MDC.withCtx("user", "jane.roe")(() => {
+  /* Do some stuff */
+  logger.debug("User did something")
+})
+/* With several MDC values */
+log4s.MDC.withCtx({"user": "benway", "query": "1234"})(() => {
+  /* Do some stuff */
+  logger.debug("Use with complext context did something")
+})
+```
+
+#### JavaScript Configuration Objects
+
+The same basic methods that you would use to do Scala-defined configuration
+are availble through JavaScript. See the documentation above for details on
+how to use them.
+
+```javascript
+log4s.Config.setLoggerThreshold("org.log4s", log4s.Info)
+log4s.Config.resetLoggerThreshold("org.log4s")
+log4s.Config.addLoggerAppender("org", e => console.log(e.level.name + ": " + e.message))
+log4s.Config.setLoggerAppenders("org.test", false, [e => console.log(e.message)])
+log4s.Config.resetLoggerAppenders("org")
+```
+
+Appenders can be created by passing in a JavaScript function.
+
+For parameters, ther are top-level threshold/level objects available:
+
+- `AllThreshold`
+- `Trace`
+- `Debug`
+- `Info`
+- `Warn`
+- `Error`
+- `OffThreshold`
 
 ## Log4s-Testing
 
