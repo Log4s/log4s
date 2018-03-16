@@ -8,13 +8,13 @@ import scala.math.Ordered._
 import scala.scalajs.js
 import js.annotation._
 
-case class AppenderSetting(appenders: immutable.Seq[Log4sAppender.Type], additive: Boolean)
 
 object Log4sConfig { thisConfig =>
   private[this] lazy val standardAppender = new Log4sConsoleAppender
 
   private[this] lazy val defaultAppenderSetting = AppenderSetting(Nil, true)
 
+  private[this] case class AppenderSetting(appenders: immutable.Seq[Log4sAppender.Type], additive: Boolean)
   private[this] case class ConcreteLoggerState(threshold: LogThreshold, appenders: Iterable[Log4sAppender]) {
     def withChild(ls: LoggerState): ConcreteLoggerState = {
       val newThreshold = ls.threshold.getOrElse(threshold)
@@ -95,7 +95,7 @@ object Log4sConfig { thisConfig =>
     }
   }
 
-  def logger(name: String, threshold: Option[Option[LogThreshold]] = None, appenders: Option[Option[AppenderSetting]] = None): Unit = {
+  private[this] def logger(name: String, threshold: Option[Option[LogThreshold]] = None, appenders: Option[Option[AppenderSetting]] = None): Unit = {
     val parts = CategoryParser(name)
     val currentState = LoggerState.get(parts)
     var updatedState = currentState
