@@ -112,7 +112,13 @@ lazy val testing = (crossProject in file ("testing"))
   .settings(
     name := "Log4s Testing",
     description := "Utilities to help with build-time unit tests for logging",
-    mimaPreviousArtifacts := Set(organization.value %% artifact.value.name % "1.5.0"),
+    mimaPreviousArtifacts := {
+      val checkVersions = scalaBinaryVersion.value match {
+        case "2.10" | "2.11" | "2.12" | "2.13.0-M2" => Set("1.5.0")
+        case other => Set.empty
+      }
+      checkVersions.map(organization.value %% artifact.value.name % _)
+    },
     libraryDependencies ++= Seq (
       slf4j,
       logback
