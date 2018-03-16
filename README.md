@@ -1,6 +1,6 @@
-# Log4s #
+# Log4s
 
-## Introduction ##
+## Introduction
 
 This is a simple project to wrap the excellent [SLF4J](http://slf4j.org/)
 logging façade with a Scala-friendly API that is lightweight and very
@@ -18,7 +18,7 @@ Please feel free to contact me if you have suggestions for how to enhance or
 improve this library—as long as those suggestions are compatible with the
 project's goals.
 
-## Installation ##
+## Installation
 
 To use Log4s, add the following to your SBT build:
 
@@ -32,7 +32,7 @@ Scala 2.10 support is beyond its support window: it may be removed in any
 minor release if there's a reason. (It will not be removed in a patch
 release.)
 
-## Topics ##
+## Topics
 
 - [Getting a logger](#getting-a-logger)
 - [Logging messages](#logging-messages)
@@ -41,7 +41,7 @@ release.)
 - [Unsupported features](#unsupported-features)
 - [Testing](#testing)
 
-### Getting a logger ###
+### Getting a logger
 
 Most of the time, you simply want to define a logger with a name that matches
 the enclosing class or module.  Log4s makes this common case as easy as
@@ -85,7 +85,7 @@ but this behavior is more consistent with Java practices and I suspect is what
 a majority of users will prefer.  Future enhancements may provide a mechanism
 to allow the user to choose whether to include the trailing _$_.
 
-#### Custom Logger Names ####
+#### Custom Logger Names
 
 There are situations where you may want to use a custom logger name. E.g., you
 may want to have a special category for some kind of high-level events, or you
@@ -108,7 +108,7 @@ about which logging statements you want to enable in which situations. By
 letting the compiler provide the name for you, you also reduce the chance of
 errors as you refactor your code.
 
-#### Instance or static? ####
+#### Instance or static?
 
 My recommendation is that by default you create your loggers as instance
 variables and mark them as `private[this]`.  This may be more compatible with
@@ -123,7 +123,7 @@ infrequent for most applications.
 The SLF4J FAQ has a good discussion of the [tradeoffs between static and
 instance loggers](http://slf4j.org/faq.html#declared_static).
 
-### Logging messages ###
+### Logging messages
 
 The logger interfaces are extremely simple, but they're more powerful than
 they look.  All the standard loggers take a single argument of type string.
@@ -225,7 +225,7 @@ Log4s allows you to pass exceptions into your logger, while still maintining
 the simple string-interpolation style API that makes it so convenient. To log
 an exception, use the following syntax.
 
-```
+```scala
 try {
   ...
 } catch {
@@ -370,31 +370,31 @@ your requests or suggestions. I'm also—of course—open to pull requests,
 but please drop me an email first if there are significant new APIs or
 features so we can agree on the general design.
 
-  * A `scalac` compiler flag or environment variable to automatically disable
-    all logging below a certain level.
-  * Marker support.
+- A `scalac` compiler flag or environment variable to automatically disable
+  all logging below a certain level.
+- Marker support.
 
-### Testing
+## Log4s-Testing
 
 There is a Logback-specific testing library that allows you to do mock-object
 style testing of your log messages if you'd like. This was built for internal
 testing of Log4s, but it has been made public by request.
 
-#### Setup ####
+### Setup
 
 This only works if you are using Logback as your logging framework, at
 least during testing. (Doing this will not interfere with using a different
 framework for your runtime logging if you correctly configure the two
 classpaths.)
 
-##### SBT config #####
+#### SBT config
 
     libraryDependencies += "org.log4s" %% "log4s-testing" % log4sVersion % "test"
 
 I recommend you use a `val log4sVersion` to match the version number with the
 main Log4s dependency.
 
-##### Logback config #####
+#### Logback config
 
 You'll then want to add lines like the following in your `logback-test.xml`
 
@@ -413,7 +413,7 @@ than the XML for more complicated logging configurations, but it's less
 familiar and adds an extra runtime dependency on Groovy.
 
 
-#### Usage ####
+### Usage
 
 The steps are relatively simple
 
@@ -445,7 +445,7 @@ TestAppender.withAppender() {
 More examples are available if you look through the various test classes
 in this project.
 
-#### Should I test my logging?
+### Should I test my logging?
 
 Testing scope and philosophy is a complex topic far beyond the reach of this
 docuemnt, but I can give some general guidance based on my personal views.
@@ -485,7 +485,7 @@ where this testing is approrpiate.
 
 Here are all the contributors (chronologically). Thanks to all!
 
-  * [Sarah Gerweck](https://github.com/sarahgerweck/) (primary author)
-  * [Bryce Anderson](https://github.com/bryce-anderson)
-  * [David Ross](https://github.com/dyross)
-  * [Seth Tisue](https://github.com/SethTisue)
+- [Sarah Gerweck](https://github.com/sarahgerweck/) (primary author)
+- [Bryce Anderson](https://github.com/bryce-anderson)
+- [David Ross](https://github.com/dyross)
+- [Seth Tisue](https://github.com/SethTisue)
