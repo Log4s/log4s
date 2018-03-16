@@ -96,7 +96,7 @@ object Log4sConfig { thisConfig =>
   }
 
   private[this] def logger(name: String, threshold: Option[Option[LogThreshold]] = None, appenders: Option[Option[AppenderSetting]] = None): Unit = {
-    val parts = CategoryParser(name)
+    val parts = LoggerParser(name)
     val currentState = LoggerState.get(parts)
     var updatedState = currentState
     for (t <- threshold) {
@@ -145,7 +145,7 @@ object Log4sConfig { thisConfig =>
   }
 
   def addLoggerAppender[A: Log4sAppender.Provider](name: String, appender: A): Unit = {
-    val parts = CategoryParser(name)
+    val parts = LoggerParser(name)
     val currentState = LoggerState.get(parts)
     val currentAppenderSetting = currentState.appenders.getOrElse(AppenderSetting(Nil, true))
     val newAppenderSetting = currentAppenderSetting.copy(appenders = currentAppenderSetting.appenders :+ Log4sAppender.from(appender))
@@ -167,5 +167,5 @@ object Log4sConfig { thisConfig =>
   }
 
   private[log4sjs] final def isNameEnabled(name: String, ll: LogLevel): Boolean =
-    isPathEnabled(CategoryParser(name), ll)
+    isPathEnabled(LoggerParser(name), ll)
 }

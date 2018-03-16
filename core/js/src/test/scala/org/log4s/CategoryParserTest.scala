@@ -9,19 +9,19 @@ import org.scalatest._
 import org.scalatest.prop.PropertyChecks
 import org.scalatest.Matchers._
 
-private object CategoryParserSpec {
-  private[this] final val catParser = CategoryParser
+private object LoggerParserSpec {
+  private[this] final val catParser = LoggerParser
 
   object select
   final class select(val cat: String) extends AnyVal {
-    def category(s: String*): Assertion = {
+    def logger(s: String*): Assertion = {
       catParser(cat) should equal (s.to[ISeq])
     }
     @inline
-    def category(s: ISeq[String]): Assertion = this.category(s: _*)
+    def logger(s: ISeq[String]): Assertion = this.logger(s: _*)
   }
 
-  implicit final class CategoryString(val cat: String) extends AnyVal {
+  implicit final class LoggerString(val cat: String) extends AnyVal {
     @inline
     def should(sel: select.type): select = new select(cat)
   }
@@ -54,34 +54,34 @@ private object CategoryParserSpec {
   }
 }
 
-import CategoryParserSpec._
+import LoggerParserSpec._
 
-class CategoryParserSpec extends FlatSpec with PropertyChecks {
-  it should "handle the root category correctly" in {
-    "" should select category ()
+class LoggerParserSpec extends FlatSpec with PropertyChecks {
+  it should "handle the root logger correctly" in {
+    "" should select logger ()
   }
-  it should "handle simple first-level categories" in {
-    "test" should select category ("test")
-    "a" should select category ("a")
+  it should "handle simple first-level loggers" in {
+    "test" should select logger ("test")
+    "a" should select logger ("a")
   }
-  it should "handle second-level categories" in {
-    "a.b" should select category ("a", "b")
-    "org.log4s" should select category ("org", "log4s")
+  it should "handle second-level loggers" in {
+    "a.b" should select logger ("a", "b")
+    "org.log4s" should select logger ("org", "log4s")
   }
-  it should "handle third-level categories" in {
-    "a.b.c" should select category ("a", "b", "c")
-    "org.log4s.log4sjs" should select category ("org", "log4s", "log4sjs")
+  it should "handle third-level loggers" in {
+    "a.b.c" should select logger ("a", "b", "c")
+    "org.log4s.log4sjs" should select logger ("org", "log4s", "log4sjs")
   }
   it should "handle simple alphanumeric paths" in {
     forAll(simpleLoggerPath) { cat =>
-      val categoryName = makePath(cat)
-      categoryName should select category cat
+      val loggerName = makePath(cat)
+      loggerName should select logger cat
     }
   }
   it should "handle complicated arbitrary paths" in {
     forAll(complexLoggerPath) { cat =>
-      val categoryName = makePath(cat)
-      categoryName should select category cat
+      val loggerName = makePath(cat)
+      loggerName should select logger cat
     }
   }
 }
