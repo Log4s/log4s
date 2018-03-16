@@ -1,47 +1,64 @@
-# Log4s #
+# Log4s
 
-## Introduction ##
-
-This is a simple project to wrap the excellent [SLF4J](http://slf4j.org/)
-logging façade with a Scala-friendly API that is lightweight and very
-convenient.  Using Scala 2.10's macros and value classes, it is possible to
-implement simple API that incurs zero runtime costs and outperforms typical
-Java-based practices.
-
-Logging is mostly a solved problem on the JVM, thanks largely to the excellent
-work of Ceki Gülcü and many others.  I have no goal to invent a new logging
-library or introduce yet another wrapper system.  SLF4J solves the problems
-of modularity and separation of concerns beautifully.  My only goal is to
-*enhance* the usability of SLF4J by offering an idiomatic Scala interface.
-
-Please feel free to contact me if you have suggestions for how to enhance or
-improve this library—as long as those suggestions are compatible with the
-project's goals.
-
-## Installation ##
-
-To use Log4s, add the following to your SBT build:
+To get started quickly, you can add this dependency to your `build.sbt`
 
     libraryDependencies += "org.log4s" %% "log4s" % "1.5.0"
 
-Scala 2.10, 2.11, and 2.12 are fully supported, and enabling macro paradise
-in the 2.10 compiler is not required: You can just add it like any other
-dependency.
+## Topics
 
-Scala 2.10 support is beyond its support window: it may be removed in any
-minor release if there's a reason. (It will not be removed in a patch
-release.)
-
-## Topics ##
-
-- [Getting a logger](#getting-a-logger)
-- [Logging messages](#logging-messages)
-- [Exception logging](#exception-logging)
-- [Diagnostic contexts](#diagnostic-contexts)
+- [Introduction](#introduction)
+- [Requirements](#requirements)
+- [Using Log4s](#using-log4s)
+  - [Getting a logger](#getting-a-logger)
+  - [Performing logging](#logging-messages)
+  - [Exception logging](#exception-logging)
+  - [Diagnostic contexts](#diagnostic-contexts)
+- [Log4s Testing](#testing)
 - [Unsupported features](#unsupported-features)
-- [Testing](#testing)
+- [Contributors](#contributors)
 
-### Getting a logger ###
+## Introduction
+
+Logging is a generally solved problem on the JVM, thanks largely to the
+excellent work of Ceki Gülcü and many others. The [SLF4J](http://slf4j.org)
+library solves the problem of abstracting logging over different frameworks
+on the JVM, and frameworks like [Logback](https://logback.qos.ch/) and
+[Log4j 2](https://logging.apache.org/log4j/2.x/) are both flexible and
+powerful.
+
+On the JVM, Log4s simply sits on top of these existing subsystems. Scala's
+macro and value classes, enable Log4s provide an idiomatic Scala façade that
+does not impose runtime overhead and that frequently outperforms the common
+usage patterns of the JVM APIs.
+
+Log4s also provides some additional functionality to improve the ease of
+logging-related development, including the Log4s Testing framework for
+facilitating the testing of logging-related code.
+
+## Using Log4s
+
+### Requirements
+
+Scala 2.11, and 2.12 are fully supported. No special settings or compiler
+options are required: just add the dependency as described above.
+
+#### Scala 2.10
+
+Scala 2.10 support is still present, but it is beyond its support window: it
+may be removed in any future minor release if there's a reason. (It will not
+be removed in a patch release.)
+
+The macro paradise compiler extensions are not required for Scala 2.10.
+
+#### Scala 2.13
+
+Efforts will be made to support Scala 2.13 milestones and release candidates
+within a short time after they are available, and it has very few build
+dependencies so there are usually no complications. If a new Log4s version has
+not yet been published for a prerelease version of Scala, feel free to file a
+ticket requesting a build for the new version.
+
+### Getting a logger
 
 Most of the time, you simply want to define a logger with a name that matches
 the enclosing class or module.  Log4s makes this common case as easy as
@@ -85,7 +102,7 @@ but this behavior is more consistent with Java practices and I suspect is what
 a majority of users will prefer.  Future enhancements may provide a mechanism
 to allow the user to choose whether to include the trailing _$_.
 
-#### Custom Logger Names ####
+#### Custom Logger Names
 
 There are situations where you may want to use a custom logger name. E.g., you
 may want to have a special category for some kind of high-level events, or you
@@ -108,7 +125,7 @@ about which logging statements you want to enable in which situations. By
 letting the compiler provide the name for you, you also reduce the chance of
 errors as you refactor your code.
 
-#### Instance or static? ####
+#### Instance or static?
 
 My recommendation is that by default you create your loggers as instance
 variables and mark them as `private[this]`.  This may be more compatible with
@@ -123,7 +140,7 @@ infrequent for most applications.
 The SLF4J FAQ has a good discussion of the [tradeoffs between static and
 instance loggers](http://slf4j.org/faq.html#declared_static).
 
-### Logging messages ###
+### Logging messages
 
 The logger interfaces are extremely simple, but they're more powerful than
 they look.  All the standard loggers take a single argument of type string.
@@ -225,7 +242,7 @@ Log4s allows you to pass exceptions into your logger, while still maintining
 the simple string-interpolation style API that makes it so convenient. To log
 an exception, use the following syntax.
 
-```
+```scala
 try {
   ...
 } catch {
@@ -362,39 +379,27 @@ with nested contexts, you may have better performance if you add and remove
 values directly. These performance costs apply only to the block-based API,
 not the map-style API.
 
-### Unsupported features
-
-The following potential or suggested features are not implemented. If some
-missing feature is particularly valuable to you, feel free to reach out with
-your requests or suggestions. I'm also—of course—open to pull requests,
-but please drop me an email first if there are significant new APIs or
-features so we can agree on the general design.
-
-  * A `scalac` compiler flag or environment variable to automatically disable
-    all logging below a certain level.
-  * Marker support.
-
-### Testing
+## Log4s-Testing
 
 There is a Logback-specific testing library that allows you to do mock-object
 style testing of your log messages if you'd like. This was built for internal
 testing of Log4s, but it has been made public by request.
 
-#### Setup ####
+### Setup
 
 This only works if you are using Logback as your logging framework, at
 least during testing. (Doing this will not interfere with using a different
 framework for your runtime logging if you correctly configure the two
 classpaths.)
 
-##### SBT config #####
+#### SBT config
 
     libraryDependencies += "org.log4s" %% "log4s-testing" % log4sVersion % "test"
 
 I recommend you use a `val log4sVersion` to match the version number with the
 main Log4s dependency.
 
-##### Logback config #####
+#### Logback config
 
 You'll then want to add lines like the following in your `logback-test.xml`
 
@@ -413,7 +418,7 @@ than the XML for more complicated logging configurations, but it's less
 familiar and adds an extra runtime dependency on Groovy.
 
 
-#### Usage ####
+### Usage
 
 The steps are relatively simple
 
@@ -445,7 +450,7 @@ TestAppender.withAppender() {
 More examples are available if you look through the various test classes
 in this project.
 
-#### Should I test my logging?
+### Should I test my logging?
 
 Testing scope and philosophy is a complex topic far beyond the reach of this
 docuemnt, but I can give some general guidance based on my personal views.
@@ -481,11 +486,24 @@ use judgment. In my estimation, most applications probably do not need or want
 tests that verify the details of their logging, but there are many situations
 where this testing is approrpiate.
 
+## Unsupported features
+
+The following potential or suggested features are not implemented. If some
+missing feature is particularly valuable to you, feel free to reach out with
+your requests or suggestions. I'm also—of course—open to pull requests,
+but please drop me an email first if there are significant new APIs or
+features so we can agree on the general design.
+
+- A `scalac` compiler flag or environment variable to automatically disable
+  all logging below a certain level.
+- Marker support.
+
+
 ## Contributors
 
 Here are all the contributors (chronologically). Thanks to all!
 
-  * [Sarah Gerweck](https://github.com/sarahgerweck/) (primary author)
-  * [Bryce Anderson](https://github.com/bryce-anderson)
-  * [David Ross](https://github.com/dyross)
-  * [Seth Tisue](https://github.com/SethTisue)
+- [Sarah Gerweck](https://github.com/sarahgerweck/) (primary author)
+- [Bryce Anderson](https://github.com/bryce-anderson)
+- [David Ross](https://github.com/dyross)
+- [Seth Tisue](https://github.com/SethTisue)
