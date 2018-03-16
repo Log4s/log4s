@@ -75,7 +75,8 @@ lazy val core = (crossProject in file ("core"))
       /* These macros are not part of the runtime and are not a binary compatibility concern */
       Seq(
         exclude[IncompatibleResultTypeProblem]("org.log4s.LoggerMacros.*"),
-        exclude[IncompatibleMethTypeProblem]("org.log4s.LoggerMacros.getLoggerImpl")
+        exclude[IncompatibleMethTypeProblem]("org.log4s.LoggerMacros.getLoggerImpl"),
+        exclude[ReversedMissingMethodProblem]("org.log4s.LogLevel.$js$exported$prop$name")
       )
     },
 
