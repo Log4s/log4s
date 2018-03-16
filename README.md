@@ -1,5 +1,20 @@
 # Log4s
 
+To get started quickly, you can add this dependency to your `build.sbt`
+
+    libraryDependencies += "org.log4s" %% "log4s" % "1.5.0"
+
+## Topics
+
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Getting a logger](#getting-a-logger)
+- [Logging messages](#logging-messages)
+- [Exception logging](#exception-logging)
+- [Diagnostic contexts](#diagnostic-contexts)
+- [Unsupported features](#unsupported-features)
+- [Testing](#testing)
+
 ## Introduction
 
 This is a simple project to wrap the excellent [SLF4J](http://slf4j.org/)
@@ -32,14 +47,7 @@ Scala 2.10 support is beyond its support window: it may be removed in any
 minor release if there's a reason. (It will not be removed in a patch
 release.)
 
-## Topics
-
-- [Getting a logger](#getting-a-logger)
-- [Logging messages](#logging-messages)
-- [Exception logging](#exception-logging)
-- [Diagnostic contexts](#diagnostic-contexts)
-- [Unsupported features](#unsupported-features)
-- [Testing](#testing)
+## Using Log4s
 
 ### Getting a logger
 
