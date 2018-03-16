@@ -1,9 +1,6 @@
 import sbt._
 import Keys._
 
-import org.scalajs.sbtplugin.ScalaJSPlugin
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
-
 object Dependencies {
   final val slf4jVersion   = "1.7.25"
   final val logbackVersion = "1.2.3"
