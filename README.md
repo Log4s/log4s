@@ -529,7 +529,7 @@ log4s.MDC.withCtx({"user": "benway", "query": "1234"})(() => {
 #### JavaScript Configuration Objects
 
 The same basic methods that you would use to do Scala-defined configuration
-are availble through JavaScript. See the documentation above for details on
+are available through JavaScript. See the documentation above for details on
 how to use them.
 
 ```javascript
