@@ -153,6 +153,11 @@ object Log4sConfig { thisConfig =>
     LoggerState(parts) = updatedState
   }
 
+  @JSExportTopLevel("Config.resetLoggerAppenders")
+  def resetLoggerAppenders(name: String) = {
+    logger(name, appenders = Some(None))
+  }
+
   private[log4sjs] final def doLog(e: LoggedEvent): Unit = {
     val state = LoggerState(e.loggerPath)
     if (state.isEnabled(e.level)) {
