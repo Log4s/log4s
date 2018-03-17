@@ -542,7 +542,7 @@ log4s.Config.resetLoggerAppenders("org")
 
 Appenders can be created by passing in a JavaScript function.
 
-For parameters, ther are top-level threshold/level objects available:
+For parameters, there are top-level threshold/level objects available:
 
 - `AllThreshold`
 - `Trace`
