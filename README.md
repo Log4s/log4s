@@ -440,7 +440,7 @@ def initLogging(): Unit = {
   setLoggerAppenders("org.log4s.audit", false, Seq(myAppender))
 
   /* The `true` here means that myAppender` from the `audit` logger will still
-  /* be called since it allows additive inheritance. */
+   * be called since it allows additive inheritance. */
   val appender2 = { ev: log4sjs.LoggedEvent => ??? }
   setLoggerAppenders("org.log4s.audit.detailed", true, Seq(appender2))
 
