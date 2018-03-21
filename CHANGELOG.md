@@ -70,3 +70,11 @@ changes to how it's coded or built, see the Git history.
 
 * **Experimental** support for Scala.JS
   * This is functional, but any JavaScript-specific APIs may change.
+
+### 1.6.1
+
+* Update Scala to 2.12.5
+  * The string-interpolation performance improvements of Scala 2.12.5 will
+    not benefit Log4s's runtime performance because it doesn't make use of
+    string interpolation. (It won't hurt performance either.) Compile-time
+    performance may be slightly better.
