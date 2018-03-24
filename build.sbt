@@ -21,6 +21,17 @@ releaseProcess := Seq[ReleaseStep](
   commitNextVersion,
   pushChanges
 )
+val prevVersions = settingKey[Set[String]]("The previous versions for the current project")
+val prevArtifacts = Def.derive {
+  mimaPreviousArtifacts := {
+    /* TODO: I imagine there's a better way to do this */
+    val artName = {
+      val suffix = if (isScalaJSProject.value) "_sjs0.6" else ""
+      artifact.value.name + suffix
+    }
+    prevVersions.value.map(organization.value %% artName % _)
+  }
+}
 
 def jsOpts = new Def.SettingList(Seq(
   scalacOptions += "-P:scalajs:sjsDefinedByDefault",
@@ -52,22 +63,7 @@ lazy val core = (crossProject in file ("core"))
   .settings(Release.settings: _*)
   .settings(
     name := "Log4s",
-
-    mimaPreviousArtifacts := {
-      /* I'm using the first & last version of each minor release rather than
-       * including every single patch-level update. */
-      def `2.11Versions` = Set("1.0.3", "1.0.5", "1.1.0", "1.1.5", "1.2.0", "1.2.1", "1.3.0")
-      def `2.12Versions` = Set("1.3.3", "1.3.6", "1.4.0", "1.5.0")
-      val checkVersions = scalaBinaryVersion.value match {
-        case "2.10" | "2.11" => `2.11Versions` ++ `2.12Versions`
-        case "2.12"          => `2.12Versions`
-        case "2.13.0-M2"     => Set("1.5.0")
-        case other           =>
-          sLog.value.info(s"No known MIMA artifacts for: $other")
-          Set.empty
-      }
-      checkVersions.map(organization.value %% artifact.value.name % _)
-    },
+    prevArtifacts,
     mimaBinaryIssueFilters ++= {
       import com.typesafe.tools.mima.core._
       import ProblemFilters.exclude
@@ -76,7 +72,6 @@ lazy val core = (crossProject in file ("core"))
       Seq(
         exclude[IncompatibleResultTypeProblem]("org.log4s.LoggerMacros.*"),
         exclude[IncompatibleMethTypeProblem]("org.log4s.LoggerMacros.getLoggerImpl"),
-        exclude[ReversedMissingMethodProblem]("org.log4s.LogLevel.$js$exported$prop$name")
       )
     },
 
@@ -98,9 +93,26 @@ lazy val core = (crossProject in file ("core"))
     }
   )
   .jvmSettings(
-    libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
+    libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided",
+    prevVersions := {
+      /* I'm using the first & last version of each minor release rather than
+       * including every single patch-level update. */
+      def `2.11Versions` = Set("1.0.3", "1.0.5", "1.1.0", "1.1.5", "1.2.0", "1.2.1", "1.3.0")
+      def `2.12Versions` = Set("1.3.3", "1.3.6", "1.4.0", "1.5.0", "1.6.0", "1.6.1")
+      scalaBinaryVersion.value match {
+        case "2.10" | "2.11" => `2.11Versions` ++ `2.12Versions`
+        case "2.12"          => `2.12Versions`
+        case "2.13.0-M2"     => Set("1.5.0")
+        case other           =>
+          sLog.value.info(s"No known MIMA artifacts for: $other")
+          Set.empty
+      }
+    }
   )
   .jsSettings(jsOpts)
+  .jsSettings(
+    prevVersions := Set("1.6.0")
+  )
 
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
@@ -112,19 +124,28 @@ lazy val testing = (crossProject in file ("testing"))
   .settings(
     name := "Log4s Testing",
     description := "Utilities to help with build-time unit tests for logging",
-    mimaPreviousArtifacts := {
-      val checkVersions = scalaBinaryVersion.value match {
-        case "2.10" | "2.11" | "2.12" | "2.13.0-M2" => Set("1.5.0")
-        case other => Set.empty
-      }
-      checkVersions.map(organization.value %% artifact.value.name % _)
-    },
+    prevArtifacts,
     libraryDependencies ++= Seq (
       slf4j,
       logback
     )
   )
+  .jvmSettings(
+    prevVersions := {
+      scalaBinaryVersion.value match {
+        case "2.10" | "2.11" | "2.12" | "2.13.0-M2" =>
+          Set("1.5.0", "1.6.0", "1.6.1")
+        case "2.13.0-M3" =>
+          Set("1.6.0", "1.6.1")
+        case other =>
+          Set.empty
+      }
+    }
+  )
   .jsSettings(jsOpts)
+  .jsSettings(
+    prevVersions := Set("1.6.0", "1.6.1")
+  )
 
 lazy val testingJS = testing.js
 lazy val testingJVM = testing.jvm
