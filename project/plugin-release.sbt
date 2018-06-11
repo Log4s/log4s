@@ -1,2 +1,2 @@
 // Plugin that automates the standard release process
-addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.7")
+addSbtPlugin("com.github.gseitz" % "sbt-release" % "1.0.8")
