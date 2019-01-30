@@ -92,7 +92,17 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
         case _ =>
           Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-2.11")
       }
+    },
+
+    unmanagedSourceDirectories in Compile ++= {
+      scalaBinaryVersion.value match {
+        case "2.10" | "2.11" | "2.12" =>
+          Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-oldcoll")
+        case _ =>
+          Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-newcoll")
+      }
     }
+
   )
   .jvmSettings(
     libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided",

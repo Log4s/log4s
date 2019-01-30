@@ -15,10 +15,10 @@ private object LoggerParserSpec {
   object select
   final class select(val cat: String) extends AnyVal {
     def logger(s: String*): Assertion = {
-      catParser(cat) should equal (s.to[ISeq])
+      catParser(cat) should equal (s.toList)
     }
     @inline
-    def logger(s: ISeq[String]): Assertion = this.logger(s: _*)
+    def loggerOf(s: ISeq[String]): Assertion = this.logger(s: _*)
   }
 
   implicit final class LoggerString(val cat: String) extends AnyVal {
@@ -75,13 +75,13 @@ class LoggerParserSpec extends FlatSpec with PropertyChecks {
   it should "handle simple alphanumeric paths" in {
     forAll(simpleLoggerPath) { cat =>
       val loggerName = makePath(cat)
-      loggerName should select logger cat
+      loggerName should select loggerOf cat
     }
   }
   it should "handle complicated arbitrary paths" in {
     forAll(complexLoggerPath) { cat =>
       val loggerName = makePath(cat)
-      loggerName should select logger cat
+      loggerName should select loggerOf cat
     }
   }
 }

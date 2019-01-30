@@ -78,3 +78,8 @@ changes to how it's coded or built, see the Git history.
     not benefit Log4s's runtime performance because it doesn't make use of
     string interpolation. (It won't hurt performance either.) Compile-time
     performance may be slightly better.
+
+## 1.7
+
+* Add Scala support for 2.13.0-M5
+* Update Scala.js to 0.6.26

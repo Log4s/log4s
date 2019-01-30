@@ -2,7 +2,7 @@ package org.log4s
 package log4sjs
 
 import scala.annotation.tailrec
-import scala.collection.{ breakOut, mutable, immutable }
+import scala.collection.{ mutable, immutable }
 import scala.math.Ordered._
 
 import scala.scalajs.js
@@ -140,11 +140,11 @@ object Log4sConfig extends Log4sConfig { thisConfig =>
 
   @JSExportTopLevel("Config.setLoggerAppenders")
   def setLoggerAppendersDynamic(name: String, additive: Boolean, appenders: js.Array[Log4sAppender.DynamicType]): Unit = {
-    setLoggerAppenders(name, additive, appenders)
+    setLoggerAppenders(name, additive, appenders.toSeq)
   }
 
   def setLoggerAppenders[A: Log4sAppender.Provider](name: String, additive: Boolean, appenders: Seq[A]): Unit = {
-    val appenderSeq: immutable.Seq[Log4sAppender] = appenders.map(Log4sAppender.from(_))(breakOut)
+    val appenderSeq: immutable.Seq[Log4sAppender] = appenders.map(Log4sAppender.from(_)).toList
     logger(name, appenders = Some(Some(AppenderSetting(appenderSeq, additive))))
   }
 
