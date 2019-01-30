@@ -1,6 +1,8 @@
 import Dependencies._
 import ReleaseTransformations._
 
+import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
+
 /* TODO: Attempts to do this with the existing `TaskKey` have failed, but that
  * would be better than doing it using the string. This approach also won't
  * work if you were to dynamically modify the cross-build settings. The key is
@@ -56,7 +58,7 @@ lazy val root: Project = (project in file ("."))
     skip in Test := true
   )
 
-lazy val core = (crossProject in file ("core"))
+lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
   .enablePlugins(BasicSettings, SiteSettingsPlugin)
   .dependsOn(testing % "test")
   .settings(Publish.settings: _*)
@@ -117,7 +119,7 @@ lazy val core = (crossProject in file ("core"))
 lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 
-lazy val testing = (crossProject in file ("testing"))
+lazy val testing = (crossProject(JSPlatform, JVMPlatform) in file ("testing"))
   .enablePlugins(BasicSettings, SiteSettingsPlugin)
   .settings(Publish.settings: _*)
   .settings(Release.settings: _*)
