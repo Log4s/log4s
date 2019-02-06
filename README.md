@@ -6,7 +6,7 @@ documentation.
 
 To get started quickly, you can add this dependency to your `build.sbt`
 
-    libraryDependencies += "org.log4s" %% "log4s" % "1.6.1"
+    libraryDependencies += "org.log4s" %% "log4s" % "1.7.0"
 
 ## Topics
 
