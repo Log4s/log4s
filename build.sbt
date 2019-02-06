@@ -58,6 +58,8 @@ lazy val root: Project = (project in file ("."))
     skip in Test := true
   )
 
+lazy val jsPrevVersions = Set.empty[String]
+
 lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
   .enablePlugins(BasicSettings, SiteSettingsPlugin)
   .dependsOn(testing % "test")
@@ -123,7 +125,7 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
   )
   .jsSettings(jsOpts)
   .jsSettings(
-    prevVersions := Set("1.6.0")
+    prevVersions := jsPrevVersions
   )
 
 lazy val coreJS = core.js
@@ -156,7 +158,7 @@ lazy val testing = (crossProject(JSPlatform, JVMPlatform) in file ("testing"))
   )
   .jsSettings(jsOpts)
   .jsSettings(
-    prevVersions := Set("1.6.0", "1.6.1")
+    prevVersions := jsPrevVersions
   )
 
 lazy val testingJS = testing.js

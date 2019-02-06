@@ -81,6 +81,8 @@ changes to how it's coded or built, see the Git history.
 
 ## 1.7
 
+**NOTE** This version breaks binary compatibility under Scala.JS
+
 * Add Scala support for 2.13.0-M5
 * Update Scala.js to 0.6.26
 * Reduce top-level exports in Scala.js
