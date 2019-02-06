@@ -5,7 +5,6 @@ import scala.scalajs.js
 import js.annotation._
 import js.JSConverters._
 
-@JSExportTopLevel("MDC")
 object Log4sMDC {
   @JSExport
   def get(key: String): String = MDC.get(key).orNull

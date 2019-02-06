@@ -14,6 +14,9 @@ sealed trait LogThreshold extends Any {
   def permits(ll: LogLevel): Boolean = this <= LevelThreshold(ll)
 }
 object LogThreshold {
+  case object AllThreshold extends LogThreshold
+  case object OffThreshold extends LogThreshold
+
   implicit val order: Ordering[LogThreshold] = Ordering.by {
     case OffThreshold => Int.MaxValue
     case LevelThreshold(Error) => 40000
@@ -32,11 +35,6 @@ object LogThreshold {
   }
 }
 
-@JSExportTopLevel("AllThreshold")
-case object AllThreshold extends LogThreshold
-
-@JSExportTopLevel("OffThreshold")
-case object OffThreshold extends LogThreshold
 
 object LevelThreshold {
   def apply(ll: LogLevel) = new LevelThreshold(ll)

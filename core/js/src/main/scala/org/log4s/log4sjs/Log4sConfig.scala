@@ -118,27 +118,22 @@ object Log4sConfig extends Log4sConfig { thisConfig =>
     LoggerState.update(parts, updatedState)
   }
 
-  @JSExportTopLevel("Config.setLoggerThreshold")
   def setLoggerThreshold(name: String, threshold: LogThreshold): Unit = {
     logger(name, threshold = Some(Option(threshold)))
   }
 
-  @JSExportTopLevel("Config.setLoggerThreshold")
   def setLoggerThreshold(name: String, level: LogLevel): Unit = {
     logger(name, threshold = Some(Option(LevelThreshold(level))))
   }
 
-  @JSExportTopLevel("Config.setLoggerThreshold")
   def setLoggerThreshold(name: String, threshold: String): Unit = {
     setLoggerThreshold(name, LogThreshold.forName(threshold))
   }
 
-  @JSExportTopLevel("Config.resetLoggerThreshold")
   def resetLoggerThreshold(name: String): Unit = {
     logger(name, threshold = Some(None))
   }
 
-  @JSExportTopLevel("Config.setLoggerAppenders")
   def setLoggerAppendersDynamic(name: String, additive: Boolean, appenders: js.Array[Log4sAppender.DynamicType]): Unit = {
     setLoggerAppenders(name, additive, appenders.toSeq)
   }
@@ -149,7 +144,6 @@ object Log4sConfig extends Log4sConfig { thisConfig =>
   }
 
   /** Add an appender for a given logger */
-  @JSExportTopLevel("Config.addLoggerAppender")
   def addLoggerAppenderDynamic(name: String, appender: Log4sAppender.DynamicType): Unit = {
     addLoggerAppender(name, appender)
   }
@@ -163,7 +157,6 @@ object Log4sConfig extends Log4sConfig { thisConfig =>
     LoggerState(parts) = updatedState
   }
 
-  @JSExportTopLevel("Config.resetLoggerAppenders")
   def resetLoggerAppenders(name: String) = {
     logger(name, appenders = Some(None))
   }

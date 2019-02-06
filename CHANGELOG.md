@@ -83,3 +83,8 @@ changes to how it's coded or built, see the Git history.
 
 * Add Scala support for 2.13.0-M5
 * Update Scala.js to 0.6.26
+* Reduce top-level exports in Scala.js
+  * To reduce the likelihood of conflicts in combined apps, `getLogger` &
+    `Log4s` are now the only top-level exports. If you want to access objects
+    like `Info`, you should now call `Log4s.Info`.
+  * Log4s support is still considered experimental.
