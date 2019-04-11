@@ -58,7 +58,7 @@ import LoggerParserSpec._
 
 class LoggerParserSpec extends FlatSpec with PropertyChecks {
   it should "handle the root logger correctly" in {
-    "" should select logger ()
+    "" should select loggerOf (Nil)
   }
   it should "handle simple first-level loggers" in {
     "test" should select logger ("test")
