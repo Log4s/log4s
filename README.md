@@ -367,7 +367,7 @@ object BlockExample {
     val requestId = java.util.UUID.randomUUID
 
     // This context operates only for the block, then cleans itself up
-    MDC.withCtx ("request-id" -> requestId.toString, "request-user" -> user) {
+    MDC.withCtx("request-id" -> requestId.toString, "request-user" -> user) {
       logger.debug("Processing request")
     }
   }
