@@ -6,7 +6,7 @@ import org.scalatest._
   *
   * @author Sarah Gerweck <sarah@atscale.com>
   */
-class MDCSpec extends FlatSpec with Matchers {
+class MDCSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
   behavior of "MDC"
 
   it should "start out empty" in {
@@ -88,4 +88,8 @@ class MDCSpec extends FlatSpec with Matchers {
     MDC should not contain key ("b")
     MDC shouldEqual Map("a" -> "1")
   }
+
+  override protected def afterAll(): Unit = {
+    MDC.clear()
+  }  
 }
