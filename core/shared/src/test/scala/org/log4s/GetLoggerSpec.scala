@@ -8,7 +8,7 @@ import org.scalatest._
   *
   * @author Sarah Gerweck <sarah@atscale.com>
   */
-class GetLoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerInit {
+class GetLoggerSpec extends FlatSpec with Matchers with GivenWhenThen {
   private[this] val logger = getLogger
 
   behavior of "getLogger"
