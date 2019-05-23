@@ -90,3 +90,8 @@ changes to how it's coded or built, see the Git history.
     `Log4s` are now the only top-level exports. If you want to access objects
     like `Info`, you should now call `Log4s.Info`.
   * Log4s support is still considered experimental.
+
+## 1.8
+
+* Add support for Scala 2.13.0-RC1 and 2.13.0-RC2
+* Update Scala.js to 0.6.27
