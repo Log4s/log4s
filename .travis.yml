@@ -1,3 +1,4 @@
+dist: xenial
 branches:
   except:
     - /^v\d/
@@ -5,12 +6,14 @@ language: scala
 scala:
   - 2.10.7
   - 2.11.12
-  - 2.12.6
+  - 2.12.8
+  - 2.13.0-RC1
+  - 2.13.0-RC2
 script:
   - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION test'
   - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then sbt ++$TRAVIS_SCALA_VERSION make-site publish; fi'
 jdk:
-  - oraclejdk7
+  - openjdk8
 env:
   global:
   - secure: LZqtbvSqVPpycaMLC9FnCaEs70WLt9tr+477t6jdCwyUgkaRfcBvLVeh/EsH4RJW+GtvNqmpZ43dpUGrnxZktFvZz+1LdPNtVggLza+ysMd/KlVlSXT1Re1NvArc4nE9Po+hQws26ehvlk2+BKh0e5SfXRU/3+NDs1H0bgtkQVU=
