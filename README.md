@@ -681,3 +681,4 @@ Here are all the contributors (chronologically). Thanks to all!
 - [David Ross](https://github.com/dyross)
 - [Seth Tisue](https://github.com/SethTisue)
 - [Ross Baker](https://github.com/rossabaker)
+- [Michal](https://github.com/mkows)
