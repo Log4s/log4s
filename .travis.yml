@@ -10,8 +10,8 @@ scala:
   - 2.13.0-RC1
   - 2.13.0-RC2
 script:
-  - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION test'
-  - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then sbt ++$TRAVIS_SCALA_VERSION make-site publish; fi'
+  - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION test makeSite'
+  - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then sbt ++$TRAVIS_SCALA_VERSION publish; fi'
 jdk:
   - openjdk8
 env:
