@@ -111,12 +111,23 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
     prevVersions := {
       /* I'm using the first & last version of each minor release rather than
        * including every single patch-level update. */
-      def `2.11Versions` = Set("1.0.3", "1.0.5", "1.1.0", "1.1.5", "1.2.0", "1.2.1", "1.3.0")
-      def `2.12Versions` = Set("1.3.3", "1.3.6", "1.4.0", "1.5.0", "1.6.0", "1.6.1", "1.7.0", "1.8.0")
+      def `2.11Versions` =
+        Set("1.0.3", "1.0.5",
+            "1.1.0", "1.1.5",
+            "1.2.0", "1.2.1",
+            "1.3.0")
+      def `2.12Versions` =
+        Set("1.3.3", "1.3.6",
+            "1.4.0",
+            "1.5.0",
+            "1.6.0", "1.6.1",
+            "1.7.0",
+            "1.8.0", "1.8.1")
       scalaBinaryVersion.value match {
         case "2.10" | "2.11"             => `2.11Versions` ++ `2.12Versions`
         case "2.12"                      => `2.12Versions`
-        case "2.13.0-RC1" | "2.13.0-RC2" => Set("1.8.0")
+        case "2.13.0-RC1" | "2.13.0-RC2" => Set("1.8.0", "1.8.1")
+        case "2.13.0-RC3"                => Set("1.8.1")
         case other                       =>
           sLog.value.info(s"No known MIMA artifacts for: $other")
           Set.empty
@@ -148,9 +159,11 @@ lazy val testing = (crossProject(JSPlatform, JVMPlatform) in file ("testing"))
     prevVersions := {
       scalaBinaryVersion.value match {
         case "2.10" | "2.11" | "2.12" | "2.13.0-M2" =>
-          Set("1.5.0", "1.6.0", "1.6.1")
-        case "2.13.0-M3" =>
-          Set("1.6.0", "1.6.1")
+          Set("1.5.0", "1.6.0", "1.6.1", "1.7.0", "1.8.0", "1.8.1")
+        case "2.13.0-RC1" | "2.13.0-RC2" =>
+          Set("1.8.0", "1.8.1")
+        case "2.13.0-RC3" =>
+          Set("1.8.1")
         case other =>
           Set.empty
       }
