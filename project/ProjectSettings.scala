@@ -31,7 +31,23 @@ trait ProjectSettings
         <name>Sarah Gerweck</name>
         <email>sarah.a180@gmail.com</email>
         <url>https://github.com/sarahgerweck</url>
+        <roles>
+          <role>author</role>
+          <role>maintainer</role>
+          <role>contributor</role>
+        </roles>
         <timezone>America/Los_Angeles</timezone>
+      </developer>
+      <developer>
+        <id>rossabaker</id>
+        <name>Ross A. Baker</name>
+        <email>ross@rossabaker.com</email>
+        <url>https://github.com/rossabaker</url>
+        <roles>
+          <role>maintainer</role>
+          <role>contributor</role>
+        </roles>
+        <timezone>America/Indiana/Indianapolis</timezone>
       </developer>
     </developers>
   }
