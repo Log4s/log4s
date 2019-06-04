@@ -674,9 +674,15 @@ features so we can agree on the general design.
 
 ## Contributors
 
-Here are all the contributors (chronologically). Thanks to all!
+### Maintainers
 
-- [Sarah Gerweck](https://github.com/sarahgerweck/) (primary author)
+- [Sarah Gerweck](https://github.com/sarahgerweck/) (creator & primary maintainer)
+- [Ross Baker](https://github.com/rossabaker)
+
+### Additional contributors
+
+Here are all other contributors, listed chronologically. Thanks to all!
+
 - [Bryce Anderson](https://github.com/bryce-anderson)
 - [David Ross](https://github.com/dyross)
 - [Seth Tisue](https://github.com/SethTisue)
