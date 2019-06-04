@@ -7,5 +7,5 @@ final class LoggedThrowable private[log4s] (val inner: IThrowableProxy) extends 
   def className: String = inner.getClassName
   def commonFrames: Int = inner.getCommonFrames
   def message: Option[String] = Option(inner.getMessage)
-  def stackTrace: IndexedSeq[StackTraceElement] = inner.getStackTraceElementProxyArray.map(_.getStackTraceElement)
+  def stackTrace: IndexedSeq[StackTraceElement] = inner.getStackTraceElementProxyArray.map(_.getStackTraceElement).toIndexedSeq
 }

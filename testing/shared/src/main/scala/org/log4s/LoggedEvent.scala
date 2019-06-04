@@ -13,9 +13,9 @@ final class LoggedEvent private[log4s] (val inner: ILoggingEvent) extends AnyVal
     *
     * Log4s doesn't use arguments, so you probably don't want this unless
     * you're also testing non-Log4s logging events. */
-  def argumentArray: Option[IndexedSeq[Any]] = Option(inner.getArgumentArray)
+  def argumentArray: Option[IndexedSeq[Any]] = Option(inner.getArgumentArray.toIndexedSeq)
 
-  def callerData: IndexedSeq[StackTraceElement] = inner.getCallerData
+  def callerData: IndexedSeq[StackTraceElement] = inner.getCallerData.toIndexedSeq
   def formattedMessage: String = inner.getFormattedMessage
   /* TODO: Convert these to Log4s levels? This would require some clever
    * tricks to deal with the circular dependency it would create. */
