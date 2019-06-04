@@ -7,7 +7,7 @@ trait Log4sAppender extends js.Any {
   def append(event: LoggedEvent): Unit
 }
 
-object Log4sAppender extends FunctionalType[Log4sAppender, LoggedEvent, Unit]("Appender", 'append) {
+object Log4sAppender extends FunctionalType[Log4sAppender, LoggedEvent, Unit]("Appender", Symbol("append")) {
   protected[this] def fromFunction(fn: LoggedEvent => Unit) = {
     new js.Object with Log4sAppender {
       override def append(le: LoggedEvent): Unit = { fn(le) }

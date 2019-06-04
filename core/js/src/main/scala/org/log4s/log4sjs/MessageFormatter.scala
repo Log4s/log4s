@@ -7,7 +7,7 @@ import scala.scalajs.js
 trait MessageFormatter extends js.Any {
   def render(le: LoggedEvent): String
 }
-object MessageFormatter extends FunctionalType[MessageFormatter, LoggedEvent, String]("MessageFormatter", 'render) {
+object MessageFormatter extends FunctionalType[MessageFormatter, LoggedEvent, String]("MessageFormatter", Symbol("render")) {
   protected[this] def fromFunction(fn: LoggedEvent => String) =
     new js.Object with MessageFormatter { def render(le: LoggedEvent) = fn(le) }
 }
