@@ -10,14 +10,21 @@ package org.log4s
   * @author Sarah Gerweck <sarah@atscale.com>
   */
 object LoggerInit {
-  // The `lazy` here gives me cheap synchronization
-  private lazy val logger = getLogger
+  @volatile
+  private var initialized: Boolean = false
 }
 
 trait LoggerInit {
   locally {
-    PlatformInit.init()
-    // Don't really do anything except hit my synchronized logger
-    LoggerInit.logger
+    if (!LoggerInit.initialized) {
+      LoggerInit.synchronized {
+        if (!LoggerInit.initialized) {
+          PlatformInit.init()
+          /* This ensures that the underlying logging system is initialized, preventing races */
+          getLogger
+          ()
+        }
+      }
+    }
   }
 }
