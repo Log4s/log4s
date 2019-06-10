@@ -83,7 +83,7 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
       slf4j,
       logback          %   "test",
       "org.scalacheck" %%% "scalacheck" % scalacheckVersion % "test",
-      "org.scalatest"  %%% "scalatest"  % scalatestVersion.value % "test",
+      "org.scalatest"  %%% "scalatest"  % scalatestVersion % "test",
       reflect.value    %   "provided"
     ),
 
@@ -158,12 +158,8 @@ lazy val testing = (crossProject(JSPlatform, JVMPlatform) in file ("testing"))
   .jvmSettings(
     prevVersions := {
       scalaBinaryVersion.value match {
-        case "2.10" | "2.11" | "2.12" | "2.13.0-M2" =>
+        case "2.10" | "2.11" | "2.12" =>
           Set("1.5.0", "1.6.0", "1.6.1", "1.7.0", "1.8.0", "1.8.1")
-        case "2.13.0-RC1" | "2.13.0-RC2" =>
-          Set("1.8.0", "1.8.1")
-        case "2.13.0-RC3" =>
-          Set("1.8.1")
         case other =>
           Set.empty
       }
