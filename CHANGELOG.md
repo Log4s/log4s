@@ -98,5 +98,9 @@ changes to how it's coded or built, see the Git history.
 
 ### 1.8.1
 
-* Add support for Scala 2.13.1-RC3 (thanks @rossabaker)
+* Add support for Scala 2.13.0-RC3 (thanks @rossabaker)
 * Update Scala.js to 0.6.28
+
+### 1.8.2
+
+* Add support for Scala 2.13.0
