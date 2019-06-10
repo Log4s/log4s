@@ -123,12 +123,13 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
             "1.6.0", "1.6.1",
             "1.7.0",
             "1.8.0", "1.8.1")
+      def `2.13Versions` =
+        Set("1.8.2")
       scalaBinaryVersion.value match {
-        case "2.10" | "2.11"             => `2.11Versions` ++ `2.12Versions`
-        case "2.12"                      => `2.12Versions`
-        case "2.13.0-RC1" | "2.13.0-RC2" => Set("1.8.0", "1.8.1")
-        case "2.13.0-RC3"                => Set("1.8.1")
-        case other                       =>
+        case "2.10" | "2.11" => `2.11Versions` ++ `2.12Versions` ++ `2.13Versions`
+        case "2.12"          => `2.12Versions` ++ `2.13Versions`
+        case "2.13"          => `2.13Versions`
+        case other           =>
           sLog.value.info(s"No known MIMA artifacts for: $other")
           Set.empty
       }
@@ -157,9 +158,11 @@ lazy val testing = (crossProject(JSPlatform, JVMPlatform) in file ("testing"))
   )
   .jvmSettings(
     prevVersions := {
+      val `2.12Versions` = Set("1.5.0", "1.6.0", "1.6.1", "1.7.0", "1.8.0", "1.8.1")
+      val `2.13Versions` = Set("1.8.2")
       scalaBinaryVersion.value match {
-        case "2.10" | "2.11" | "2.12" =>
-          Set("1.5.0", "1.6.0", "1.6.1", "1.7.0", "1.8.0", "1.8.1")
+        case "2.10" | "2.11" | "2.12" => `2.12Versions` ++ `2.13Versions`
+        case "2.13"                   => `2.13Versions`
         case other =>
           Set.empty
       }
