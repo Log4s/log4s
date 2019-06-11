@@ -22,6 +22,7 @@ trait LoggerInit {
           PlatformInit.init()
           /* This ensures that the underlying logging system is initialized, preventing races */
           getLogger
+          LoggerInit.initialized = true
           ()
         }
       }
