@@ -91,13 +91,13 @@ private[log4s] object LoggerMacros {
   @inline private[this] def reflectiveLog(c: LogCtx)(msg: c.Expr[String], error: Option[c.Expr[Throwable]])(logLevel: LogLevel) = {
     import c.universe._
 
-    val logger = Select(c.prefix.tree, newTermName("logger"))
+    val logger = reflectiveLogger(c)
     val logValues = error match {
       case None    => List(msg.tree)
       case Some(e) => List(msg.tree, e.tree)
     }
     val logExpr = c.Expr[Unit](Apply(Select(logger, newTermName(logLevel.methodName)), logValues))
-    def checkExpr = c.Expr[Boolean](Apply(Select(logger, newTermName(s"is${logLevel.name}Enabled")), Nil))
+    def checkExpr = reflectiveEnabled(c)(logLevel)
 
     def errorIsSimple = {
       error match {
@@ -114,18 +114,34 @@ private[log4s] object LoggerMacros {
     }
   }
 
+  @inline private[this] def reflectiveEnabled(c: LogCtx)(logLevel: LogLevel) = {
+    import c.universe._
+    val logger = reflectiveLogger(c)
+    c.Expr[Boolean](Apply(Select(logger, newTermName(s"is${logLevel.name}Enabled")), Nil))
+  }
+
+  private[this] def reflectiveLogger(c: LogCtx) = {
+    import c.universe._
+    Select(c.prefix.tree, newTermName("logger"))
+  }
+
   def traceTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))(Trace)
   def traceM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)(Trace)
+  def traceEnabledM(c: LogCtx) = reflectiveEnabled(c)(Trace)
 
   def debugTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))(Debug)
   def debugM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)(Debug)
+  def debugEnabledM(c: LogCtx) = reflectiveEnabled(c)(Debug)
 
   def infoTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))(Info)
   def infoM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)(Info)
+  def infoEnabledM(c: LogCtx) = reflectiveEnabled(c)(Info)
 
   def warnTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))(Warn)
   def warnM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)(Warn)
+  def warnEnabledM(c: LogCtx) = reflectiveEnabled(c)(Warn)
 
   def errorTM(c: LogCtx)(t: c.Expr[Throwable])(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, Some(t))(Error)
   def errorM(c: LogCtx)(msg: c.Expr[String]): c.Expr[Unit] = reflectiveLog(c)(msg, None)(Error)
+  def errorEnabledM(c: LogCtx) = reflectiveEnabled(c)(Error)
 }

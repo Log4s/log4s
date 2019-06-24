@@ -49,16 +49,6 @@ final class Logger(val logger: JLogger) extends AnyVal {
   /** The name of this logger. */
   @inline def name = logger.getName
 
-  @inline def isTraceEnabled: Boolean = logger.isTraceEnabled
-
-  @inline def isDebugEnabled: Boolean = logger.isDebugEnabled
-
-  @inline def isInfoEnabled: Boolean = logger.isInfoEnabled
-
-  @inline def isWarnEnabled: Boolean = logger.isWarnEnabled
-
-  @inline def isErrorEnabled: Boolean = logger.isErrorEnabled
-
 
   import Logger._
 
@@ -79,18 +69,23 @@ final class Logger(val logger: JLogger) extends AnyVal {
 
   import LoggerMacros._
 
+  def isTraceEnabled: Boolean = macro traceEnabledM
   def trace(t: Throwable)(msg: String): Unit = macro traceTM
   def trace(msg: String): Unit = macro traceM
 
+  def isDebugEnabled: Boolean = macro debugEnabledM
   def debug(t: Throwable)(msg: String): Unit = macro debugTM
   def debug(msg: String): Unit = macro debugM
 
+  def isInfoEnabled: Boolean = macro infoEnabledM
   def info(t: Throwable)(msg: String): Unit = macro infoTM
   def info(msg: String): Unit = macro infoM
 
+  def isWarnEnabled: Boolean = macro warnEnabledM
   def warn(t: Throwable)(msg: String): Unit = macro warnTM
   def warn(msg: String): Unit = macro warnM
 
+  def isErrorEnabled: Boolean = macro errorEnabledM
   def error(t: Throwable)(msg: String): Unit = macro errorTM
   def error(msg: String): Unit = macro errorM
 
