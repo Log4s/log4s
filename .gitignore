@@ -13,6 +13,10 @@ bin
 .cache-main
 .cache-tests
 
+# Metals files
+.bloop
+.metals
+
 # Eclipse files
 .project
 .classpath

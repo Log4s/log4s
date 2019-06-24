@@ -21,6 +21,7 @@ trait ProjectSettings
   override final val defaultOptimize          = true
   override final val defaultOptimizeGlobal    = true
   override final val defaultDisableAssertions = true
+  override final val extraScalacOptions       = Seq("-Yrangepos")
 
   override final val sonatypeResolver         = true
 
