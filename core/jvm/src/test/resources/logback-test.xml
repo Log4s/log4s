@@ -12,6 +12,23 @@
     <appender-ref ref="TEST" />
   </logger>
 
+  <!-- Note: these are intentionally not named "trace", etc, in case of cross-wiring bugs -->
+  <logger name="level.tr" additivity="false" level="TRACE">
+    <appender-ref ref="TEST" />
+  </logger>
+  <logger name="level.de" additivity="false" level="DEBUG">
+    <appender-ref ref="TEST" />
+  </logger>
+  <logger name="level.in" additivity="false" level="INFO">
+    <appender-ref ref="TEST" />
+  </logger>
+  <logger name="level.wa" additivity="false" level="WARN">
+    <appender-ref ref="TEST" />
+  </logger>
+  <logger name="level.er" additivity="false" level="ERROR">
+    <appender-ref ref="TEST" />
+  </logger>
+
   <root level="WARN">
     <appender-ref ref="STDOUT" />
   </root>

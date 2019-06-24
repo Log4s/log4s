@@ -10,6 +10,11 @@ import ch.qos.logback.classic.{ Level => Lvl }
   */
 class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerInit {
   private[this] val testLogger = getLogger("test")
+  private[this] val traceLogger = getLogger("level.tr")
+  private[this] val debugLogger = getLogger("level.de")
+  private[this] val infoLogger = getLogger("level.in")
+  private[this] val warnLogger = getLogger("level.wa")
+  private[this] val errorLogger = getLogger("level.er")
 
   behavior of "log compilation"
 
@@ -111,6 +116,101 @@ class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerIn
     val e2 = new Exception(/* no message */)
     testLogger.error(Some(e2).get)(s"errorError${0+2}")
     event hasData ("errorError2", Lvl.ERROR, Some(e2))
+  }
+
+  it should "identify trace enablement" in {
+    val l: Logger = traceLogger
+
+    When("threshold is trace")
+    l.isTraceEnabled shouldBe true
+
+    When("threshold is debug")
+    l.isDebugEnabled shouldBe true
+
+    When("threshold is info")
+    l.isInfoEnabled shouldBe true
+
+    When("threshold is warn")
+    l.isWarnEnabled shouldBe true
+
+    When("threshold is error")
+    l.isErrorEnabled shouldBe true
+  }
+
+  it should "identify debug enablement" in {
+    val l: Logger = debugLogger
+
+    When("threshold is trace")
+    l.isTraceEnabled shouldBe false
+
+    When("threshold is debug")
+    l.isDebugEnabled shouldBe true
+
+    When("threshold is info")
+    l.isInfoEnabled shouldBe true
+
+    When("threshold is warn")
+    l.isWarnEnabled shouldBe true
+
+    When("threshold is error")
+    l.isErrorEnabled shouldBe true
+  }
+
+  it should "identify info enablement" in {
+    val l: Logger = infoLogger
+
+    When("threshold is trace")
+    l.isTraceEnabled shouldBe false
+
+    When("threshold is debug")
+    l.isDebugEnabled shouldBe false
+
+    When("threshold is info")
+    l.isInfoEnabled shouldBe true
+
+    When("threshold is warn")
+    l.isWarnEnabled shouldBe true
+
+    When("threshold is error")
+    l.isErrorEnabled shouldBe true
+  }
+
+  it should "identify warn enablement" in {
+    val l: Logger = warnLogger
+
+    When("threshold is trace")
+    l.isTraceEnabled shouldBe false
+
+    When("threshold is debug")
+    l.isDebugEnabled shouldBe false
+
+    When("threshold is info")
+    l.isInfoEnabled shouldBe false
+
+    When("threshold is warn")
+    l.isWarnEnabled shouldBe true
+
+    When("threshold is error")
+    l.isErrorEnabled shouldBe true
+  }
+
+  it should "identify error enablement" in {
+    val l: Logger = errorLogger
+
+    When("threshold is trace")
+    l.isTraceEnabled shouldBe false
+
+    When("threshold is debug")
+    l.isDebugEnabled shouldBe false
+
+    When("threshold is info")
+    l.isInfoEnabled shouldBe false
+
+    When("threshold is warn")
+    l.isWarnEnabled shouldBe false
+
+    When("threshold is error")
+    l.isErrorEnabled shouldBe true
   }
 
   it should "handle MDC behavior" in {

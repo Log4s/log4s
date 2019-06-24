@@ -74,5 +74,10 @@ object PlatformInit extends IPlatformInit {
       }
     }
     Log4sConfig.addLoggerAppender("test", log4sAppender)
+    Log4sConfig.setLoggerThreshold("level.tr", Trace)
+    Log4sConfig.setLoggerThreshold("level.de", Debug)
+    Log4sConfig.setLoggerThreshold("level.in", Info)
+    Log4sConfig.setLoggerThreshold("level.wa", Warn)
+    Log4sConfig.setLoggerThreshold("level.er", Error)
   }
 }
