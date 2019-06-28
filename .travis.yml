@@ -13,6 +13,11 @@ script:
   - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then sbt ++$TRAVIS_SCALA_VERSION publish; fi'
 jdk:
   - openjdk8
+  - openjdk11
+matrix:
+  exclude:
+    - jdk: openjdk11
+      scala: 2.10.7
 env:
   global:
   - secure: LZqtbvSqVPpycaMLC9FnCaEs70WLt9tr+477t6jdCwyUgkaRfcBvLVeh/EsH4RJW+GtvNqmpZ43dpUGrnxZktFvZz+1LdPNtVggLza+ysMd/KlVlSXT1Re1NvArc4nE9Po+hQws26ehvlk2+BKh0e5SfXRU/3+NDs1H0bgtkQVU=
