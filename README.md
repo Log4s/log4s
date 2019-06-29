@@ -44,8 +44,9 @@ facilitating the testing of logging-related code.
 
 ### Requirements
 
-Scala 2.11, and 2.12 are fully supported. No special settings or compiler
-options are required: just add the dependency as described above.
+Scala 2.11, 2.12 and 2.13 are fully supported. No special settings or
+compiler options are required: just add the dependency as described
+above.
 
 #### Scala 2.10
 
@@ -54,14 +55,6 @@ may be removed in any future minor release if there's a reason. (It will not
 be removed in a patch release.)
 
 The macro paradise compiler extensions are not required for Scala 2.10.
-
-#### Scala 2.13
-
-Efforts will be made to support Scala 2.13 milestones and release candidates
-within a short time after they are available, and it has very few build
-dependencies so there are usually no complications. If a new Log4s version has
-not yet been published for a prerelease version of Scala, feel free to file a
-ticket requesting a build for the new version.
 
 ### Getting a logger
 
