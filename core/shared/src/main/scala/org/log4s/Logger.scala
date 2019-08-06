@@ -12,36 +12,42 @@ object Logger {
     def isEnabled: Boolean
     def apply(msg: => String): Unit
     def apply(t: Throwable)(msg: => String): Unit
+    def underlying: JLogger
   }
 
   final class TraceLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
     @inline def isEnabled = logger.isTraceEnabled
     @inline def apply(msg: => String) = if (isEnabled) logger.trace(msg)
     @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.trace(msg, t)
+    @inline def underlying = logger
   }
 
   final class DebugLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
     @inline def isEnabled = logger.isDebugEnabled
     @inline def apply(msg: => String) = if (isEnabled) logger.debug(msg)
     @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.debug(msg, t)
+    @inline def underlying = logger
   }
 
   final class InfoLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
     @inline def isEnabled = logger.isInfoEnabled
     @inline def apply(msg: => String) = if (isEnabled) logger.info(msg)
     @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.info(msg, t)
+    @inline def underlying = logger
   }
 
   final class WarnLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
     @inline def isEnabled = logger.isWarnEnabled
     @inline def apply(msg: => String) = if (isEnabled) logger.warn(msg)
     @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.warn(msg, t)
+    @inline def underlying = logger
   }
 
   final class ErrorLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
     @inline def isEnabled = logger.isErrorEnabled
     @inline def apply(msg: => String) = if (isEnabled) logger.error(msg)
     @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.error(msg, t)
+    @inline def underlying = logger
   }
 }
 
