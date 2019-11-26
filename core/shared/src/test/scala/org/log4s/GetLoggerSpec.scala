@@ -115,6 +115,11 @@ class GetLoggerSpec extends FlatSpec with Matchers with GivenWhenThen with Logge
     val hkt = new GetLoggerSpecKinds.NestedKind1[Seq]
     hkt.logger.name shouldEqual "org.log4s.GetLoggerSpecKinds.NestedKind1"
   }
+
+  it should "use classOf from scala.Predef" in {
+    val classOf = 1 // shadow the symbol to make compilation fail if it’s attempted to be used
+    getLogger.name shouldEqual "org.log4s.GetLoggerSpec"
+  }
 }
 
 private class GetLoggerSpecParam[A] {
