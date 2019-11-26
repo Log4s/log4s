@@ -62,7 +62,7 @@ private[log4s] object LoggerMacros {
       val typeParams = typeSymbol.typeParams
 
       if (typeParams.isEmpty) {
-        loggerByParam(q"classOf[$typeSymbol]")
+        loggerByParam(q"_root_.scala.Predef.classOf[$typeSymbol]")
       } else {
         if (typeParams.exists(_.asType.typeParams.nonEmpty)) {
           /* We have at least one higher-kinded type: fall back to by-name logger construction, as
@@ -71,7 +71,7 @@ private[log4s] object LoggerMacros {
         } else {
           val typeArgs = List.fill(typeParams.length)(WildcardType)
           val typeConstructor = tq"$typeSymbol[..${typeArgs}]"
-          loggerByParam(q"classOf[$typeConstructor]")
+          loggerByParam(q"_root_.scala.Predef.classOf[$typeConstructor]")
         }
       }
     }
