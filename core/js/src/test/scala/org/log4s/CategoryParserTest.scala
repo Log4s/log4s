@@ -5,9 +5,10 @@ import scala.collection.immutable.{ Seq => ISeq }
 import org.scalacheck._
 import org.scalacheck.Arbitrary._
 
-import org.scalatest._
-import org.scalatest.prop.PropertyChecks
-import org.scalatest.Matchers._
+import org.scalatest.Assertion
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers._
 
 private object LoggerParserSpec {
   private[this] final val catParser = LoggerParser
@@ -56,7 +57,7 @@ private object LoggerParserSpec {
 
 import LoggerParserSpec._
 
-class LoggerParserSpec extends FlatSpec with PropertyChecks {
+class LoggerParserSpec extends AnyFlatSpec with ScalaCheckPropertyChecks {
   it should "handle the root logger correctly" in {
     "" should select loggerOf (Nil)
   }

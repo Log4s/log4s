@@ -10,7 +10,7 @@ object Log4s {
   @JSExport("getLogger")
   def getLogger(name: String) = org.slf4j.LoggerFactory.getLogger(name)
   @JSExport("Config")
-  val Config = Log4sConfig
+  val Config = org.log4s.log4sjs.Log4sConfig
   @JSExport("MDC")
   val MDC = log4sjs.Log4sMDC
   @JSExport("LogThreshold")
