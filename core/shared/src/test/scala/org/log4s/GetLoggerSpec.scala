@@ -2,13 +2,15 @@ package org.log4s
 
 import language.higherKinds
 
-import org.scalatest._
+import org.scalatest.GivenWhenThen
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 /** Test suite for the behavior of `getLogger`.
   *
   * @author Sarah Gerweck <sarah@atscale.com>
   */
-class GetLoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerInit {
+class GetLoggerSpec extends AnyFlatSpec with Matchers with GivenWhenThen with LoggerInit {
   private[this] val logger = getLogger
 
   behavior of "getLogger"

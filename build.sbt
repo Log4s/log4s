@@ -25,18 +25,10 @@ releaseProcess := Seq[ReleaseStep](
 )
 val prevVersions = settingKey[Set[String]]("The previous versions for the current project")
 val prevArtifacts = Def.derive {
-  mimaPreviousArtifacts := {
-    /* TODO: I imagine there's a better way to do this */
-    val artName = {
-      val suffix = if (isScalaJSProject.value) "_sjs0.6" else ""
-      artifact.value.name + suffix
-    }
-    prevVersions.value.map(organization.value %% artName % _)
-  }
+  mimaPreviousArtifacts := prevVersions.value.map(organization.value %%% artifact.value.name % _)
 }
 
 def jsOpts = new Def.SettingList(Seq(
-  scalacOptions += "-P:scalajs:sjsDefinedByDefault",
   scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
 ))
 
@@ -81,10 +73,11 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
 
     libraryDependencies ++= Seq (
       slf4j,
-      logback          %   "test",
-      "org.scalacheck" %%% "scalacheck" % scalacheckVersion % "test",
-      "org.scalatest"  %%% "scalatest"  % scalatestVersion % "test",
-      reflect.value    %   "provided"
+      logback             %   "test",
+      "org.scalacheck"    %%% "scalacheck"      % scalacheckVersion              % "test",
+      "org.scalatest"     %%% "scalatest"       % scalatestVersion               % "test",
+      "org.scalatestplus" %%% "scalacheck-1-14" % scalatestPlusScalacheckVersion % "test",
+      reflect.value       %   "provided"
     ),
 
     unmanagedSourceDirectories in Compile ++= {
@@ -107,7 +100,7 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
 
   )
   .jvmSettings(
-    libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided",
+    libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalajsStubsVersion % "provided",
     prevVersions := {
       /* I'm using the first & last version of each minor release rather than
        * including every single patch-level update. */

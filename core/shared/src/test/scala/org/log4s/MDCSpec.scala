@@ -1,12 +1,14 @@
 package org.log4s
 
-import org.scalatest._
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 /** Test specs for mapped diagnostic contexts.
   *
   * @author Sarah Gerweck <sarah@atscale.com>
   */
-class MDCSpec extends FlatSpec with Matchers with BeforeAndAfterAll {
+class MDCSpec extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   behavior of "MDC"
 
   it should "start out empty" in {
