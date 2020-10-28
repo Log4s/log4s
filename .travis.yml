@@ -4,9 +4,8 @@ branches:
     - /^v\d/
 language: scala
 scala:
-  - 2.10.7
   - 2.11.12
-  - 2.12.8
+  - 2.12.11
   - 2.13.3
 script:
   - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION test makeSite'
@@ -14,10 +13,6 @@ script:
 jdk:
   - openjdk8
   - openjdk11
-matrix:
-  exclude:
-    - jdk: openjdk11
-      scala: 2.10.7
 env:
   global:
   - secure: LZqtbvSqVPpycaMLC9FnCaEs70WLt9tr+477t6jdCwyUgkaRfcBvLVeh/EsH4RJW+GtvNqmpZ43dpUGrnxZktFvZz+1LdPNtVggLza+ysMd/KlVlSXT1Re1NvArc4nE9Po+hQws26ehvlk2+BKh0e5SfXRU/3+NDs1H0bgtkQVU=

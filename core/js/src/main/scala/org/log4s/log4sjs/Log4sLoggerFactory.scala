@@ -6,7 +6,7 @@ import scala.scalajs.js
 import org.slf4j.{ ILoggerFactory, Logger }
 
 class Log4sLoggerFactory extends ILoggerFactory {
-  @inline private final def config = Log4sConfig
+  @inline private final def config = org.log4s.log4sjs.Log4sConfig
   private[this] final class Log4sLoggerInstance private[Log4sLoggerFactory] (private[this] val name: String) extends Logger {
     private[this] val path = LoggerParser(name)
 

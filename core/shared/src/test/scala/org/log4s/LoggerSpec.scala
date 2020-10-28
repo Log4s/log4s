@@ -1,6 +1,8 @@
 package org.log4s
 
-import org.scalatest._
+import org.scalatest.GivenWhenThen
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 import ch.qos.logback.classic.{ Level => Lvl }
 
@@ -8,7 +10,7 @@ import ch.qos.logback.classic.{ Level => Lvl }
   *
   * @author Sarah Gerweck <sarah@atscale.com>
   */
-class LoggerSpec extends FlatSpec with Matchers with GivenWhenThen with LoggerInit {
+class LoggerSpec extends AnyFlatSpec with Matchers with GivenWhenThen with LoggerInit {
   private[this] val testLogger = getLogger("test")
   private[this] val traceLogger = getLogger("level.tr")
   private[this] val debugLogger = getLogger("level.de")
