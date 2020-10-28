@@ -112,3 +112,4 @@ changes to how it's coded or built, see the Git history.
 * Add support for Scala.js 1.0
 * Drops support for Scala 2.10
 * Drops support for Scala.js 0.6
+* Built against Scala 2.13.3 and 2.12.12
