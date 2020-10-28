@@ -6,7 +6,7 @@ language: scala
 scala:
   - 2.11.12
   - 2.12.11
-  - 2.13.2
+  - 2.13.3
 script:
   - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION test makeSite'
   - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then sbt ++$TRAVIS_SCALA_VERSION publish; fi'
