@@ -104,3 +104,11 @@ changes to how it's coded or built, see the Git history.
 ### 1.8.2
 
 * Add support for Scala 2.13.0
+
+### 1.9.0
+
+* Set internal flag to prevent second initialization
+* Use fully-qualified `classOf` from `scala.Predef`
+* Add support for Scala.js 1.0
+* Drops support for Scala 2.10
+* Drops support for Scala.js 0.6
