@@ -135,12 +135,13 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
             "1.7.0",
             "1.8.0", "1.8.1")
       def `2.13Versions` =
-        Set("1.8.2")
+        Set("1.8.2",
+            "1.9.0")
       scalaBinaryVersion.value match {
-        case "2.10" | "2.11" => `2.11Versions` ++ `2.12Versions` ++ `2.13Versions`
-        case "2.12"          => `2.12Versions` ++ `2.13Versions`
-        case "2.13"          => `2.13Versions`
-        case other           =>
+        case "2.11" => `2.11Versions` ++ `2.12Versions` ++ `2.13Versions`
+        case "2.12" => `2.12Versions` ++ `2.13Versions`
+        case "2.13" => `2.13Versions`
+        case other  =>
           sLog.value.info(s"No known MIMA artifacts for: $other")
           Set.empty
       }
