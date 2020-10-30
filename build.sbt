@@ -47,7 +47,9 @@ lazy val root: Project = (project in file ("."))
     exportJars := false,
 
     skip in Compile := true,
-    skip in Test := true
+    skip in Test := true,
+
+    mimaFailOnNoPrevious := false
   )
 
 lazy val jsPrevVersions = Set.empty[String]
@@ -64,10 +66,26 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
       import com.typesafe.tools.mima.core._
       import ProblemFilters.exclude
       /* import com.typesafe.tools.mima.core.ProblemFilters._ */
-      /* These macros are not part of the runtime and are not a binary compatibility concern */
       Seq(
+        /* These macros are not part of the runtime and are not a binary compatibility concern */
         exclude[IncompatibleResultTypeProblem]("org.log4s.LoggerMacros.*"),
         exclude[IncompatibleMethTypeProblem]("org.log4s.LoggerMacros.getLoggerImpl"),
+
+        /* These false positives happened in log4s-1.7.0 when we
+         * upgraded to Scala 2.12.8.
+         *
+         * See https://github.com/lightbend/mima/issues/388 */
+        exclude[DirectMissingMethodProblem]("org.log4s.MDC.+"),
+        exclude[DirectMissingMethodProblem]("org.log4s.MDC.++"),
+        exclude[DirectMissingMethodProblem]("org.log4s.MDC.-"),
+        exclude[DirectMissingMethodProblem]("org.log4s.MDC.--"),
+        exclude[DirectMissingMethodProblem]("org.log4s.MDC.andThen"),
+        exclude[DirectMissingMethodProblem]("org.log4s.MDC.clone"),
+        exclude[DirectMissingMethodProblem]("org.log4s.MDC.empty"),
+        exclude[DirectMissingMethodProblem]("org.log4s.MDC.filterNot"),
+        exclude[DirectMissingMethodProblem]("org.log4s.MDC.seq"),
+        exclude[DirectMissingMethodProblem]("org.log4s.MDC.updated"),
+        exclude[DirectMissingMethodProblem]("org.log4s.MDC.view"),
       )
     },
 
