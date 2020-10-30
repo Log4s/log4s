@@ -1,7 +1,7 @@
 import sbt._
 
 import sbtrelease.ReleasePlugin.autoImport._
-import com.typesafe.sbt.SbtPgp.autoImport._
+import com.jsuereth.sbtpgp.SbtPgp.autoImport._
 
 object Release {
   lazy val settings = Seq (
