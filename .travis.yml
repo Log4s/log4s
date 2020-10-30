@@ -5,7 +5,7 @@ branches:
 language: scala
 scala:
   - 2.11.12
-  - 2.12.11
+  - 2.12.12
   - 2.13.3
 script:
   - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION test makeSite'
