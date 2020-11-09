@@ -45,7 +45,7 @@ object Logger {
   }
 }
 
-final class Logger(val logger: JLogger) extends AnyVal {
+final class Logger(val logger: JLogger) extends AnyVal with LoggerCompat {
   /** The name of this logger. */
   @inline def name = logger.getName
 
@@ -76,22 +76,4 @@ final class Logger(val logger: JLogger) extends AnyVal {
     case Warn  => new WarnLevelLogger(logger)
     case Error => new ErrorLevelLogger(logger)
   }
-
-  import LoggerMacros._
-
-  def trace(t: Throwable)(msg: String): Unit = macro traceTM
-  def trace(msg: String): Unit = macro traceM
-
-  def debug(t: Throwable)(msg: String): Unit = macro debugTM
-  def debug(msg: String): Unit = macro debugM
-
-  def info(t: Throwable)(msg: String): Unit = macro infoTM
-  def info(msg: String): Unit = macro infoM
-
-  def warn(t: Throwable)(msg: String): Unit = macro warnTM
-  def warn(msg: String): Unit = macro warnM
-
-  def error(t: Throwable)(msg: String): Unit = macro errorTM
-  def error(msg: String): Unit = macro errorM
-
 }

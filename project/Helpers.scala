@@ -36,6 +36,7 @@ object HelpersImpl {
     }
 
     sealed trait Backend
+    case object DottyBackend extends Backend
     case object NewBackend extends Backend
     case object SupportsNewBackend extends Backend
     case object OldBackend extends Backend
@@ -45,6 +46,7 @@ object HelpersImpl {
       val requireJava8: Boolean
 
       def supportsNewBackend = backend match {
+        case DottyBackend       => false
         case NewBackend         => true
         case SupportsNewBackend => true
         case OldBackend         => false
@@ -53,18 +55,15 @@ object HelpersImpl {
     object SVer {
       def apply(scalaVersion: String): SVer = {
         CrossVersion.partialVersion(scalaVersion) match {
-          case Some((2, 10))           => SVer2_10
           case Some((2, 11))           => SVer2_11
           case Some((2, 12))           => SVer2_12
           case Some((2, n)) if n >= 13 => SVer2_13
+          case Some((0, _))            => SVerDotty
+          case Some((3, _))            => SVerDotty
           case _ =>
             throw new IllegalArgumentException(s"Scala version $scalaVersion is not supported")
         }
       }
-    }
-    case object SVer2_10 extends SVer {
-      override final val backend = OldBackend
-      override final val requireJava8 = false
     }
     case object SVer2_11 extends SVer {
       override final val backend = SupportsNewBackend
@@ -76,6 +75,10 @@ object HelpersImpl {
     }
     case object SVer2_13 extends SVer {
       override final val backend = NewBackend
+      override final val requireJava8 = true
+    }
+    case object SVerDotty extends SVer {
+      override final val backend = DottyBackend
       override final val requireJava8 = true
     }
   }

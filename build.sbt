@@ -94,22 +94,25 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
       logback             %   "test",
       "org.scalacheck"    %%% "scalacheck"      % scalacheckVersion              % "test",
       "org.scalatest"     %%% "scalatest"       % scalatestVersion               % "test",
-      "org.scalatestplus" %%% "scalacheck-1-14" % scalatestPlusScalacheckVersion % "test",
-      reflect.value       %   "provided"
+      "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion % "test",
     ),
+    libraryDependencies ++= {
+      if (isDotty.value) Seq.empty
+      else Seq(reflect.value)
+    },
 
     unmanagedSourceDirectories in Compile ++= {
       scalaBinaryVersion.value match {
-        case "2.10" | "2.11" =>
-          Seq.empty
-        case _ =>
-          Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-2.11")
+        case "2.11" | "2.12" | "2.13" =>
+          Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-2")
+        case "0.27" | "3.0.0-M1" =>
+          Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-3")
       }
     },
 
     unmanagedSourceDirectories in Compile ++= {
       scalaBinaryVersion.value match {
-        case "2.10" | "2.11" | "2.12" =>
+        case "2.11" | "2.12" =>
           Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-oldcoll")
         case _ =>
           Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-newcoll")
@@ -118,7 +121,7 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
 
   )
   .jvmSettings(
-    libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalajsStubsVersion % "provided",
+    libraryDependencies += ("org.scala-js" %% "scalajs-stubs" % scalajsStubsVersion % "provided").withDottyCompat(scalaVersion.value),
     prevVersions := {
       /* I'm using the first & last version of each minor release rather than
        * including every single patch-level update. */
@@ -136,11 +139,14 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
             "1.8.0", "1.8.1")
       def `2.13Versions` =
         Set("1.8.2")
+      def DottyVersions =
+        Set.empty[String]
       scalaBinaryVersion.value match {
-        case "2.10" | "2.11" => `2.11Versions` ++ `2.12Versions` ++ `2.13Versions`
-        case "2.12"          => `2.12Versions` ++ `2.13Versions`
-        case "2.13"          => `2.13Versions`
-        case other           =>
+        case "2.11"              => `2.11Versions` ++ `2.12Versions` ++ `2.13Versions` ++ DottyVersions
+        case "2.12"              => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
+        case "2.13"              => `2.13Versions` ++ DottyVersions
+        case "0.27" | "3.0.0-M1" => DottyVersions
+        case other               =>
           sLog.value.info(s"No known MIMA artifacts for: $other")
           Set.empty
       }
@@ -171,9 +177,11 @@ lazy val testing = (crossProject(JSPlatform, JVMPlatform) in file ("testing"))
     prevVersions := {
       val `2.12Versions` = Set("1.5.0", "1.6.0", "1.6.1", "1.7.0", "1.8.0", "1.8.1")
       val `2.13Versions` = Set("1.8.2")
+      val DottyVersions  = Set.empty[String]
       scalaBinaryVersion.value match {
-        case "2.10" | "2.11" | "2.12" => `2.12Versions` ++ `2.13Versions`
-        case "2.13"                   => `2.13Versions`
+        case "2.11" | "2.12"     => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
+        case "2.13"              => `2.13Versions` ++ DottyVersions
+        case "0.27" | "3.0.0-M1" => DottyVersions
         case other =>
           Set.empty
       }
