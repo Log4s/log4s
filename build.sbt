@@ -94,7 +94,7 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
       logback             %   "test",
       "org.scalacheck"    %%% "scalacheck"      % scalacheckVersion              % "test",
       "org.scalatest"     %%% "scalatest"       % scalatestVersion               % "test",
-      "org.scalatestplus" %%% "scalacheck-1-14" % scalatestPlusScalacheckVersion % "test",
+      "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion % "test",
       reflect.value       %   "provided"
     ),
 
