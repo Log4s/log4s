@@ -19,12 +19,12 @@ class GetLoggerSpec extends AnyFlatSpec with Matchers with GivenWhenThen with Lo
     logger.name shouldEqual "org.log4s.GetLoggerSpec"
   }
 
-  it should "properly name simply parametrized class loggers" in {
+  it should "properly name simply parameterized class loggers" in {
     val lsp = new GetLoggerSpecParam[GetLoggerSpec]
     lsp.logger.name shouldEqual "org.log4s.GetLoggerSpecParam"
   }
 
-  it should "properly name complex parametrized class loggers" in {
+  it should "properly name complex parameterized class loggers" in {
     implicit val intPrinter = new Printable[Int] { def print(i: Int) = i.toString }
     val lspb = new GetLoggerSpecParamBounded(3)
     lspb.logger.name shouldEqual "org.log4s.GetLoggerSpecParamBounded"
