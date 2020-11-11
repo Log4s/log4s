@@ -25,19 +25,37 @@ private[log4s] object LoggerMacros {
       }
     }
 
-    val cls = findEnclosingClass(Symbol.currentOwner)
-
-    def loggerByName(name: Expr[String]): Expr[Logger] =
-      '{new Logger(JLoggerFactory.getLogger($name))}
-
-    def loggerBySymbolName(s: Symbol): Expr[Logger] = {
+    def logger(s: Symbol): Expr[Logger] = {
       def fullName(s: Symbol): String = {
-        s.fullName
+        val flags = s.flags
+        if (flags.is(Flags.Package)) {
+          s.fullName
+        }
+        else if (s.isClassDef) {
+          if (flags.is(Flags.ModuleClass & Flags.Object) && !flags.is(Flags.Package)) {
+            if (s.name == "package$") {
+              fullName(s.owner)
+            }
+            else {
+              val chomped = s.name.stripSuffix("$")
+              fullName(s.owner) + "." + chomped
+            }
+          }
+          else {
+            fullName(s.owner) + "." + s.name
+          }
+        }
+        else {
+          fullName(s.owner)
+        }
       }
-      loggerByName(Expr(fullName(s)))
+
+      val name = Expr(fullName(s))
+      '{ new Logger(JLoggerFactory.getLogger($name)) }
     }
 
-    loggerBySymbolName(cls)
+    val cls = findEnclosingClass(Symbol.currentOwner)
+    logger(cls)
   }
 
   def traceTM(logger: Expr[JLogger])(t: Expr[Throwable])(msg: Expr[String])(using qctx: QuoteContext) =
