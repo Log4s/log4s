@@ -8,17 +8,22 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
  * work if you were to dynamically modify the cross-build settings. The key is
  * autoimported and named `mimaReportBinaryIssues`. */
 lazy val binaryCompatStep = releaseStepCommandAndRemaining("+mimaReportBinaryIssues")
+
+// Workarounds for Dotty being incomplete
+lazy val testIfRelevantStep = releaseStepCommandAndRemaining("+testIfRelevant")
+lazy val publishIfRelevantStep = releaseStepCommandAndRemaining("+publishSignedIfRelevant")
+
 /* This is the standard release process plus a binary compat check after tests */
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
   inquireVersions,
   runClean,
-  runTest,
+  testIfRelevantStep,
   binaryCompatStep,
   setReleaseVersion,
   commitReleaseVersion,
   tagRelease,
-  publishArtifacts,
+  publishIfRelevantStep,
   setNextVersion,
   commitNextVersion,
   pushChanges
