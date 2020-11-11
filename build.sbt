@@ -29,7 +29,8 @@ val prevArtifacts = Def.derive {
 }
 
 def jsOpts = new Def.SettingList(Seq(
-  scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+  scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
+  crossScalaVersions := crossScalaVersions.value.filter(_.startsWith("2."))
 ))
 
 lazy val root: Project = (project in file ("."))

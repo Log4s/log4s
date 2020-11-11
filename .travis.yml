@@ -9,7 +9,7 @@ scala:
   - 2.13.3
   - 3.0.0-M1
 script:
-  - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION test mimaReportBinaryIssues makeSite'
+  - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION testIfRelevant mimaReportBinaryIssues makeSite'
   - 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then sbt ++$TRAVIS_SCALA_VERSION publish; fi'
 jdk:
   - openjdk8
