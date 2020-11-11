@@ -113,3 +113,7 @@ changes to how it's coded or built, see the Git history.
 * Drops support for Scala 2.10
 * Drops support for Scala.js 0.6
 * Built against Scala 2.13.3 and 2.12.12
+
+### 1.10.0-M1
+
+* **Experimental** support for Scala 3.0.0-M1. Currently JVM only.
