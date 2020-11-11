@@ -146,7 +146,8 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
             "1.7.0",
             "1.8.0", "1.8.1")
       def `2.13Versions` =
-        Set("1.8.2")
+        Set("1.8.2",
+            "1.9.0")
       def DottyVersions =
         Set.empty[String]
       scalaBinaryVersion.value match {
