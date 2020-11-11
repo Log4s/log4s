@@ -12,6 +12,7 @@ bin
 .cache
 .cache-main
 .cache-tests
+/.bsp
 
 # Metals files
 .bloop
