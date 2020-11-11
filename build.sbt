@@ -99,8 +99,6 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
       slf4j,
       logback             %   "test",
       "org.scalacheck"    %%% "scalacheck"      % scalacheckVersion              % "test",
-      "org.scalatest"     %%% "scalatest"       % scalatestVersion               % "test",
-      "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion % "test",
     ),
     libraryDependencies ++= {
       if (isDotty.value) Seq.empty
@@ -128,6 +126,10 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
   )
   .jvmSettings(
     libraryDependencies += ("org.scala-js" %% "scalajs-stubs" % scalajsStubsVersion % "provided").withDottyCompat(scalaVersion.value),
+    libraryDependencies ++= Seq(
+      "org.scalatest"     %%% "scalatest"       % scalatestVersion,
+      "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion
+    ),
     prevVersions := {
       /* I'm using the first & last version of each minor release rather than
        * including every single patch-level update. */
@@ -160,7 +162,14 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
   )
   .jsSettings(jsOpts)
   .jsSettings(
-    prevVersions := jsPrevVersions
+    prevVersions := jsPrevVersions,
+    libraryDependencies ++= {
+      if (!isDotty.value) Seq(
+        "org.scalatest"     %%% "scalatest"       % scalatestVersion,
+        "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion
+      )
+      else Seq.empty
+    }
   )
 
 lazy val coreJS = core.js
