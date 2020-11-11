@@ -49,7 +49,7 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
       if (noBuildDocs) {
         Seq(sources in (Compile, doc) := Seq.empty)
       } else {
-        Seq.empty
+        docOptions()
       }
     ) ++ (
       if (autoAddCompileOptions) {
@@ -181,6 +181,16 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
       options
     }
   }
+
+  def docOptions() = Seq(
+    Compile / doc / sources := {
+      val old = (Compile / doc / sources).value
+      if (isDotty.value)
+        Seq()
+      else
+        old
+    }
+  )
 
   private[this] lazy val githubOrgPage = url(s"https://github.com/${githubOrganization}")
 }
