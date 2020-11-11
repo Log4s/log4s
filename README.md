@@ -670,7 +670,7 @@ features so we can agree on the general design.
 ### Maintainers
 
 - [Sarah Gerweck](https://github.com/sarahgerweck/) (creator & primary maintainer)
-- [Ross Baker](https://github.com/rossabaker)
+- [Ross A. Baker](https://github.com/rossabaker)
 
 ### Additional contributors
 
@@ -679,5 +679,7 @@ Here are all other contributors, listed chronologically. Thanks to all!
 - [Bryce Anderson](https://github.com/bryce-anderson)
 - [David Ross](https://github.com/dyross)
 - [Seth Tisue](https://github.com/SethTisue)
-- [Ross Baker](https://github.com/rossabaker)
 - [Michal](https://github.com/mkows)
+- [Sean Sullivan](https://github.com/sullis)
+- [Olli Helenius](https://github.com/liff)
+- [Raúl Piaggio](https://github.com/rpiaggio)
