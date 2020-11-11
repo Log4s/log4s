@@ -11,7 +11,7 @@ private[log4s] object LoggerMacros {
 
   /** Get a logger by reflecting the enclosing class name. */
   final def getLoggerImpl(using qctx: QuoteContext): Expr[Logger] = {
-    import qctx.tasty._
+    import qctx.reflect._
 
     @tailrec def findEnclosingClass(sym: Symbol): Symbol = {
       sym match {
