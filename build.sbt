@@ -103,9 +103,9 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
 
     unmanagedSourceDirectories in Compile ++= {
       scalaBinaryVersion.value match {
-        case "2.11" | "2.12" | "2.13" =>
+        case s if s.startsWith("2.") =>
           Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-2")
-        case "0.27" | "3.0.0-M1" =>
+        case s if s.startsWith("3.") =>
           Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-3")
       }
     },
@@ -142,11 +142,11 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
       def DottyVersions =
         Set.empty[String]
       scalaBinaryVersion.value match {
-        case "2.11"              => `2.11Versions` ++ `2.12Versions` ++ `2.13Versions` ++ DottyVersions
-        case "2.12"              => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
-        case "2.13"              => `2.13Versions` ++ DottyVersions
-        case "0.27" | "3.0.0-M1" => DottyVersions
-        case other               =>
+        case "2.11"     => `2.11Versions` ++ `2.12Versions` ++ `2.13Versions` ++ DottyVersions
+        case "2.12"     => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
+        case "2.13"     => `2.13Versions` ++ DottyVersions
+        case "3.0.0-M1" => DottyVersions
+        case other      =>
           sLog.value.info(s"No known MIMA artifacts for: $other")
           Set.empty
       }
@@ -179,9 +179,9 @@ lazy val testing = (crossProject(JSPlatform, JVMPlatform) in file ("testing"))
       val `2.13Versions` = Set("1.8.2")
       val DottyVersions  = Set.empty[String]
       scalaBinaryVersion.value match {
-        case "2.11" | "2.12"     => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
-        case "2.13"              => `2.13Versions` ++ DottyVersions
-        case "0.27" | "3.0.0-M1" => DottyVersions
+        case "2.11" | "2.12" => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
+        case "2.13"          => `2.13Versions` ++ DottyVersions
+        case "3.0.0-M1"      => DottyVersions
         case other =>
           Set.empty
       }
