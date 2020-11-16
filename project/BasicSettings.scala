@@ -1,5 +1,6 @@
 /* Note: This file is shared among many projects. Avoid putting project-specific things here. */
 
+import dotty.tools.sbtplugin.DottyPlugin.autoImport.isDotty
 import sbt._
 import sbt.Keys._
 
@@ -48,7 +49,7 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
       if (noBuildDocs) {
         Seq(sources in (Compile, doc) := Seq.empty)
       } else {
-        Seq.empty
+        docOptions()
       }
     ) ++ (
       if (autoAddCompileOptions) {
@@ -90,8 +91,14 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
       if (sv.backend == SupportsNewBackend && newBackend) {
         options :+= "-Ybackend:GenBCode"
       }
-      if (disableAsserts) {
+      if (disableAsserts && !isDotty.value) {
         options :+= "-Xdisable-assertions"
+      }
+      if (isDotty.value) {
+        options ++= List("-source:3.0-migration", "-language:implicitConversions")
+      }
+      if (!isDotty.value) {
+        options :+= "-Yrangepos"
       }
 
       options
@@ -135,6 +142,8 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
             options :+= "-opt:l:project"
           }
           doNewWarn()
+        } else if (sv.backend == DottyBackend) {
+          // TODO Any interesting ones here?
         } else {
           options :+= "-optimize"
           if (optimizeWarn) {
@@ -149,8 +158,7 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
 
   def addScalacOptions(optim: Boolean = optimize) = new Def.SettingList(Seq(
     basicScalacOptions,
-    optimizationScalacOptions(optim),
-    scalacOptions ++= extraScalacOptions
+    optimizationScalacOptions(optim)
   ))
 
   def addJavacOptions() = Def.derive {
@@ -173,6 +181,16 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
       options
     }
   }
+
+  def docOptions() = Seq(
+    Compile / doc / sources := {
+      val old = (Compile / doc / sources).value
+      if (isDotty.value)
+        Seq()
+      else
+        old
+    }
+  )
 
   private[this] lazy val githubOrgPage = url(s"https://github.com/${githubOrganization}")
 }

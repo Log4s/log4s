@@ -4,6 +4,7 @@ import java.util.{ Map => JMap }
 import java.util.Collections.EMPTY_MAP
 
 import scala.collection.JavaConverters._
+import scala.language.implicitConversions
 
 import org.slf4j.{ MDC => JMDC }
 

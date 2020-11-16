@@ -79,19 +79,28 @@ final class Logger(val logger: JLogger) extends AnyVal {
 
   import LoggerMacros._
 
-  def trace(t: Throwable)(msg: String): Unit = macro traceTM
-  def trace(msg: String): Unit = macro traceM
+  inline def trace(inline t: Throwable)(inline msg: String): Unit =
+    ${traceTM('logger)('t)('msg)}
+  inline def trace(inline msg: String): Unit =
+    ${traceM('logger)('msg)}
 
-  def debug(t: Throwable)(msg: String): Unit = macro debugTM
-  def debug(msg: String): Unit = macro debugM
+  inline def debug(inline t: Throwable)(inline msg: String): Unit =
+    ${debugTM('logger)('t)('msg)}
+  inline def debug(inline msg: String): Unit =
+    ${debugM('logger)('msg)}
 
-  def info(t: Throwable)(msg: String): Unit = macro infoTM
-  def info(msg: String): Unit = macro infoM
+  inline def info(inline t: Throwable)(inline msg: String): Unit =
+    ${infoTM('logger)('t)('msg)}
+  inline def info(inline msg: String): Unit =
+    ${infoM('logger)('msg)}
 
-  def warn(t: Throwable)(msg: String): Unit = macro warnTM
-  def warn(msg: String): Unit = macro warnM
+  inline def warn(inline t: Throwable)(inline msg: String): Unit =
+    ${warnTM('logger)('t)('msg)}
+  inline def warn(inline msg: String): Unit =
+    ${warnM('logger)('msg)}
 
-  def error(t: Throwable)(msg: String): Unit = macro errorTM
-  def error(msg: String): Unit = macro errorM
-
+  inline def error(inline t: Throwable)(inline msg: String): Unit =
+    ${errorTM('logger)('t)('msg)}
+  inline def error(inline msg: String): Unit =
+    ${errorM('logger)('msg)}
 }
