@@ -105,7 +105,7 @@ changes to how it's coded or built, see the Git history.
 
 * Add support for Scala 2.13.0
 
-### 1.9.0
+## 1.9
 
 * Set internal flag to prevent second initialization
 * Use fully-qualified `classOf` from `scala.Predef`
@@ -114,6 +114,12 @@ changes to how it's coded or built, see the Git history.
 * Drops support for Scala.js 0.6
 * Built against Scala 2.13.3 and 2.12.12
 
+## 1.10
+
 ### 1.10.0-M1
 
 * **Experimental** support for Scala 3.0.0-M1. Currently JVM only.
+
+### 1.10.0-M2
+
+* Remove scala-reflect, scalatest, and scalacheck from compile scope.
