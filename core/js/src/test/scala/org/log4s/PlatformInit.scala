@@ -43,7 +43,7 @@ object PlatformInit extends IPlatformInit {
             }
             makeThrowableProxy(throwable.orNull)
           }
-          def getTimeStamp() = event.timestamp.getTime.toLong
+          def getTimeStamp() = event.timestamp.getTime().toLong
           def hasCallerData() = false
 
           /* Note that the `throwable` parameter is permitted to be null */

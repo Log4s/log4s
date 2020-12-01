@@ -43,7 +43,7 @@ object TestAppender {
   }
 
   def dequeue: Option[LoggedEvent] = synchronized {
-    Try(events.dequeue).toOption
+    Try(events.dequeue()).toOption
   }
 
   def dequeueAll(p: LoggedEvent => Boolean = Function.const(true)): Seq[LoggedEvent] = synchronized {
@@ -79,12 +79,12 @@ object TestAppender {
       require(events.isEmpty)
     }
     if (autoClear) {
-      events.clear
+      events.clear()
     }
     val result = Try(f)
     val endSize = events.size
     if (autoClear) {
-      events.clear
+      events.clear()
     }
     result
       .flatMap { r =>

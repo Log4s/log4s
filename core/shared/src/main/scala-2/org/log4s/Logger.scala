@@ -15,31 +15,31 @@ object Logger {
   }
 
   final class TraceLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
-    @inline def isEnabled = logger.isTraceEnabled
+    @inline def isEnabled = logger.isTraceEnabled()
     @inline def apply(msg: => String) = if (isEnabled) logger.trace(msg)
     @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.trace(msg, t)
   }
 
   final class DebugLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
-    @inline def isEnabled = logger.isDebugEnabled
+    @inline def isEnabled = logger.isDebugEnabled()
     @inline def apply(msg: => String) = if (isEnabled) logger.debug(msg)
     @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.debug(msg, t)
   }
 
   final class InfoLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
-    @inline def isEnabled = logger.isInfoEnabled
+    @inline def isEnabled = logger.isInfoEnabled()
     @inline def apply(msg: => String) = if (isEnabled) logger.info(msg)
     @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.info(msg, t)
   }
 
   final class WarnLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
-    @inline def isEnabled = logger.isWarnEnabled
+    @inline def isEnabled = logger.isWarnEnabled()
     @inline def apply(msg: => String) = if (isEnabled) logger.warn(msg)
     @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.warn(msg, t)
   }
 
   final class ErrorLevelLogger private[log4s](val logger: JLogger) extends AnyVal with LevelLogger {
-    @inline def isEnabled = logger.isErrorEnabled
+    @inline def isEnabled = logger.isErrorEnabled()
     @inline def apply(msg: => String) = if (isEnabled) logger.error(msg)
     @inline def apply(t: Throwable)(msg: => String) = if (isEnabled) logger.error(msg, t)
   }
@@ -47,17 +47,17 @@ object Logger {
 
 final class Logger(val logger: JLogger) extends AnyVal {
   /** The name of this logger. */
-  @inline def name = logger.getName
+  @inline def name = logger.getName()
 
-  @inline def isTraceEnabled: Boolean = logger.isTraceEnabled
+  @inline def isTraceEnabled: Boolean = logger.isTraceEnabled()
 
-  @inline def isDebugEnabled: Boolean = logger.isDebugEnabled
+  @inline def isDebugEnabled: Boolean = logger.isDebugEnabled()
 
-  @inline def isInfoEnabled: Boolean = logger.isInfoEnabled
+  @inline def isInfoEnabled: Boolean = logger.isInfoEnabled()
 
-  @inline def isWarnEnabled: Boolean = logger.isWarnEnabled
+  @inline def isWarnEnabled: Boolean = logger.isWarnEnabled()
 
-  @inline def isErrorEnabled: Boolean = logger.isErrorEnabled
+  @inline def isErrorEnabled: Boolean = logger.isErrorEnabled()
 
 
   import Logger._

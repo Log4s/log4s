@@ -8,6 +8,7 @@ scala:
   - 2.12.12
   - 2.13.3
   - 3.0.0-M1
+  - 3.0.0-M2
 script:
   - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION testIfRelevant mimaReportBinaryIssues'
   - 'if [[ "${TRAVIS_SCALA_VERSION}" == 2.* ]]; then sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION makeSite; fi'
