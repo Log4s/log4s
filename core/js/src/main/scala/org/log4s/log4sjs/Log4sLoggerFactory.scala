@@ -10,7 +10,7 @@ class Log4sLoggerFactory extends ILoggerFactory {
   private[this] final class Log4sLoggerInstance private[Log4sLoggerFactory] (private[this] val name: String) extends Logger {
     private[this] val path = LoggerParser(name)
 
-    override def getName = name
+    override def getName() = name
 
     protected[this] def isEnabled(level: LogLevel) = config.isPathEnabled(path, level)
 

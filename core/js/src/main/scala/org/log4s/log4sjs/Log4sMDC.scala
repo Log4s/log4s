@@ -37,6 +37,6 @@ object Log4sMDC {
 
   @JSExport
   def withCtx(values: js.Dictionary[String]): js.Function1[js.Function0[_], _] = {
-    fn: js.Function0[_] => MDC.withCtx(values.toSeq: _*)(fn())
+    (fn: js.Function0[_]) => MDC.withCtx(values.toSeq: _*)(fn())
   }
 }

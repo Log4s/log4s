@@ -13,20 +13,20 @@ final class LoggedEvent private[log4s] (val inner: ILoggingEvent) extends AnyVal
     *
     * Log4s doesn't use arguments, so you probably don't want this unless
     * you're also testing non-Log4s logging events. */
-  def argumentArray: Option[IndexedSeq[Any]] = Option(inner.getArgumentArray.toIndexedSeq)
+  def argumentArray: Option[IndexedSeq[Any]] = Option(inner.getArgumentArray().toIndexedSeq)
 
-  def callerData: IndexedSeq[StackTraceElement] = inner.getCallerData.toIndexedSeq
-  def formattedMessage: String = inner.getFormattedMessage
+  def callerData: IndexedSeq[StackTraceElement] = inner.getCallerData().toIndexedSeq
+  def formattedMessage: String = inner.getFormattedMessage()
   /* TODO: Convert these to Log4s levels? This would require some clever
    * tricks to deal with the circular dependency it would create. */
-  def level: Level = inner.getLevel
-  def loggerName: String = inner.getLoggerName
-  def marker: Option[Marker] = Option(inner.getMarker)
-  def mdc: Map[String, String] = inner.getMDCPropertyMap.asScala
-  def message: String = inner.getMessage
-  def threadName: String = inner.getThreadName
-  def throwable: Option[LoggedThrowable] = Option(inner.getThrowableProxy).map(new LoggedThrowable(_))
-  def timestamp: Long = inner.getTimeStamp
-  def hasCallerData: Boolean = inner.hasCallerData
+  def level: Level = inner.getLevel()
+  def loggerName: String = inner.getLoggerName()
+  def marker: Option[Marker] = Option(inner.getMarker())
+  def mdc: Map[String, String] = inner.getMDCPropertyMap().asScala
+  def message: String = inner.getMessage()
+  def threadName: String = inner.getThreadName()
+  def throwable: Option[LoggedThrowable] = Option(inner.getThrowableProxy()).map(new LoggedThrowable(_))
+  def timestamp: Long = inner.getTimeStamp()
+  def hasCallerData: Boolean = inner.hasCallerData()
 
 }

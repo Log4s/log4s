@@ -286,7 +286,7 @@ class LoggerSpec extends AnyFlatSpec with Matchers with GivenWhenThen with Logge
         event.formattedMessage shouldEqual msg
         event.level shouldEqual level
 
-        event.inner.getArgumentArray should be (null)
+        event.inner.getArgumentArray() should be (null)
         event.loggerName shouldEqual "test"
 
         val tp = event.throwable

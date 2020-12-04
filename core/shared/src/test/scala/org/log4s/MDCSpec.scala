@@ -25,7 +25,7 @@ class MDCSpec extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   }
 
   it should "restore conflicting contexts" in {
-    MDC.clear
+    MDC.clear()
     MDC("a") = "old"
     MDC("b") = "old"
     MDC shouldEqual Map("a" -> "old", "b" -> "old")
@@ -33,7 +33,7 @@ class MDCSpec extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
       MDC shouldEqual Map("a" -> "old", "b" -> "new", "c" -> "new")
     }
     MDC shouldEqual Map("a" -> "old", "b" -> "old")
-    MDC.clear
+    MDC.clear()
   }
 
   it should "handle duplicate keys in context" in {
@@ -45,7 +45,7 @@ class MDCSpec extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   }
 
   it should "set values" in {
-    MDC.clear
+    MDC.clear()
     MDC get "a" shouldBe empty
     MDC("a") = "new"
     MDC get "a" should not be empty
@@ -56,12 +56,12 @@ class MDCSpec extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
     MDC("a") = "1"
     MDC("b") = "2"
     MDC.size should be >= 2
-    MDC.clear
+    MDC.clear()
     MDC shouldBe empty
   }
 
   it should "support map operations" in {
-    MDC.clear
+    MDC.clear()
     MDC("a") = "1"
     MDC should have size 1
     MDC should contain key ("a")
@@ -80,7 +80,7 @@ class MDCSpec extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   }
 
   it should "remove values" in {
-    MDC.clear
+    MDC.clear()
     MDC("a") = "1"
     MDC("b") = "2"
     MDC should have size 2
