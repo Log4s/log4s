@@ -684,3 +684,4 @@ Here are all other contributors, listed chronologically. Thanks to all!
 - [Olli Helenius](https://github.com/liff)
 - [Raúl Piaggio](https://github.com/rpiaggio)
 - [Sergey Torgashov](https://github.com/satorg)
+- [Kevin Lee](https://github.com/Kevin-Lee)
