@@ -10,7 +10,7 @@ import scala.quoted._
 private[log4s] object LoggerMacros {
 
   /** Get a logger by reflecting the enclosing class name. */
-  final def getLoggerImpl(using qctx: QuoteContext): Expr[Logger] = {
+  final def getLoggerImpl(using qctx: Quotes): Expr[Logger] = {
     import qctx.reflect._
 
     @tailrec def findEnclosingClass(sym: Symbol): Symbol = {
@@ -54,32 +54,32 @@ private[log4s] object LoggerMacros {
       '{ new Logger(JLoggerFactory.getLogger($name)) }
     }
 
-    val cls = findEnclosingClass(Symbol.currentOwner)
+    val cls = findEnclosingClass(Symbol.spliceOwner)
     logger(cls)
   }
 
-  def traceTM(logger: Expr[JLogger])(t: Expr[Throwable])(msg: Expr[String])(using qctx: QuoteContext) =
+  def traceTM(logger: Expr[JLogger])(t: Expr[Throwable])(msg: Expr[String])(using qctx: Quotes) =
     '{ if ($logger.isTraceEnabled()) $logger.trace($msg, $t) }
-  def traceM(logger: Expr[JLogger])(msg: Expr[String])(using qctx: QuoteContext) =
+  def traceM(logger: Expr[JLogger])(msg: Expr[String])(using qctx: Quotes) =
     '{ if ($logger.isTraceEnabled()) $logger.trace($msg) }
 
-  def debugTM(logger: Expr[JLogger])(t: Expr[Throwable])(msg: Expr[String])(using qctx: QuoteContext) =
+  def debugTM(logger: Expr[JLogger])(t: Expr[Throwable])(msg: Expr[String])(using qctx: Quotes) =
     '{ if ($logger.isDebugEnabled()) $logger.debug($msg, $t) }
-  def debugM(logger: Expr[JLogger])(msg: Expr[String])(using qctx: QuoteContext) =
+  def debugM(logger: Expr[JLogger])(msg: Expr[String])(using qctx: Quotes) =
     '{ if ($logger.isDebugEnabled()) $logger.debug($msg) }
 
-  def infoTM(logger: Expr[JLogger])(t: Expr[Throwable])(msg: Expr[String])(using qctx: QuoteContext) =
+  def infoTM(logger: Expr[JLogger])(t: Expr[Throwable])(msg: Expr[String])(using qctx: Quotes) =
     '{ if ($logger.isInfoEnabled()) $logger.info($msg, $t) }
-  def infoM(logger: Expr[JLogger])(msg: Expr[String])(using qctx: QuoteContext) =
+  def infoM(logger: Expr[JLogger])(msg: Expr[String])(using qctx: Quotes) =
     '{ if ($logger.isInfoEnabled()) $logger.info($msg) }
 
-  def warnTM(logger: Expr[JLogger])(t: Expr[Throwable])(msg: Expr[String])(using qctx: QuoteContext) =
+  def warnTM(logger: Expr[JLogger])(t: Expr[Throwable])(msg: Expr[String])(using qctx: Quotes) =
     '{ if ($logger.isWarnEnabled()) $logger.warn($msg, $t) }
-  def warnM(logger: Expr[JLogger])(msg: Expr[String])(using qctx: QuoteContext) =
+  def warnM(logger: Expr[JLogger])(msg: Expr[String])(using qctx: Quotes) =
     '{ if ($logger.isWarnEnabled()) $logger.warn($msg) }
 
-  def errorTM(logger: Expr[JLogger])(t: Expr[Throwable])(msg: Expr[String])(using qctx: QuoteContext) =
+  def errorTM(logger: Expr[JLogger])(t: Expr[Throwable])(msg: Expr[String])(using qctx: Quotes) =
     '{ if ($logger.isErrorEnabled()) $logger.error($msg, $t) }
-  def errorM(logger: Expr[JLogger])(msg: Expr[String])(using qctx: QuoteContext) =
+  def errorM(logger: Expr[JLogger])(msg: Expr[String])(using qctx: Quotes) =
     '{ if ($logger.isErrorEnabled()) $logger.error($msg) }
 }
