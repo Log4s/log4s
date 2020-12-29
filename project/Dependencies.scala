@@ -4,7 +4,7 @@ import Keys._
 object Dependencies {
   final val slf4jVersion                   = "1.7.25"
   final val logbackVersion                 = "1.2.3"
-  final val scalacheckVersion              = "1.15.1"
+  final val scalacheckVersion              = "1.15.2"
   final val scalatestVersion               = "3.2.3"
   final val scalatestPlusScalacheckVersion = "3.2.3.0"
   final val scalajsStubsVersion            = "1.0.0"
