@@ -32,7 +32,7 @@ private[log4s] object LoggerMacros {
           s.fullName
         }
         else if (s.isClassDef) {
-          if (flags.is(Flags.ModuleClass & Flags.Object)) {
+          if (flags.is(Flags.Module)) {
             if (s.name == "package$") {
               fullName(s.owner)
             }
