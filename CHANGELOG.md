@@ -127,3 +127,9 @@ changes to how it's coded or built, see the Git history.
 ### 1.10.0-M3
 
 * Add support for Scala 3.0.0-M2.
+
+### 1.10.0-M4
+
+* Add support for Scala 3.0.0-M3.
+* Drop support for Scala 3.0.0-M1.
+* 2.13.x version built against Scala 2.13.4.
