@@ -35,7 +35,7 @@ val prevArtifacts = Def.derive {
 
 def jsOpts = new Def.SettingList(Seq(
   scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
-  crossScalaVersions := crossScalaVersions.value.filterNot(_ == "3.0.0-M1")
+  crossScalaVersions := crossScalaVersions.value.filterNot(Set("3.0.0-M3", "3.0.0-RC1").contains)
 ))
 
 lazy val root: Project = (project in file ("."))
@@ -164,13 +164,10 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
   .jsSettings(jsOpts)
   .jsSettings(
     prevVersions := jsPrevVersions,
-    libraryDependencies ++= {
-      if (!isDotty.value) Seq(
-        "org.scalatest"     %%% "scalatest"       % scalatestVersion.value               % Test,
-        "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion.value % Test,
-      )
-      else Seq.empty
-    }
+    libraryDependencies ++= Seq(
+      "org.scalatest"     %%% "scalatest"       % scalatestVersion.value               % Test,
+      "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion.value % Test,
+    )
   )
 
 lazy val coreJS = core.js
