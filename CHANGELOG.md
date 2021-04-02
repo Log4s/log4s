@@ -123,3 +123,19 @@ changes to how it's coded or built, see the Git history.
 ### 1.10.0-M2
 
 * Remove scala-reflect, scalatest, and scalacheck from compile scope.
+
+### 1.10.0-M3
+
+* Add support for Scala 3.0.0-M2.
+
+### 1.10.0-M4
+
+* Add support for Scala 3.0.0-M3.
+* Drop support for Scala 3.0.0-M1.
+* 2.13.x version built against Scala 2.13.4.
+
+### 1.10.0-M5
+
+* Add support for Scala 3.0.0-RC1.
+* Drop support for Scala 3.0.0-M2.
+* Upgrade to slf4j-1.7.30
