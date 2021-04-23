@@ -154,7 +154,7 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
         case "2.11"                    => `2.11Versions` ++ `2.12Versions` ++ `2.13Versions` ++ DottyVersions
         case "2.12"                    => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
         case "2.13"                    => `2.13Versions` ++ DottyVersions
-        case "3.0.0-RC1" | "3.0.0-RC2" => DottyVersions
+        case "3.0.0-RC2" | "3.0.0-RC3" => DottyVersions
         case other                     =>
           sLog.value.info(s"No known MIMA artifacts for: $other")
           Set.empty
@@ -197,7 +197,7 @@ lazy val testing = (crossProject(JSPlatform, JVMPlatform) in file ("testing"))
       scalaBinaryVersion.value match {
         case "2.11" | "2.12"           => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
         case "2.13"                    => `2.13Versions` ++ DottyVersions
-        case "3.0.0-RC1" | "3.0.0-RC2" => DottyVersions
+        case "3.0.0-RC2" | "3.0.0-RC3" => DottyVersions
         case other =>
           Set.empty
       }

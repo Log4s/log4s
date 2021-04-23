@@ -12,8 +12,7 @@ object Dependencies {
   final val scalatestVersion               =
     Def.map(scalaBinaryVersion) {
       case "2.11"      => "3.2.3"
-      case "3.0.0-RC1" => "3.2.6"
-      case _           => "3.2.7"
+      case _           => "3.2.8"
     }
   final val scalatestPlusScalacheckVersion =
     Def.map(scalaBinaryVersion) {
