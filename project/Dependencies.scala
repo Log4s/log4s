@@ -12,14 +12,14 @@ object Dependencies {
   final val scalatestVersion               =
     Def.map(scalaBinaryVersion) {
       case "2.11"      => "3.2.3"
-      case "3.0.0-RC1" => "3.2.6"
-      case _           => "3.2.7"
+      case "3.0.0-RC2" => "3.2.7"
+      case _           => "3.2.8"
     }
   final val scalatestPlusScalacheckVersion =
     Def.map(scalaBinaryVersion) {
       case "2.11"      => "3.2.3.0"
-      case "3.0.0-RC1" => "3.2.6.0"
-      case _           => "3.2.7.0"
+      case "3.0.0-RC2" => "3.2.7.0"
+      case _           => "3.2.8.0"
     }
   final val scalajsStubsVersion            = "1.0.0"
 

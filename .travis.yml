@@ -5,10 +5,10 @@ branches:
 language: scala
 scala:
   - 2.11.12
-  - 2.12.12
-  - 2.13.4
-  - 3.0.0-RC1
+  - 2.12.13
+  - 2.13.5
   - 3.0.0-RC2
+  - 3.0.0-RC3
 script:
   - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION testIfRelevant mimaReportBinaryIssues'
   - 'if [[ "${TRAVIS_SCALA_VERSION}" == 2.* ]]; then sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION makeSite; fi'

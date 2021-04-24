@@ -147,3 +147,8 @@ changes to how it's coded or built, see the Git history.
 * Upgrade to slf4j-1.7.30
 * 2.12.x version built against 2.12.13
 * 2.13.x version built against 2.13.5
+
+### 1.10.0-M7
+
+* Add support for Scala 3.0.0-RC3
+* Drop support for Scala 3.0.0-RC1
