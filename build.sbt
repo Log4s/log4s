@@ -35,7 +35,6 @@ val prevArtifacts = Def.derive {
 
 def jsOpts = new Def.SettingList(Seq(
   scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
-  crossScalaVersions := crossScalaVersions.value.filter(_.startsWith("2."))
 ))
 
 lazy val root: Project = (project in file ("."))
@@ -52,8 +51,8 @@ lazy val root: Project = (project in file ("."))
 
     exportJars := false,
 
-    skip in Compile := true,
-    skip in Test := true,
+    Compile / skip := true,
+    Test / skip := true,
 
     mimaFailOnNoPrevious := false
   )
@@ -101,20 +100,20 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
       "org.scalacheck"    %%% "scalacheck"      % scalacheckVersion.value          % "test",
     ),
     libraryDependencies ++= {
-      if (isDotty.value) Seq.empty
+      if (isScala3(scalaVersion.value)) Seq.empty
       else Seq(reflect.value % Provided)
     },
 
-    unmanagedSourceDirectories in Compile ++= {
+    Compile / unmanagedSourceDirectories ++= {
       scalaBinaryVersion.value match {
         case s if s.startsWith("2.") =>
           Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-2")
-        case s if s.startsWith("3.") =>
-          Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-3")
+        case s if s.startsWith("3") =>
+          Seq.empty
       }
     },
 
-    unmanagedSourceDirectories in Compile ++= {
+    Compile / unmanagedSourceDirectories ++= {
       scalaBinaryVersion.value match {
         case "2.11" | "2.12" =>
           Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-oldcoll")
@@ -125,7 +124,7 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
 
   )
   .jvmSettings(
-    libraryDependencies += ("org.scala-js" %% "scalajs-stubs" % scalajsStubsVersion % "provided").withDottyCompat(scalaVersion.value),
+    libraryDependencies += ("org.scala-js" %% "scalajs-stubs" % scalajsStubsVersion % "provided").cross(CrossVersion.for3Use2_13),
     libraryDependencies ++= Seq(
       "org.scalatest"     %%% "scalatest"       % scalatestVersion.value               % Test,
       "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion.value % Test
@@ -151,11 +150,11 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
       def DottyVersions =
         Set.empty[String]
       scalaBinaryVersion.value match {
-        case "2.11"                    => `2.11Versions` ++ `2.12Versions` ++ `2.13Versions` ++ DottyVersions
-        case "2.12"                    => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
-        case "2.13"                    => `2.13Versions` ++ DottyVersions
-        case "3.0.0-RC2" | "3.0.0-RC3" => DottyVersions
-        case other                     =>
+        case "2.11" => `2.11Versions` ++ `2.12Versions` ++ `2.13Versions` ++ DottyVersions
+        case "2.12" => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
+        case "2.13" => `2.13Versions` ++ DottyVersions
+        case "3"    => DottyVersions
+        case other  =>
           sLog.value.info(s"No known MIMA artifacts for: $other")
           Set.empty
       }
@@ -165,11 +164,10 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
   .jsSettings(
     prevVersions := jsPrevVersions,
     libraryDependencies ++= {
-      if (!isDotty.value) Seq(
+      Seq(
         "org.scalatest"     %%% "scalatest"       % scalatestVersion.value               % Test,
         "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion.value % Test,
       )
-      else Seq.empty
     }
   )
 
@@ -195,9 +193,9 @@ lazy val testing = (crossProject(JSPlatform, JVMPlatform) in file ("testing"))
       val `2.13Versions` = Set("1.8.2")
       val DottyVersions  = Set.empty[String]
       scalaBinaryVersion.value match {
-        case "2.11" | "2.12"           => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
-        case "2.13"                    => `2.13Versions` ++ DottyVersions
-        case "3.0.0-RC2" | "3.0.0-RC3" => DottyVersions
+        case "2.11" | "2.12" => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
+        case "2.13"          => `2.13Versions` ++ DottyVersions
+        case "3"             => DottyVersions
         case other =>
           Set.empty
       }

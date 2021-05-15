@@ -14,19 +14,19 @@ object SiteSettingsPlugin extends AutoPlugin {
   )
 
   override lazy val projectSettings = Seq(
-    scalacOptions in (Compile,doc) ++= {
+    Compile / doc / scalacOptions ++= {
       var s =
         Seq(
           "-groups",
           "-implicits",
-          "-sourcepath", (baseDirectory in ThisBuild).value.getAbsolutePath
+          "-sourcepath", (ThisBuild / baseDirectory).value.getAbsolutePath
         )
       if (includeSiteDiagrams.value) {
         s :+= "-diagrams"
       }
       s
     },
-    scalacOptions in (Compile,doc) ++= (
+    Compile / doc / scalacOptions ++= (
       (BasicSettings: SettingTemplate).sourceLocation("master") match {
         case Some(url) =>
           val srcUrl = url + "€{FILE_PATH}.scala"

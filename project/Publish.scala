@@ -18,26 +18,26 @@ object Publish {
   ).toSeq
 
   val settings = sonaCreds ++ Seq (
-    publishMavenStyle       := true,
-    pomIncludeRepository    := { _ => false },
-    publishArtifact in Test := false,
+    publishMavenStyle      := true,
+    pomIncludeRepository   := { _ => false },
+    Test / publishArtifact := false,
 
-    publishTo               := {
+    publishTo              := {
       if (version.value.trim endsWith "SNAPSHOT")
         Some(sonatypeSnaps)
       else
         Some(sonatypeStaging)
     },
 
-    pomExtra                := BasicSettings.developerInfo
+    pomExtra               := BasicSettings.developerInfo
   )
 
   /** Use this if you don't want to publish a certain module.
     * (SBT's release plugin doesn't handle this well.)
     */
   val falseSettings = settings ++ Seq (
-    publishArtifact in Compile := false,
-    publishArtifact in Test := false,
+    Compile / publishArtifact := false,
+    Test / publishArtifact := false,
     publishTo := Some(Resolver.file("phony-repo", file("target/repo")))
   )
 }

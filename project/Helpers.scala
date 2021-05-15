@@ -54,14 +54,16 @@ object HelpersImpl {
     }
     object SVer {
       def apply(scalaVersion: String): SVer = {
-        CrossVersion.partialVersion(scalaVersion) match {
-          case Some((2, 11))           => SVer2_11
-          case Some((2, 12))           => SVer2_12
-          case Some((2, n)) if n >= 13 => SVer2_13
-          case Some((0, _))            => SVerDotty
-          case Some((3, _))            => SVerDotty
-          case _ =>
-            throw new IllegalArgumentException(s"Scala version $scalaVersion is not supported")
+        if (scalaVersion.startsWith("3")) {
+          SVerDotty
+        } else {
+          CrossVersion.partialVersion(scalaVersion) match {
+            case Some((2, 11))           => SVer2_11
+            case Some((2, 12))           => SVer2_12
+            case Some((2, n)) if n >= 13 => SVer2_13
+            case _ =>
+              throw new IllegalArgumentException(s"Scala version $scalaVersion is not supported")
+          }
         }
       }
     }
@@ -81,6 +83,9 @@ object HelpersImpl {
       override final val backend = DottyBackend
       override final val requireJava8 = true
     }
+  
+    def isScala3(scalaVersion: String): Boolean =
+      CrossVersion.binaryScalaVersion(scalaVersion) == "3"
   }
 
   sealed trait PomHelper {
