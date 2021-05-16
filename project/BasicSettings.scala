@@ -1,12 +1,16 @@
 /* Note: This file is shared among many projects. Avoid putting project-specific things here. */
 
-import dotty.tools.sbtplugin.DottyPlugin.autoImport.isDotty
 import sbt._
 import sbt.Keys._
 
 import Helpers._
 
 object BasicSettings extends AutoPlugin with BasicSettings {
+
+  object autoImport {
+    def isScala3(scalaVersion: String): Boolean = Helpers.isScala3(scalaVersion)
+  }
+
   override def projectSettings = basicSettings
 }
 
@@ -43,11 +47,11 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
       updateOptions        :=  updateOptions.value.withCachedResolution(cachedResolution),
       parallelExecution    :=  parallelBuild,
 
-      evictionWarningOptions in update :=
+      update / evictionWarningOptions :=
         EvictionWarningOptions.default.withWarnTransitiveEvictions(false).withWarnDirectEvictions(false).withWarnScalaVersionEviction(false)
     ) ++ (
       if (noBuildDocs) {
-        Seq(sources in (Compile, doc) := Seq.empty)
+        Seq(Compile / doc / sources := Seq.empty)
       } else {
         docOptions()
       }
@@ -91,13 +95,13 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
       if (sv.backend == SupportsNewBackend && newBackend) {
         options :+= "-Ybackend:GenBCode"
       }
-      if (disableAsserts && !isDotty.value) {
+      if (disableAsserts && !isScala3(scalaVersion.value)) {
         options :+= "-Xdisable-assertions"
       }
-      if (isDotty.value) {
+      if (isScala3(scalaVersion.value)) {
         options ++= List("-source:3.0-migration", "-language:implicitConversions")
       }
-      if (!isDotty.value) {
+      if (!isScala3(scalaVersion.value)) {
         options :+= "-Yrangepos"
       }
 
@@ -185,8 +189,8 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
   def docOptions() = Seq(
     Compile / doc / sources := {
       val old = (Compile / doc / sources).value
-      if (isDotty.value)
-        Seq()
+      if (isScala3(scalaVersion.value))
+        Seq.empty
       else
         old
     }

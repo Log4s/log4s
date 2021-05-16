@@ -53,7 +53,7 @@ object Log4sConfig extends Log4sConfig { thisConfig =>
       var state: LoggerState = emptyLoggerState)
 
   private[this] object LoggerState {
-    private[this] val defaultRootState = ConcreteLoggerState(AllThreshold, Seq(standardAppender))
+    private[this] val defaultRootState = ConcreteLoggerState(log4sjs.LogThreshold.AllThreshold, Seq(standardAppender))
     private[this] val root = new Node()
 
     def apply(parts: Seq[String]): ConcreteLoggerState = {

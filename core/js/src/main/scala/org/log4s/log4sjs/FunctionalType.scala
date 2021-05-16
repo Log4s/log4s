@@ -9,8 +9,13 @@ abstract class FunctionalType[ObjectType <: js.Any, Argument, Result]
   type FunctionType = js.Function1[Argument, Result]
   type DynamicType = js.|[FunctionType, Type]
 
+  // Workaround for formatter.merge.asInstanceOf[js.Dynamic] since formatter.merge doesn't work on Scala 3.0.0
+  // For more information, please check out https://github.com/Log4s/log4s/pull/75#issuecomment-841758231
+  private def unionMerge[A <: js.|[_, _], B](a: A)(implicit ev: js.|.Evidence[A, B]): B =
+    a.asInstanceOf[B]
+
   def fromDynamicType(formatter: DynamicType): Type = {
-    val dynamic = formatter.merge.asInstanceOf[js.Dynamic]
+    val dynamic = unionMerge(formatter).asInstanceOf[js.Dynamic]
     if (dynamic.selectDynamic(dynamicField.name).isInstanceOf[js.Function]) {
       from(dynamic.asInstanceOf[Type])
     } else if (dynamic.isInstanceOf[js.Function]) {

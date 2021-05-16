@@ -25,5 +25,5 @@ final class Log4sEvent private[log4sjs] (
     val timestamp: js.Date)
   extends js.Object with LoggedEvent {
 
-  override def toString = s"Log4sEvent(loggerName=$loggerName, level=$level, message=$message, mdc=$mdc, threadName=$threadName, throwable=$throwable, timestamp=$timestamp)"
+  override def toString() = s"Log4sEvent(loggerName=$loggerName, level=$level, message=$message, mdc=$mdc, threadName=$threadName, throwable=$throwable, timestamp=$timestamp)"
 }
