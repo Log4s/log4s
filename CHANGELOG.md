@@ -152,3 +152,9 @@ changes to how it's coded or built, see the Git history.
 
 * Add support for Scala 3.0.0-RC3
 * Drop support for Scala 3.0.0-RC1
+
+### 1.10.0-RC1
+
+* Add support for Scala 3.0.0
+* Drop support for Scala 3.0.0-RC2 and 3.0.0-RC3
+* Add support for Scala.js on Scala 3
