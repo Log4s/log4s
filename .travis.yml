@@ -6,8 +6,8 @@ language: scala
 scala:
   - 2.11.12
   - 2.12.13
-  - 2.13.5
-  - 3.0.0
+  - 2.13.6
+  - 3.0.1
 script:
   - 'sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION testIfRelevant mimaReportBinaryIssues'
   - 'if [[ "${TRAVIS_SCALA_VERSION}" == 2.* ]]; then sbt -Dsbt.log.noformat=true ++$TRAVIS_SCALA_VERSION makeSite; fi'
