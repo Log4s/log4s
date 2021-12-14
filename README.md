@@ -1,5 +1,7 @@
 # Log4s
 
+**Note:** Log4s is not vulnerable to [log4shell (CVE-2021-44228)](https://nvd.nist.gov/vuln/detail/CVE-2021-44228) but the loggers that sit behind it may be. [See more details.](#cve-2021-44228-log4shell)
+
 **Note:** version 1.6 and above have *experimental* support for
 [Scala.js](https://www.scala-js.org/). See the table of contents below for
 documentation.
