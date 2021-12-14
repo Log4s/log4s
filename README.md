@@ -664,6 +664,15 @@ features so we can agree on the general design.
   all logging below a certain level.
 - Marker support.
 
+## CVE-2021-44228 ("log4shell")
+
+log4s delegates all logging operations to [slf4j][slf4j].  log4s is
+not directly at risk from CVE-2021-44228, but your configured slf4j
+provider may put you at risk.  See [slf4j's comments on
+CVE-2021-44228][slf4j-log4shell] for more.
+
+[slf4j]: https://www.slf4j.org/
+[slf4j-log4shell]: https://www.slf4j.org/log4shell.html
 
 ## Contributors
 
