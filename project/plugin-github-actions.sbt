@@ -1,1 +1,1 @@
-addSbtPlugin("com.codecommit"     % "sbt-github-actions" % "0.13.0")
+addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.14.2")

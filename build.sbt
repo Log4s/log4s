@@ -33,6 +33,10 @@ val prevArtifacts = Def.derive {
   mimaPreviousArtifacts := prevVersions.value.map(organization.value %%% artifact.value.name % _)
 }
 
+ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("testIfRelevant", "mimaReportBinaryIssues")))
+ThisBuild / githubWorkflowJavaVersions := Seq("8", "11", "17").map(JavaSpec.temurin)
+ThisBuild / githubWorkflowPublishTargetBranches := Seq.empty
+
 def jsOpts = new Def.SettingList(Seq(
   scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
 ))
