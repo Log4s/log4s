@@ -35,6 +35,7 @@ val prevArtifacts = Def.derive {
 
 ThisBuild / githubWorkflowBuild := Seq(WorkflowStep.Sbt(List("testIfRelevant", "mimaReportBinaryIssues")))
 ThisBuild / githubWorkflowJavaVersions := Seq("8", "11", "17").map(JavaSpec.temurin)
+ThisBuild / githubWorkflowScalaVersions := crossScalaVersions.value
 ThisBuild / githubWorkflowPublishTargetBranches := Seq.empty
 
 def jsOpts = new Def.SettingList(Seq(
