@@ -15,8 +15,8 @@ trait ProjectSettings
   override final val githubOrganization       = "Log4s"
   override final val githubProject            = "log4s"
 
-  override final val buildScalaVersion        = "2.12.13"
-  override final val extraScalaVersions       = Seq("2.11.12", "2.13.5", "3.0.0")
+  override final val buildScalaVersion        = "2.12.15"
+  override final val extraScalaVersions       = Seq("2.11.12", "2.13.8", "3.0.2")
   override final val minimumJavaVersion       = "1.7"
   override final val defaultOptimize          = true
   override final val defaultOptimizeGlobal    = true
