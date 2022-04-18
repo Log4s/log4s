@@ -2,7 +2,7 @@ import sbt._
 import Keys._
 
 object Dependencies {
-  final val slf4jVersion                   = "1.7.35"
+  final val slf4jVersion                   = "1.7.36"
   final val logbackVersion                 = "1.2.3"
   final val scalacheckVersion              =
     Def.map(scalaBinaryVersion) {
