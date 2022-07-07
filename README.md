@@ -20,7 +20,7 @@ To get started quickly, you can add this dependency to your `build.sbt`
   - [Exception logging](#exception-logging)
   - [Diagnostic contexts](#diagnostic-contexts)
 - [Scala.js support](#scalajs-support)
-- [Log4s Testing](#testing)
+- [Log4s Testing](#log4s-testing)
 - [Unsupported features](#unsupported-features)
 - [Contributors](#contributors)
 
