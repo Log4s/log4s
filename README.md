@@ -8,7 +8,7 @@ documentation.
 
 To get started quickly, you can add this dependency to your `build.sbt`
 
-    libraryDependencies += "org.log4s" %% "log4s" % "1.8.2"
+    libraryDependencies += "org.log4s" %% "log4s" % "1.10.0"
 
 ## Topics
 
