@@ -13,6 +13,21 @@ lazy val binaryCompatStep = releaseStepCommandAndRemaining("+mimaReportBinaryIss
 lazy val testIfRelevantStep = releaseStepCommandAndRemaining("+testIfRelevant")
 lazy val publishIfRelevantStep = releaseStepCommandAndRemaining("+publishSignedIfRelevant")
 
+// sonaReleaseIfNecessary is from sbt-typelevel
+// https://github.com/typelevel/sbt-typelevel/blob/v0.8.0/sonatype/src/main/scala/org/typelevel/sbt/TypelevelSonatypePlugin.scala#L81-L87
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2022 Typelevel
+lazy val sonaReleaseIfNecessary: Command =
+  Command.command("sonaReleaseIfNecessary") { state =>
+    if (state.getSetting(isSnapshot).getOrElse(false))
+      state // a snapshot is good-to-go
+    else // a non-snapshot releases as a bundle
+      Command.process("sonaRelease", state, _ => ())
+  }
+
+commands += sonaReleaseIfNecessary
+lazy val sonaReleaseIfNecessaryStep = releaseStepCommand("sonaReleaseIfNecessary")
+
 /* This is the standard release process plus a binary compat check after tests */
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
@@ -24,6 +39,7 @@ releaseProcess := Seq[ReleaseStep](
   commitReleaseVersion,
   tagRelease,
   publishIfRelevantStep,
+  sonaReleaseIfNecessaryStep,
   setNextVersion,
   commitNextVersion,
   pushChanges

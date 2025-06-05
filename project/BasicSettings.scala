@@ -64,7 +64,7 @@ trait BasicSettings extends ProjectSettings { st: SettingTemplate =>
     ) ++ (
       if (sonatypeResolver) {
         /* Many OSS projects push here and then appear in Maven Central later */
-        Seq(resolvers += Resolver.sonatypeRepo("releases"))
+        Seq(resolvers ++= Resolver.sonatypeOssRepos("releases"))
       } else {
         Seq.empty
       }
