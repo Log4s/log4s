@@ -1,1 +1,1 @@
-addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.14.2")
+addSbtPlugin("org.typelevel" % "sbt-typelevel-github-actions" % "0.8.0")
