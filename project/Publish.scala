@@ -10,7 +10,7 @@ object Publish {
       pass <- getProp("SONATYPE_PASS")
     } yield {
       credentials +=
-          Credentials("Sonatype Central Portal",
+          Credentials("Sonatype Nexus Repository Manager",
                       "central.sonatype.com",
                       user, pass)
     }
