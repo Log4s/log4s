@@ -2,7 +2,6 @@ import sbt.{Resolvers => _, _}
 import Keys._
 
 object Publish {
-  import Resolvers._
   import Helpers._
 
   val sonaCreds = (
