@@ -1,8 +1,7 @@
-import sbt._
+import sbt.{Resolvers => _, _}
 import Keys._
 
 object Publish {
-  import Resolvers._
   import Helpers._
 
   val sonaCreds = (
@@ -12,7 +11,7 @@ object Publish {
     } yield {
       credentials +=
           Credentials("Sonatype Nexus Repository Manager",
-                      "oss.sonatype.org",
+                      "central.sonatype.com",
                       user, pass)
     }
   ).toSeq
@@ -23,10 +22,9 @@ object Publish {
     Test / publishArtifact := false,
 
     publishTo              := {
-      if (version.value.trim endsWith "SNAPSHOT")
-        Some(sonatypeSnaps)
-      else
-        Some(sonatypeStaging)
+      val centralSnapshots = "https://central.sonatype.com/repository/maven-snapshots/"
+      if (isSnapshot.value) Some("central-snapshots" at centralSnapshots)
+      else localStaging.value
     },
 
     pomExtra               := BasicSettings.developerInfo
