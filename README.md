@@ -46,17 +46,9 @@ facilitating the testing of logging-related code.
 
 ### Requirements
 
-Scala 2.11, 2.12 and 2.13 are fully supported. No special settings or
+Scala 2.12, 2.13 and 3 are fully supported. No special settings or
 compiler options are required: just add the dependency as described
 above.
-
-#### Scala 2.10
-
-Scala 2.10 support is still present, but it is beyond its support window: it
-may be removed in any future minor release if there's a reason. (It will not
-be removed in a patch release.)
-
-The macro paradise compiler extensions are not required for Scala 2.10.
 
 ### Getting a logger
 

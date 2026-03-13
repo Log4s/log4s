@@ -1,4 +1,4 @@
-import sbt._
+import sbt.*
 
 /** Basic metadata about the project that gets pulled into the build */
 trait ProjectSettings
@@ -15,9 +15,9 @@ trait ProjectSettings
   override final val githubOrganization       = "Log4s"
   override final val githubProject            = "log4s"
 
-  override final val buildScalaVersion        = "2.12.15"
-  override final val extraScalaVersions       = Seq("2.11.12", "2.13.8", "3.0.2")
-  override final val minimumJavaVersion       = "1.7"
+  override final val buildScalaVersion        = "2.12.21"
+  override final val extraScalaVersions       = Seq("2.13.18", "3.3.7")
+  override final val minimumJavaVersion       = "1.8"
   override final val defaultOptimize          = true
   override final val defaultOptimizeGlobal    = true
   override final val defaultDisableAssertions = true

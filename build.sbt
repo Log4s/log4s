@@ -2,6 +2,7 @@ import Dependencies._
 import ReleaseTransformations._
 
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
+import org.typelevel.sbt.TypelevelScalaJSGitHubPlugin
 
 /* TODO: Attempts to do this with the existing `TaskKey` have failed, but that
  * would be better than doing it using the string. This approach also won't
@@ -59,7 +60,7 @@ def jsOpts = new Def.SettingList(Seq(
 ))
 
 lazy val root: Project = (project in file ("."))
-  .enablePlugins(BasicSettings)
+  .enablePlugins(BasicSettings, TypelevelScalaJSGitHubPlugin)
   .settings(Publish.settings: _*)
   .settings(Release.settings: _*)
   .aggregate(coreJVM, coreJS, testingJVM, testingJS)
@@ -118,7 +119,7 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
     libraryDependencies ++= Seq (
       slf4j,
       logback             %   "test",
-      "org.scalacheck"    %%% "scalacheck"      % scalacheckVersion.value          % "test",
+      "org.scalacheck"    %%% "scalacheck"      % scalacheckVersion          % "test",
     ),
     libraryDependencies ++= {
       if (isScala3(scalaVersion.value)) Seq.empty
@@ -127,16 +128,7 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
 
     Compile / unmanagedSourceDirectories ++= {
       scalaBinaryVersion.value match {
-        case s if s.startsWith("2.") =>
-          Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-2")
-        case s if s.startsWith("3") =>
-          Seq.empty
-      }
-    },
-
-    Compile / unmanagedSourceDirectories ++= {
-      scalaBinaryVersion.value match {
-        case "2.11" | "2.12" =>
+        case "2.12" =>
           Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-oldcoll")
         case _ =>
           Seq(baseDirectory.value / ".." / "shared" / "src" / "main" / "scala-newcoll")
@@ -147,17 +139,12 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
   .jvmSettings(
     libraryDependencies += ("org.scala-js" %% "scalajs-stubs" % scalajsStubsVersion % "provided").cross(CrossVersion.for3Use2_13),
     libraryDependencies ++= Seq(
-      "org.scalatest"     %%% "scalatest"       % scalatestVersion.value               % Test,
-      "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion.value % Test
+      "org.scalatest"     %%% "scalatest"       % scalatestVersion               % Test,
+      "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion % Test
     ),
     prevVersions := {
       /* I'm using the first & last version of each minor release rather than
        * including every single patch-level update. */
-      def `2.11Versions` =
-        Set("1.0.3", "1.0.5",
-            "1.1.0", "1.1.5",
-            "1.2.0", "1.2.1",
-            "1.3.0")
       def `2.12Versions` =
         Set("1.3.3", "1.3.6",
             "1.4.0",
@@ -171,7 +158,6 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
       def DottyVersions =
         Set.empty[String]
       scalaBinaryVersion.value match {
-        case "2.11" => `2.11Versions` ++ `2.12Versions` ++ `2.13Versions` ++ DottyVersions
         case "2.12" => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
         case "2.13" => `2.13Versions` ++ DottyVersions
         case "3"    => DottyVersions
@@ -186,8 +172,8 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file ("core"))
     prevVersions := jsPrevVersions,
     libraryDependencies ++= {
       Seq(
-        "org.scalatest"     %%% "scalatest"       % scalatestVersion.value               % Test,
-        "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion.value % Test,
+        "org.scalatest"     %%% "scalatest"       % scalatestVersion               % Test,
+        "org.scalatestplus" %%% "scalacheck-1-15" % scalatestPlusScalacheckVersion % Test,
       )
     }
   )
@@ -214,7 +200,7 @@ lazy val testing = (crossProject(JSPlatform, JVMPlatform) in file ("testing"))
       val `2.13Versions` = Set("1.8.2")
       val DottyVersions  = Set.empty[String]
       scalaBinaryVersion.value match {
-        case "2.11" | "2.12" => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
+        case "2.12" => `2.12Versions` ++ `2.13Versions` ++ DottyVersions
         case "2.13"          => `2.13Versions` ++ DottyVersions
         case "3"             => DottyVersions
         case other =>
