@@ -27,7 +27,8 @@ object Publish {
       else localStaging.value
     },
 
-    pomExtra               := BasicSettings.developerInfo
+    pomExtra               := BasicSettings.developerInfo,
+    developers             := Nil // hide sbt-typelevel defaults, which duplicate pomExtra
   )
 
   /** Use this if you don't want to publish a certain module.
