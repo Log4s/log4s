@@ -162,3 +162,11 @@ changes to how it's coded or built, see the Git history.
 ### 1.10.0
 
 * Release 1.10.0-RC1 as final.
+
+### 1.11.0-RC1
+
+* Drop support for Scala 2.11
+* Upgrade Scala 3 crossbuild to 3.3 LTS
+* Upgrade Scala.js to 1.20
+* Upgrade slf4j to 1.7.36
+* Fix Scala.js source map URI to point to GitHub
